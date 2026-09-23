@@ -2,6 +2,7 @@
 data/*
 !data/
 !data/README.md
+real_attachments/
 
 # Common local analysis artifacts
 __pycache__/
