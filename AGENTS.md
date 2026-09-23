@@ -2,13 +2,15 @@
 
 ## 项目结构与模块组织
 
-本仓库包含无人机应急物资运输与通信数学建模项目的数据和文档。主要目录如下：
+本仓库包含“算力约束下提升大语言模型能力的资源配置建模”项目的数据和文档。主要目录如下：
 
-- `data/无人机应急物资运输基础数据/`：描述无人机、通信链路、物资需求、服务区和调度输入的 Excel 工作簿。
-- `data/镇龙乡地理空间数据/`：GIS 源数据，包括 CSV/MAT 图层、GeoTIFF 格式 DEM、地图 HTML 文件及其说明 PDF。
-- `docs/`：建模题目说明（`.docx`）和结果提交模板（`.xlsx`）。
+- `data/A_data_value/`：训练数据混合、领域映射和 SlimPajama 质量信号。
+- `data/B_scaling_laws/`：模型缩放律、训练日志、检查点索引和补充实验。
+- `data/C_efficiency_evolution/`：排行榜时间序列、模型元数据和逐模型评测结果。
+- `docs/`：题目说明（`.pdf`）和结果提交模板（`.docx`）。
+- `data/source_manifest.json`：数据来源、文件大小和版本备注。
 
-目前没有应用源代码目录或测试目录。新增分析、脚本或笔记本时，应放在清晰命名的顶层目录（例如 `analysis/` 或 `scripts/`）中，不要混入 `data/`。
+`src/` 为预留的分析代码目录。新增脚本或笔记本应放在 `src/` 或清晰命名的顶层 `analysis/`、`scripts/` 目录中，不要混入 `data/`。
 
 ## 构建、测试与开发命令
 
@@ -17,18 +19,18 @@
 ```bash
 find data docs -type f                 # inventory inputs and deliverables
 git diff --check                       # detect whitespace errors
-python -m zipfile -t path/to/file.xlsx # validate an Excel container
+python3 -m json.tool data/source_manifest.json >/dev/null
 ```
 
-可在浏览器中打开 `data/镇龙乡地理空间数据/镇龙乡地理空间详情地图.html` 查看地图。若新增可执行分析，应记录其运行环境和调用方式，并优先提供可复现的 `requirements.txt`、`pyproject.toml` 或锁定文件。
+可直接阅读 `docs/数据说明.pdf` 了解字段、单位和来源。若新增可执行分析，应记录其运行环境和调用方式，并优先提供可复现的 `requirements.txt`、`pyproject.toml` 或锁定文件。
 
 ## 代码风格与命名约定
 
-使用 UTF-8，并保留现有中文文件名；不要仅为转写成拼音而重命名源数据。新脚本使用四个空格缩进、具有描述性的 `snake_case` 名称和小型函数。除非属于正式交付物，否则不要将生成文件放入 `data/`；不要提交缓存、凭据或临时导出文件。
+使用 UTF-8，并保留现有中文文件名；不要仅为转写成拼音而重命名源数据。新 Python 脚本使用四个空格缩进、具有描述性的 `snake_case` 名称和小型函数。除非属于正式交付物，否则不要将生成文件放入 `data/`；不要提交缓存、凭据或临时导出文件。
 
 ## 测试指南
 
-目前没有既定的测试框架或覆盖率要求。修改数据时，应验证文件可读性、工作表或图层名称、行数、坐标单位和缺失值。新增代码时，应添加针对性的测试（例如 `tests/test_<module>.py`），并说明测试命令。
+目前没有既定的测试框架或覆盖率要求。修改数据时，应验证文件可读性、CSV 表头、行数、字段单位和缺失值；对 Parquet/JSONL 等大文件优先做结构检查而非整文件加载。新增代码时，应添加针对性的测试（例如 `tests/test_<module>.py`），并说明测试命令。
 
 ## 提交与拉取请求指南
 
@@ -42,4 +44,4 @@ python -m zipfile -t path/to/file.xlsx # validate an Excel container
 
 ## 数据处理与可复现性
 
-将现有数据集视为源输入：保留原始值，并将清洗后或派生的数据单独记录。应在分析文档中记录坐标参考系、单位、假设和软件版本，使结果能够在不修改原始数据的情况下复现。
+将现有数据集视为源输入：保留原始值，并将清洗后或派生的数据单独记录。应在分析文档中记录数据来源、字段单位、半合成数据假设、筛选规则和软件版本，使结果能够在不修改原始数据的情况下复现。

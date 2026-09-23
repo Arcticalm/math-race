@@ -1,23 +1,26 @@
-# 山区洪涝灾害下无人机运输与通信协同优化
+# 算力约束下提升大语言模型能力的资源配置建模
 
-本仓库用于存放山区洪涝灾害场景下无人机应急物资运输与通信协同优化建模的基础数据、地理空间数据及成果文档。
+本仓库用于存放“算力约束下提升大语言模型能力的资源配置建模”竞赛题目的数据、说明材料和结果模板。数据按题目 A、B、C 组织，覆盖训练数据配比、模型缩放律和模型效率演化。
 
 ## 目录说明
 
-- `data/无人机应急物资运输基础数据/`：无人机、通信链路、物资需求、调度中心和服务区等基础数据。
-- `data/镇龙乡地理空间数据/`：镇龙乡及周边的道路、水系、水体、村镇点位和 DEM 等 GIS 数据。
-- `docs/`：建模题目说明和结果提交模板。
+- `data/A_data_value/`：RegMix 训练/测试混合数据、领域映射与 SlimPajama 质量信号。
+- `data/B_scaling_laws/`：Pythia、Cerebras-GPT 等模型的训练轨迹、缩放律基线及补充实验数据。
+- `data/C_efficiency_evolution/`：开放模型排行榜时间序列、模型元数据、原始 Parquet 和逐模型详细评测结果。
+- `docs/`：题目说明 PDF 和结果提交模板 DOCX。
+- `data/source_manifest.json`：数据文件、来源、大小和版本备注的清单。
 
 ## 数据格式
 
-仓库同时提供 `.xlsx`、`.csv`、`.mat`、`.tif`、`.html`、`.pdf` 和 `.docx` 文件。使用 GIS 或 MATLAB 数据前，请先阅读对应的数据说明文档，并保留坐标系、单位及原始数据结构。
+仓库提供 `.csv`、`.jsonl.xz`、`.parquet`、`.json`、`.pdf` 和 `.docx` 文件。使用前请阅读 `docs/数据说明.pdf`，并保留字段单位、数据来源和原始数据结构。
 
 ## 快速查看
 
-可直接在浏览器中打开以下文件查看地理空间地图：
+可先查看以下文件了解数据来源和各题数据范围：
 
 ```text
-data/镇龙乡地理空间数据/镇龙乡地理空间详情地图.html
+docs/数据说明.pdf
+data/source_manifest.json
 ```
 
 贡献和提交规范请参阅 [AGENTS.md](AGENTS.md) 与 [commit-conventions.md](commit-conventions.md)。
