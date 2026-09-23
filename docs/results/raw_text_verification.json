@@ -1,0 +1,218 @@
+{
+  "scoring_reliability_rationale": "Empirical inspection confirms strong alignment between mathematical scores and human cognitive intuition: High-scoring texts possess rigorous logical structure, dense conceptual depth, and academic citations; Low-scoring texts are characterized by boilerplates, SEO spam, navigation bars, or broken characters; High-conflict texts capture structural discrepancies where deep technical value (e.g. code/formulas) diverges from surface prose fluency metrics.",
+  "high_quality_cases": [
+    {
+      "id": "BkiUa-M4eIfiUWJpLSxL",
+      "domain": "arxiv",
+      "score_q": 0.7402,
+      "conflict_index": 0.2372,
+      "s_cog": 0.9514,
+      "s_surf": 0.7142,
+      "word_count": 4827,
+      "text_snippet": "\\section{Introduction} Social media platforms on the Internet have become an integral part of everyday life, and more and more people obtain news from social rather than traditional media, such as newspapers. Key drivers"
+    },
+    {
+      "id": "BkiUeJLxK0iCl36cXtaR",
+      "domain": "arxiv",
+      "score_q": 0.722,
+      "conflict_index": 0.2461,
+      "s_cog": 0.9526,
+      "s_surf": 0.7065,
+      "word_count": 2864,
+      "text_snippet": "\\section{Introduction} Listeners are able to perceive speech as a coherent sequence of distinct sounds, despite the fact that speech is spoken in a continuous stream with coarticulatory effects in which the realization o"
+    },
+    {
+      "id": "BkiUcho5qoYDgPtUqA2W",
+      "domain": "arxiv",
+      "score_q": 0.7235,
+      "conflict_index": 0.1263,
+      "s_cog": 0.8644,
+      "s_surf": 0.7381,
+      "word_count": 6413,
+      "text_snippet": "\\section{Introduction}   Perceiving environments in three dimensions (3D) is important for locating objects, identifying free space, and motion planning in robotics and autonomous vehicles. Although these domains typical"
+    }
+  ],
+  "median_quality_cases": [
+    {
+      "id": "BkiUc_Q5qoYAlE7mUWSI",
+      "domain": "arxiv",
+      "score_q": 0.5165,
+      "conflict_index": 0.2386,
+      "s_cog": 0.7211,
+      "s_surf": 0.4825,
+      "word_count": 8875,
+      "text_snippet": "\\chapter{\\LARGE \\bf {#1}}\\vspace{-40mm}} \\renewcommand{\\sectionl}[1]{\\section{\\LARGE \\bf {#1}}} \\renewcommand{\\subsectionl}[1]{\\subsection{\\LARGE \\bf {#1}}} \\renewcommand{\\subsubsectionl}[1]{\\subsubsection{\\Large \\bf {#1"
+    },
+    {
+      "id": "BkiUa885qoaAwnKZBDlS",
+      "domain": "arxiv",
+      "score_q": 0.5113,
+      "conflict_index": 0.1942,
+      "s_cog": 0.6675,
+      "s_surf": 0.4733,
+      "word_count": 17154,
+      "text_snippet": "\\section{#1} \\vspace{-5mm} \\indent} \\newcommand{\\subsectionplus}[1]{\\subsection{#1} \\vspace{-5mm} \\indent} \\newcommand{\\subsubsectionplus}[1]{\\subsubsection{#1} \\vspace{-5mm} \\indent}    \\newcommand{\\suiteexacte}[3]{#1 \\"
+    },
+    {
+      "id": "BkiUfBTxK3YB9ohkOrvM",
+      "domain": "arxiv",
+      "score_q": 0.5012,
+      "conflict_index": 0.1074,
+      "s_cog": 0.5592,
+      "s_surf": 0.6666,
+      "word_count": 272,
+      "text_snippet": "\\section{Introduction} \\input{sections/intro.tex} \\section{Dataset Construction} \\input{sections/data.tex} \\section{Experiments} \\input{sections/exp.tex} \\section{Conclusion} \\input{sections/conclusion.tex} \\section*{Ack"
+    }
+  ],
+  "low_quality_cases": [
+    {
+      "id": "BkiUbZQ5qsMAI0vkb3d9",
+      "domain": "c4",
+      "score_q": 0.3452,
+      "conflict_index": 0.0613,
+      "s_cog": 0.3207,
+      "s_surf": 0.382,
+      "word_count": 109,
+      "text_snippet": "Holy Toledo, that was fast!! Congratulations! Indeed you are losing again! Last edited by Eliana; 04-14-2010 at 12:52 PM. Thanks! The weight always seems to drop off right after your TOM, now if I can just keep this up,"
+    },
+    {
+      "id": "BkiUbSM4eIZijWO-l4hi",
+      "domain": "c4",
+      "score_q": 0.331,
+      "conflict_index": 0.1769,
+      "s_cog": 0.2774,
+      "s_surf": 0.4543,
+      "word_count": 41,
+      "text_snippet": "Sooooo beautiful. Thank you for ALl your piano doodles. They are musical art! I really enjoyed this composition. Very very nice! Thank you for sharing! This is just PERFECT! Congrats on a fine job! FANTASTICO! I really e"
+    },
+    {
+      "id": "BkiUgfrxK7IDPADJ5Gaj",
+      "domain": "c4",
+      "score_q": 0.3356,
+      "conflict_index": 0.038,
+      "s_cog": 0.3188,
+      "s_surf": 0.3568,
+      "word_count": 106,
+      "text_snippet": "Desk Office Table Furniture L Shaped Home Computer Cozy Ideas , Download this wallpaper for free in high resolution. Desk Office Table Furniture L Shaped Home Computer Cozy Ideas was posted in April 5, 2018 at 9:20 am an"
+    }
+  ],
+  "high_conflict_cases": [
+    {
+      "id": "BkiUb_A5qsNCPeN2FHd8",
+      "domain": "arxiv",
+      "score_q": 0.434,
+      "conflict_index": 0.3213,
+      "s_cog": 0.3088,
+      "s_surf": 0.6301,
+      "word_count": 47,
+      "text_snippet": "\\section*{Acknowledgements}  N.E.M. wishes to thank Juan Fuster and IFIC-University of Valencia  (Spain) for their interest and support,  and P. Sodano and INFN-Sezione di Perugia (Italy) for their hospitality and suppor"
+    },
+    {
+      "id": "BkiUdObxK7IDBOV4sdC7",
+      "domain": "arxiv",
+      "score_q": 0.6731,
+      "conflict_index": 0.3038,
+      "s_cog": 0.9236,
+      "s_surf": 0.6198,
+      "word_count": 2765,
+      "text_snippet": "\\section{Deep radio surveys}  \\subsection{The modern radio sky}  The GHz radio bright ($\\ga 1$ mJy) sky consists mainly of ``classical'' radio sources, that is radio quasars and radio galaxies. These are active galactic"
+    },
+    {
+      "id": "BkiUbU7xK0iCl7DT6sRT",
+      "domain": "arxiv",
+      "score_q": 0.625,
+      "conflict_index": 0.3181,
+      "s_cog": 0.888,
+      "s_surf": 0.5699,
+      "word_count": 2140,
+      "text_snippet": "\\section{Introduction} To extend our knowledge of the nucleon structure far beyond what we know from parton distribution functions (PDFs) about longitudinal momentum distributions, we need a generalization of PDFs which"
+    }
+  ],
+  "regmix_domain_profiles": {
+    "arxiv": {
+      "domain": "arxiv",
+      "text_chars": 21269,
+      "snippet": "--- abstract: 'The role of the spatial structure of a turbulent flow in enhancing particle collision rates in suspensions is an open question. We show and quantify, as a function of particle inertia,"
+    },
+    "dm_mathematics": {
+      "domain": "dm_mathematics",
+      "text_chars": 8194,
+      "snippet": "b be o(-2). Suppose -1 = -2*i + 2*z - 23, -3*i - 5*z = b. What is the remainder when 8/6*(-306)/i is divided by 12? 10 What is the remainder when -4*(-4 - -1) - -1 is divided by 5? 3 Suppose y + 7 -"
+    },
+    "enron_emails": {
+      "domain": "enron_emails",
+      "text_chars": 2383,
+      "snippet": "pls print this email also.  thanks df ---------------------- Forwarded by Drew Fossum/ET&S/Enron on 03/20/2001  04:37 PM --------------------------- From: Michael P Moran/ENRON@enronXgate on 03/20/200"
+    },
+    "europarl": {
+      "domain": "europarl",
+      "text_chars": 36824,
+      "snippet": "Ramy kwalifikacji dla uczenia się przez całe życie (debata)  Przewodniczący Następnym punktem porządku obrad jest sprawozdanie Mario Mantovaniego, w imieniu Komisji Zatrudnienia i Spraw Socjalnych, w"
+    },
+    "freelaw": {
+      "domain": "freelaw",
+      "text_chars": 47119,
+      "snippet": "720 N.W.2d 716 (2006) 2006 WI App 132 Linda T. PETERSON, Plaintiff-Appellant, v. CORNERSTONE PROPERTY DEVELOPMENT, LLC, Defendant-Respondent. No. 2004AP3358. Court of Appeals of Wisconsin. June 13, 2"
+    },
+    "github": {
+      "domain": "github",
+      "text_chars": 421,
+      "snippet": "grammar Poly; options {     output=AST;     language=ObjC;     } tokens { MULT; } // imaginary token  poly: term ('+'^ term)*     ;  term: INT ID  -> ^(MULT[@\"*\"] INT ID)     | INT exp -> ^(MULT[@\"*\"]"
+    },
+    "gutenberg_pg_19": {
+      "domain": "gutenberg_pg_19",
+      "text_chars": 262687,
+      "snippet": "Produced by Jason Isbell, Stacy Brown Thellend and the Online Distributed Proofreading Team at http://www.pgdp.net Merged with an earlier text produced by Juliet Sutherland, Thomas Hutchinson and"
+    },
+    "hackernews": {
+      "domain": "hackernews",
+      "text_chars": 693,
+      "snippet": "How Freud’s Only Visit to America Made Him Hate the US for the Rest of His Life - protomyth http://mentalfloss.com/article/501060/man-buys-two-metric-tons-lego-bricks-sorts-them-machine-learning ===="
+    },
+    "nih_exporter": {
+      "domain": "nih_exporter",
+      "text_chars": 2372,
+      "snippet": "Potassium channels in the renal cortical collecting tubule (CCT) play an important role in potassium (K) secretion by the kidney and help to maintain the body's overall K balance. In this nephron segm"
+    },
+    "philpapers": {
+      "domain": "philpapers",
+      "text_chars": 21797,
+      "snippet": "S.Ph. Essays and Explorations 1.2 25 \"Part of that force that always wills the evil and always produces the good\" On a Devilish Incoherence Peter Baumann When Mephisto was asked by Faust, \"Well now, w"
+    },
+    "pile_cc": {
+      "domain": "pile_cc",
+      "text_chars": 2212,
+      "snippet": "Mud Hens pitcher Evan Reed charged with sexual assault  Mud Hens pitcher Evan Reed was charged July 30 with sexual assault related to a March incident in Detroit when he was a member of the Detroit Ti"
+    },
+    "pubmed_abstracts": {
+      "domain": "pubmed_abstracts",
+      "text_chars": 1083,
+      "snippet": "One-year follow-up of patients treated for dental fear: effects of cognitive therapy, applied relaxation, and nitrous oxide sedation. The effects of dental fear treatments were assessed in a 1-year fo"
+    },
+    "pubmed_central": {
+      "domain": "pubmed_central",
+      "text_chars": 24243,
+      "snippet": "Background {#Sec1} ==========  The clinical importance of lumbar disc degeneration as measured on MRI remains controversial and uncertain. This may in part be due to the challenges in accurately and r"
+    },
+    "stackexchange": {
+      "domain": "stackexchange",
+      "text_chars": 1597,
+      "snippet": "Q:  Show message dialog  Is it possible to display a QML dialog when the user hits a button in a QML window? Example: When the user clicks in the menu bar on Help -> About the About dialog should be d"
+    },
+    "ubuntu_irc": {
+      "domain": "ubuntu_irc",
+      "text_chars": 4990,
+      "snippet": "#ubuntu-design 2012-06-19 <warp10> Hi all guys! <warp10> Is this picture available in higher resolution somehwere? --> http://www.ubuntu.com/sites/www.ubuntu.com/files/active/02_ubuntu/U_business/desk"
+    },
+    "uspto_backgrounds": {
+      "domain": "uspto_backgrounds",
+      "text_chars": 1397,
+      "snippet": "The invention relates to an expansion joint for part of a railway track disposed on a foundation which has a stock rail with a stock rail head, web and foot and a tongue movable with respect to and al"
+    },
+    "wikipedia_en": {
+      "domain": "wikipedia_en",
+      "text_chars": 1030,
+      "snippet": "Roman Catholic Diocese of Tambacounda  The Roman Catholic Diocese of Tambacounda () is a diocese located in the city of Tambacounda in the Ecclesiastical province of Dakar in Senegal.  History  August"
+    }
+  }
+}

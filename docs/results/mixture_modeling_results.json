@@ -67,6 +67,224 @@
       "quality_spearman": -0.5184
     }
   ],
+  "individual_domain_metrics_1m": {
+    "arxiv": {
+      "r2": 0.4303,
+      "rmse": 0.5884,
+      "mape": 10.41,
+      "spearman": 0.7419
+    },
+    "freelaw": {
+      "r2": 0.5748,
+      "rmse": 0.4806,
+      "mape": 8.05,
+      "spearman": 0.7735
+    },
+    "pubmed_central": {
+      "r2": 0.5969,
+      "rmse": 0.5309,
+      "mape": 9.15,
+      "spearman": 0.8327
+    },
+    "wikipedia_en": {
+      "r2": 0.7073,
+      "rmse": 0.2956,
+      "mape": 4.28,
+      "spearman": 0.8815
+    },
+    "dm_mathematics": {
+      "r2": 0.4276,
+      "rmse": 1.1601,
+      "mape": 34.18,
+      "spearman": 0.7669
+    },
+    "github": {
+      "r2": 0.5576,
+      "rmse": 0.6128,
+      "mape": 10.11,
+      "spearman": 0.8386
+    },
+    "stackexchange": {
+      "r2": 0.5434,
+      "rmse": 0.4487,
+      "mape": 7.32,
+      "spearman": 0.821
+    },
+    "gutenberg_pg_19": {
+      "r2": 0.673,
+      "rmse": 0.2565,
+      "mape": 3.68,
+      "spearman": 0.8924
+    },
+    "pile_cc": {
+      "r2": 0.7716,
+      "rmse": 0.1532,
+      "mape": 2.16,
+      "spearman": 0.9053
+    },
+    "ubuntu_irc": {
+      "r2": 0.5767,
+      "rmse": 0.6489,
+      "mape": 9.15,
+      "spearman": 0.7658
+    },
+    "hackernews": {
+      "r2": 0.6798,
+      "rmse": 0.1903,
+      "mape": 2.89,
+      "spearman": 0.8456
+    },
+    "pubmed_abstracts": {
+      "r2": 0.7881,
+      "rmse": 0.2625,
+      "mape": 3.73,
+      "spearman": 0.9262
+    },
+    "uspto_backgrounds": {
+      "r2": 0.7148,
+      "rmse": 0.2724,
+      "mape": 4.47,
+      "spearman": 0.8507
+    }
+  },
+  "transfer_analysis": [
+    {
+      "training_domain": "enron_emails",
+      "in_domain_loss": null,
+      "cross_domain_transfer_loss": 0.9596,
+      "overall_standalone_loss": 0.9596,
+      "quality_Q": 0.5188,
+      "is_unmonitored": true
+    },
+    {
+      "training_domain": "philpapers",
+      "in_domain_loss": null,
+      "cross_domain_transfer_loss": 1.1962,
+      "overall_standalone_loss": 1.1962,
+      "quality_Q": 0.5537,
+      "is_unmonitored": true
+    },
+    {
+      "training_domain": "ubuntu_irc",
+      "in_domain_loss": -11.4508,
+      "cross_domain_transfer_loss": 4.5193,
+      "overall_standalone_loss": 3.2908,
+      "quality_Q": 0.5323,
+      "is_unmonitored": false
+    },
+    {
+      "training_domain": "nih_exporter",
+      "in_domain_loss": null,
+      "cross_domain_transfer_loss": 3.3046,
+      "overall_standalone_loss": 3.3046,
+      "quality_Q": 0.5462,
+      "is_unmonitored": true
+    },
+    {
+      "training_domain": "hackernews",
+      "in_domain_loss": -2.7346,
+      "cross_domain_transfer_loss": 4.1106,
+      "overall_standalone_loss": 3.584,
+      "quality_Q": 0.5367,
+      "is_unmonitored": false
+    },
+    {
+      "training_domain": "dm_mathematics",
+      "in_domain_loss": -13.3451,
+      "cross_domain_transfer_loss": 5.677,
+      "overall_standalone_loss": 4.2137,
+      "quality_Q": 0.6014,
+      "is_unmonitored": false
+    },
+    {
+      "training_domain": "europarl",
+      "in_domain_loss": null,
+      "cross_domain_transfer_loss": 4.2817,
+      "overall_standalone_loss": 4.2817,
+      "quality_Q": 0.4798,
+      "is_unmonitored": true
+    },
+    {
+      "training_domain": "gutenberg_pg_19",
+      "in_domain_loss": 2.4317,
+      "cross_domain_transfer_loss": 5.4269,
+      "overall_standalone_loss": 5.1965,
+      "quality_Q": 0.5011,
+      "is_unmonitored": false
+    },
+    {
+      "training_domain": "pubmed_abstracts",
+      "in_domain_loss": 2.6567,
+      "cross_domain_transfer_loss": 5.4978,
+      "overall_standalone_loss": 5.2792,
+      "quality_Q": 0.5807,
+      "is_unmonitored": false
+    },
+    {
+      "training_domain": "stackexchange",
+      "in_domain_loss": 2.9914,
+      "cross_domain_transfer_loss": 5.4971,
+      "overall_standalone_loss": 5.3043,
+      "quality_Q": 0.5546,
+      "is_unmonitored": false
+    },
+    {
+      "training_domain": "wikipedia_en",
+      "in_domain_loss": 3.4482,
+      "cross_domain_transfer_loss": 5.6006,
+      "overall_standalone_loss": 5.4351,
+      "quality_Q": 0.4597,
+      "is_unmonitored": false
+    },
+    {
+      "training_domain": "uspto_backgrounds",
+      "in_domain_loss": 2.3952,
+      "cross_domain_transfer_loss": 5.7024,
+      "overall_standalone_loss": 5.448,
+      "quality_Q": 0.5634,
+      "is_unmonitored": false
+    },
+    {
+      "training_domain": "pile_cc",
+      "in_domain_loss": 4.816,
+      "cross_domain_transfer_loss": 5.5553,
+      "overall_standalone_loss": 5.4984,
+      "quality_Q": 0.5321,
+      "is_unmonitored": false
+    },
+    {
+      "training_domain": "pubmed_central",
+      "in_domain_loss": 2.8619,
+      "cross_domain_transfer_loss": 5.7827,
+      "overall_standalone_loss": 5.5581,
+      "quality_Q": 0.5807,
+      "is_unmonitored": false
+    },
+    {
+      "training_domain": "arxiv",
+      "in_domain_loss": 2.3109,
+      "cross_domain_transfer_loss": 5.9003,
+      "overall_standalone_loss": 5.6242,
+      "quality_Q": 0.6326,
+      "is_unmonitored": false
+    },
+    {
+      "training_domain": "github",
+      "in_domain_loss": 2.7372,
+      "cross_domain_transfer_loss": 5.9327,
+      "overall_standalone_loss": 5.6869,
+      "quality_Q": 0.4669,
+      "is_unmonitored": false
+    },
+    {
+      "training_domain": "freelaw",
+      "in_domain_loss": 2.67,
+      "cross_domain_transfer_loss": 5.9703,
+      "overall_standalone_loss": 5.7164,
+      "quality_Q": 0.4804,
+      "is_unmonitored": false
+    }
+  ],
   "domain_utilities": [
     {
       "domain": "enron_emails",
