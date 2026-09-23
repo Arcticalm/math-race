@@ -1,0 +1,137 @@
+# -*- coding: utf-8 -*-
+"""Quality conflict definition, diagnosis, and domain-adaptive resolution model."""
+
+import math
+import numpy as np
+from pathlib import Path
+from typing import Dict, Tuple, Any
+
+from problem1.q1_preprocessing import (
+    stream_jsonl_xz,
+    extract_scalar_indicators,
+    normalize_record
+)
+from problem1.q1_quality_evaluation import evaluate_sample_score
+
+# Indicator sub-groups for conflict detection
+COG_INDICATORS = [
+    "fineweb_edu",
+    "modernbert_reasoning",
+    "modernbert_professionalism",
+    "dsir_math",
+    "rps_doc_unigram_entropy"
+]
+
+SURF_INDICATORS = [
+    "fluency_en",
+    "ad_en",
+    "modernbert_readability",
+    "rps_doc_frac_chars_top_2gram",
+    "rps_lines_ending_with_terminal_punctution_mark"
+]
+
+
+def compute_conflict_index(norm_dict: Dict[str, float]) -> Tuple[float, float, float]:
+    """Compute cognitive value, surface quality, and conflict index CI."""
+    s_cog = float(np.mean([norm_dict[k] for k in COG_INDICATORS]))
+    s_surf = float(np.mean([norm_dict[k] for k in SURF_INDICATORS]))
+    ci = abs(s_cog - s_surf)
+    return ci, s_cog, s_surf
+
+
+def compute_resolved_score(
+    q_base: float,
+    ci: float,
+    tau_domain: float = 0.20,
+    decay_lambda: float = 0.5
+) -> float:
+    """Compute conflict-resolved quality score with domain-adaptive tolerance."""
+    excess_conflict = max(0.0, ci - tau_domain)
+    # Exponential discount for abnormal conflict
+    resolved_q = q_base * math.exp(-decay_lambda * excess_conflict)
+    return float(max(0.0, min(1.0, resolved_q)))
+
+
+def analyze_conflicts_in_dataset(
+    filepath: Path,
+    bounds: Dict[str, Dict[str, float]],
+    weights: Dict[str, float],
+    conflict_threshold: float = 0.25,
+    default_domain: str = None,
+    max_records: int = None
+) -> Dict[str, Any]:
+    """Analyze conflict rates, distribution, and representative cases."""
+    domain_conflicts = {}
+    representative_samples = []
+
+    count = 0
+    for record in stream_jsonl_xz(filepath):
+        domain = record.get("_source_domain") or default_domain or "unknown"
+        if domain not in domain_conflicts:
+            domain_conflicts[domain] = {
+                "total": 0,
+                "conflict_count": 0,
+                "ci_list": [],
+                "q_base_list": [],
+                "q_resolved_list": []
+            }
+
+        scalars = extract_scalar_indicators(record)
+        norm_vals = normalize_record(scalars, bounds)
+        q_base = evaluate_sample_score(norm_vals, weights)
+        ci, s_cog, s_surf = compute_conflict_index(norm_vals)
+
+        # Baseline domain tolerance ~ 0.20
+        q_resolved = compute_resolved_score(q_base, ci, tau_domain=0.20, decay_lambda=0.5)
+
+        dc = domain_conflicts[domain]
+        dc["total"] += 1
+        is_conflict = ci > conflict_threshold
+        if is_conflict:
+            dc["conflict_count"] += 1
+
+        if len(dc["ci_list"]) < 20000:
+            dc["ci_list"].append(ci)
+            dc["q_base_list"].append(q_base)
+            dc["q_resolved_list"].append(q_resolved)
+
+        # Collect high conflict cases for reporting
+        if is_conflict and len(representative_samples) < 10:
+            text_preview = record.get("content", "")[:120].replace("\n", " ")
+            representative_samples.append({
+                "id": record.get("id", "N/A"),
+                "domain": domain,
+                "s_cog": round(s_cog, 4),
+                "s_surf": round(s_surf, 4),
+                "conflict_index": round(ci, 4),
+                "q_base": round(q_base, 4),
+                "q_resolved": round(q_resolved, 4),
+                "text_snippet": text_preview
+            })
+
+        count += 1
+        if max_records and count >= max_records:
+            break
+
+    # Summaries
+    summary = {}
+    for dom, dc in domain_conflicts.items():
+        ci_arr = np.array(dc["ci_list"])
+        qb_arr = np.array(dc["q_base_list"])
+        qr_arr = np.array(dc["q_resolved_list"])
+
+        summary[dom] = {
+            "total_records": dc["total"],
+            "conflict_count": dc["conflict_count"],
+            "conflict_rate": round(dc["conflict_count"] / max(1, dc["total"]), 4),
+            "mean_ci": round(float(np.mean(ci_arr)), 4),
+            "std_ci": round(float(np.std(ci_arr)), 4),
+            "mean_q_base": round(float(np.mean(qb_arr)), 4),
+            "mean_q_resolved": round(float(np.mean(qr_arr)), 4),
+            "q_diff_pct": round(float((np.mean(qr_arr) - np.mean(qb_arr)) / max(1e-6, np.mean(qb_arr)) * 100), 2)
+        }
+
+    return {
+        "domain_summary": summary,
+        "representative_samples": representative_samples
+    }
