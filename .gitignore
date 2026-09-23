@@ -1,0 +1,16 @@
+# Local and generated data files. Keep data/README.md tracked.
+data/*
+!data/
+!data/README.md
+
+# Common local analysis artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Local environments and editor files
+.venv/
+venv/
+.env
+.DS_Store
