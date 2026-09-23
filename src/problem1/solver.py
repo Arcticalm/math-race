@@ -90,11 +90,17 @@ class Candidate:
     mass_kg: float
     volume_m3: float
     energy_kwh: float
+    outbound_energy_kwh: float
+    return_energy_kwh: float
     flight_time_s: float
+    outbound_time_s: float
+    return_time_s: float
     work_time_s: float
     range_budget_m: float
     return_range_budget_m: float
     reserve_kwh: float
+    return_soc_percent: float
+    feasible: bool
 
 
 def _rows(path: Path, sheet: str | None = None) -> list[tuple]:
@@ -362,17 +368,27 @@ def build_candidates(
                 mass_kg=mass,
                 volume_m3=volume,
                 energy_kwh=flight.energy_kwh,
+                outbound_energy_kwh=flight.outbound_energy_kwh,
+                return_energy_kwh=flight.return_energy_kwh,
                 flight_time_s=flight.time_s,
+                outbound_time_s=flight.outbound_time_s,
+                return_time_s=flight.return_time_s,
                 work_time_s=work_time,
                 range_budget_m=flight.range_budget_m,
                 return_range_budget_m=flight.return_range_budget_m,
                 reserve_kwh=aircraft.usable_energy_kwh * (1-aircraft.reserve_fraction)-flight.energy_kwh,
+                return_soc_percent=100 * (1 - flight.energy_kwh / aircraft.usable_energy_kwh),
+                feasible=True,
             ))
     return candidates
 
 
-def solve_set_partition(boxes: list[Box], candidates: list[Candidate]) -> list[Candidate]:
-    """Exact lexicographic set partition via bitmask dynamic programming."""
+def solve_set_partition(
+    boxes: list[Box],
+    candidates: list[Candidate],
+    objective_order: tuple[int, int, int] = (0, 1, 2),
+) -> list[Candidate]:
+    """Solve an exact set partition with a selected lexicographic objective order."""
     count = len(boxes)
     full_mask = (1 << count) - 1
     index = {box.code: position for position, box in enumerate(boxes)}
@@ -397,9 +413,10 @@ def solve_set_partition(boxes: list[Box], candidates: list[Candidate]) -> list[C
             if candidate_mask & mask:
                 continue
             new_mask = mask | candidate_mask
-            new_score = (score[0] + 1, score[1] + candidate.energy_kwh, score[2] + candidate.work_time_s)
+            values = (1, candidate.energy_kwh, candidate.work_time_s)
+            new_score = tuple(score[index] + values[index] for index in range(3))
             previous = best.get(new_mask)
-            if previous is None or new_score < previous[0]:
+            if previous is None or tuple(new_score[index] for index in objective_order) < tuple(previous[0][index] for index in objective_order):
                 best[new_mask] = (new_score, chosen + (candidate,))
     if full_mask not in best:
         raise ValueError(f"No feasible complete partition for {boxes[0].site}")
@@ -411,16 +428,36 @@ def route_max_elevation(dem: rasterio.io.DatasetReader, base: Node, site: Node) 
     return maximum, distance
 
 
-def run(reserves: Iterable[float] | None = None) -> dict:
+def run(
+    reserves: Iterable[float] | None = None,
+    energy_scales: Iterable[float] | None = None,
+) -> dict:
     aircrafts = load_aircraft()
     base, sites = load_nodes()
     boxes_by_site = load_boxes()
-    reserve_levels = list(reserves) if reserves is not None else [None]
-    energy_rates = load_energy_per_meter(aircrafts)
+    default_reserves = {aircraft.reserve_fraction for aircraft in aircrafts.values()}
+    if len(default_reserves) != 1:
+        raise ValueError("Aircraft workbook reserve defaults differ; define per-type baseline explicitly")
+    default_reserve = default_reserves.pop()
+    reserve_levels = [default_reserve]
+    if reserves is not None:
+        reserve_levels.extend(float(reserve) for reserve in reserves)
+    reserve_levels = list(dict.fromkeys(round(value, 10) for value in reserve_levels))
+    energy_scale_levels = [1.0]
+    if energy_scales is not None:
+        energy_scale_levels.extend(float(scale) for scale in energy_scales)
+    energy_scale_levels = list(dict.fromkeys(round(value, 10) for value in energy_scale_levels))
+    if any(scale <= 0 for scale in energy_scale_levels):
+        raise ValueError("Horizontal energy scale factors must be positive")
+    base_energy_rates = load_energy_per_meter(aircrafts)
+    scenarios = [(default_reserve, 1.0)]
+    scenarios.extend((reserve, 1.0) for reserve in reserve_levels if reserve != default_reserve)
+    scenarios.extend((default_reserve, scale) for scale in energy_scale_levels if scale != 1.0)
     all_runs = []
     with rasterio.open(DEM_PATH) as dem:
-        for reserve in reserve_levels:
-            reserve_overrides = None if reserve is None else {code: reserve for code in aircrafts}
+        for reserve, energy_scale in scenarios:
+            energy_rates = {code: rate * energy_scale for code, rate in base_energy_rates.items()}
+            reserve_overrides = {code: reserve for code in aircrafts}
             payload_rows = []
             all_candidates: dict[str, list[Candidate]] = {}
             route_metadata = {}
@@ -428,14 +465,13 @@ def run(reserves: Iterable[float] | None = None) -> dict:
                 max_elevation, distance = route_max_elevation(dem, base, site)
                 route_metadata[site_code] = {"distance_m": distance, "max_ground_elevation_m": max_elevation}
                 for aircraft in aircrafts.values():
-                    active = aircraft
-                    if reserve_overrides:
-                        active = Aircraft(**{**asdict(aircraft), "reserve_fraction": reserve})
+                    active = Aircraft(**{**asdict(aircraft), "reserve_fraction": reserve})
                     safe_payload, flight = max_safe_payload(
                         active, energy_rates[active.code], base, site, max_elevation
                     )
                     payload_rows.append({
                         "site": site_code, "aircraft": active.code,
+                        "reserve_fraction": reserve,
                         "max_safe_payload_kg": safe_payload,
                         "route_distance_m": distance,
                         "cruise_altitude_m": flight.cruise_altitude_m,
@@ -446,32 +482,87 @@ def run(reserves: Iterable[float] | None = None) -> dict:
                     aircrafts, energy_rates, reserve_overrides,
                 )
                 all_candidates[site_code] = candidates
-            partitions = {
-                site_code: solve_set_partition(boxes_by_site[site_code], all_candidates[site_code])
-                for site_code in sites
+            objective_policies = {
+                "架次优先": (0, 1, 2),
+                "能耗优先": (1, 0, 2),
+                "时间优先": (2, 0, 1),
             }
-            for site_code, chosen in partitions.items():
-                _validate_solution(boxes_by_site[site_code], chosen)
-            flattened = [candidate for candidates in partitions.values() for candidate in candidates]
+            policy_partitions = {}
+            infeasible_sites = set()
+            for name, order in objective_policies.items():
+                partitions = {}
+                for site_code in sites:
+                    try:
+                        partitions[site_code] = solve_set_partition(
+                            boxes_by_site[site_code], all_candidates[site_code], order
+                        )
+                    except ValueError:
+                        infeasible_sites.add(site_code)
+                        break
+                if len(partitions) == len(sites):
+                    policy_partitions[name] = partitions
+            if infeasible_sites:
+                policy_partitions = {}
+            for partitions in policy_partitions.values():
+                for site_code, chosen in partitions.items():
+                    _validate_solution(boxes_by_site[site_code], chosen)
+            primary = policy_partitions["架次优先"]
+            solution_rows = []
+            for policy, partitions in policy_partitions.items():
+                chosen_candidates = [candidate for values in partitions.values() for candidate in values]
+                solution_rows.append({
+                    "policy": policy,
+                    "flight_count": len(chosen_candidates),
+                    "total_energy_kwh": sum(candidate.energy_kwh for candidate in chosen_candidates),
+                    "total_work_time_s": sum(candidate.work_time_s for candidate in chosen_candidates),
+                    "partitions": partitions,
+                })
+            nondominated = []
+            for candidate_solution in solution_rows:
+                score = (candidate_solution["flight_count"], candidate_solution["total_energy_kwh"], candidate_solution["total_work_time_s"])
+                dominated = any(
+                    other is not candidate_solution
+                    and all(a <= b + 1e-9 for a, b in zip(
+                        (other["flight_count"], other["total_energy_kwh"], other["total_work_time_s"]), score
+                    ))
+                    and any(a < b - 1e-9 for a, b in zip(
+                        (other["flight_count"], other["total_energy_kwh"], other["total_work_time_s"]), score
+                    ))
+                    for other in solution_rows
+                )
+                if not dominated:
+                    nondominated.append(candidate_solution["policy"])
+            primary_flat = [candidate for candidates in primary.values() for candidate in candidates]
             all_runs.append({
                 "reserve_fraction": reserve,
+                "reserve_source": "aircraft_workbook_default" if reserve == default_reserve else "sensitivity_override",
+                "horizontal_energy_scale": energy_scale,
+                "complete_delivery_feasible": bool(policy_partitions),
+                "infeasible_sites": sorted(infeasible_sites),
                 "safe_payloads": payload_rows,
                 "route_metadata": route_metadata,
                 "partitions": {
                     site: [asdict(candidate) for candidate in candidates]
-                    for site, candidates in partitions.items()
+                    for site, candidates in primary.items()
                 },
+                "objective_solutions": [
+                    {key: value for key, value in solution.items() if key != "partitions"}
+                    for solution in solution_rows
+                ],
+                "sampled_nondominated_policies": nondominated,
                 "summary": {
                     "box_count": sum(len(items) for items in boxes_by_site.values()),
-                    "flight_count": len(flattened),
-                    "total_energy_kwh": sum(candidate.energy_kwh for candidate in flattened),
-                    "total_work_time_s": sum(candidate.work_time_s for candidate in flattened),
+                    "flight_count": len(primary_flat) if policy_partitions else None,
+                    "total_energy_kwh": sum(candidate.energy_kwh for candidate in primary_flat) if policy_partitions else None,
+                    "total_work_time_s": sum(candidate.work_time_s for candidate in primary_flat) if policy_partitions else None,
                 },
             })
     return {
         "model": {
             "energy_calibration": "usable_energy_kwh / empty_standard_range_m as baseline horizontal energy per meter; check one-way range against payload-adjusted outbound and empty return ranges",
-            "reserve_basis": "aircraft return SOC lower bound unless --reserve scenarios override all types",
+            "horizontal_energy_sensitivity": "horizontal calibrated energy rate multiplied by the scenario scale; 1.0 is baseline",
+            "reserve_basis": "baseline uses the 20% return SOC lower bound in the aircraft workbook; sensitivity scenarios apply a common fraction to all types",
+            "objective_tradeoff": "three lexicographic priority policies are compared; nondominated among these representative solutions, not a proof of the complete Pareto frontier",
             "dem": str(DEM_PATH.relative_to(ROOT)),
             "crs": "EPSG:4326; great-circle distance used for horizontal legs",
         },
@@ -486,37 +577,126 @@ def write_outputs(result: dict, output_dir: Path) -> None:
     )
     run_data = result["runs"][0]
     with (output_dir / "safe_payloads.csv").open("w", encoding="utf-8-sig", newline="") as stream:
-        writer = csv.DictWriter(stream, fieldnames=run_data["safe_payloads"][0].keys())
+        writer = csv.DictWriter(stream, fieldnames=run_data["safe_payloads"][0].keys(), lineterminator="\n")
         writer.writeheader()
         writer.writerows(run_data["safe_payloads"])
+    chosen_rows = [candidate for batches in run_data["partitions"].values() for candidate in batches]
+    template_fields = [
+        "架次编号", "服务区编号", "机型编号", "货箱编号列表", "总质量（kg）",
+        "总体积（m³）", "往返时间（s）", "架次能耗（kWh）", "返航SOC（%）",
+    ]
     with (output_dir / "batches.csv").open("w", encoding="utf-8-sig", newline="") as stream:
-        rows = [candidate for batches in run_data["partitions"].values() for candidate in batches]
-        writer = csv.DictWriter(stream, fieldnames=rows[0].keys())
+        writer = csv.DictWriter(stream, fieldnames=template_fields, lineterminator="\n")
         writer.writeheader()
-        for row in rows:
-            row = dict(row)
-            row["boxes"] = ",".join(row["boxes"])
-            writer.writerow(row)
-    with (output_dir / "sensitivity_summary.csv").open("w", encoding="utf-8-sig", newline="") as stream:
-        fields = ["reserve_fraction", "box_count", "flight_count", "total_energy_kwh", "total_work_time_s"]
-        writer = csv.DictWriter(stream, fieldnames=fields)
+        for index, row in enumerate(chosen_rows, start=1):
+            writer.writerow({
+                "架次编号": f"Q1-{index:03d}",
+                "服务区编号": row["site"],
+                "机型编号": row["aircraft"],
+                "货箱编号列表": ",".join(row["boxes"]),
+                "总质量（kg）": row["mass_kg"],
+                "总体积（m³）": row["volume_m3"],
+                "往返时间（s）": row["flight_time_s"],
+                "架次能耗（kWh）": row["energy_kwh"],
+                "返航SOC（%）": row["return_soc_percent"],
+            })
+
+    detail_fields = [
+        "架次编号", "服务区编号", "机型编号", "货箱编号列表", "总质量（kg）", "总体积（m³）",
+        "去程能耗（kWh）", "返程能耗（kWh）", "往返能耗（kWh）", "去程时间（s）",
+        "返程时间（s）", "作业时间（s）", "返航SOC（%）", "允许返航SOC（%）", "可行状态",
+    ]
+    aircraft_defaults = {item["aircraft"]: item["reserve_fraction"] for item in run_data["safe_payloads"]}
+    with (output_dir / "batches_detailed.csv").open("w", encoding="utf-8-sig", newline="") as stream:
+        writer = csv.DictWriter(stream, fieldnames=detail_fields, lineterminator="\n")
+        writer.writeheader()
+        for index, row in enumerate(chosen_rows, start=1):
+            writer.writerow({
+                "架次编号": f"Q1-{index:03d}", "服务区编号": row["site"], "机型编号": row["aircraft"],
+                "货箱编号列表": ",".join(row["boxes"]), "总质量（kg）": row["mass_kg"],
+                "总体积（m³）": row["volume_m3"], "去程能耗（kWh）": row["outbound_energy_kwh"],
+                "返程能耗（kWh）": row["return_energy_kwh"], "往返能耗（kWh）": row["energy_kwh"],
+                "去程时间（s）": row["outbound_time_s"], "返程时间（s）": row["return_time_s"],
+                "作业时间（s）": row["work_time_s"], "返航SOC（%）": row["return_soc_percent"],
+                "允许返航SOC（%）": aircraft_defaults[row["aircraft"]] * 100,
+                "可行状态": "可行" if row["feasible"] else "不可行",
+            })
+
+    with (output_dir / "service_area_summary.csv").open("w", encoding="utf-8-sig", newline="") as stream:
+        fields = ["服务区编号", "货箱数", "往返架次数", "总能耗（kWh）", "累计作业时间（s）", "未交付箱数"]
+        writer = csv.DictWriter(stream, fieldnames=fields, lineterminator="\n")
+        writer.writeheader()
+        for site, batches in run_data["partitions"].items():
+            writer.writerow({
+                "服务区编号": site,
+                "货箱数": sum(len(batch["boxes"]) for batch in batches),
+                "往返架次数": len(batches),
+                "总能耗（kWh）": sum(batch["energy_kwh"] for batch in batches),
+                "累计作业时间（s）": sum(batch["work_time_s"] for batch in batches),
+                "未交付箱数": 0,
+            })
+
+    with (output_dir / "objective_tradeoff.csv").open("w", encoding="utf-8-sig", newline="") as stream:
+        fields = ["返航余量（%）", "水平能耗率倍率", "目标优先策略", "总架次", "总能耗（kWh）", "累计作业时间（s）", "代表方案集中非支配"]
+        writer = csv.DictWriter(stream, fieldnames=fields, lineterminator="\n")
         writer.writeheader()
         for item in result["runs"]:
-            writer.writerow({"reserve_fraction": item["reserve_fraction"], **item["summary"]})
+            for solution in item["objective_solutions"]:
+                writer.writerow({
+                    "返航余量（%）": item["reserve_fraction"] * 100,
+                    "水平能耗率倍率": item["horizontal_energy_scale"],
+                    "目标优先策略": solution["policy"],
+                    "总架次": solution["flight_count"],
+                    "总能耗（kWh）": solution["total_energy_kwh"],
+                    "累计作业时间（s）": solution["total_work_time_s"],
+                    "代表方案集中非支配": "是" if solution["policy"] in item["sampled_nondominated_policies"] else "否",
+                })
+    with (output_dir / "sensitivity_summary.csv").open("w", encoding="utf-8-sig", newline="") as stream:
+        fields = ["reserve_fraction", "horizontal_energy_scale", "feasible", "infeasible_sites", "box_count", "flight_count", "total_energy_kwh", "total_work_time_s"]
+        writer = csv.DictWriter(stream, fieldnames=fields, lineterminator="\n")
+        writer.writeheader()
+        for item in result["runs"]:
+            writer.writerow({
+                "reserve_fraction": item["reserve_fraction"],
+                "horizontal_energy_scale": item["horizontal_energy_scale"],
+                "feasible": item["complete_delivery_feasible"],
+                "infeasible_sites": ",".join(item["infeasible_sites"]),
+                **item["summary"],
+            })
 
     with (output_dir / "safe_payloads_sensitivity.csv").open("w", encoding="utf-8-sig", newline="") as stream:
-        fields = ["reserve_fraction", "site", "aircraft", "max_safe_payload_kg", "route_distance_m", "cruise_altitude_m", "empty_round_trip_energy_kwh"]
-        writer = csv.DictWriter(stream, fieldnames=fields)
+        fields = ["reserve_fraction", "horizontal_energy_scale", "site", "aircraft", "max_safe_payload_kg", "route_distance_m", "cruise_altitude_m", "empty_round_trip_energy_kwh"]
+        writer = csv.DictWriter(stream, fieldnames=fields, lineterminator="\n")
         writer.writeheader()
         for item in result["runs"]:
             for payload in item["safe_payloads"]:
-                writer.writerow({"reserve_fraction": item["reserve_fraction"], **payload})
+                writer.writerow({"reserve_fraction": item["reserve_fraction"], "horizontal_energy_scale": item["horizontal_energy_scale"], **payload})
 
     plt.rcParams["font.family"] = "Noto Sans CJK SC"
     plt.rcParams["axes.unicode_minus"] = False
     _plot_safe_payloads(run_data, output_dir / "safe_payloads_heatmap.png")
     _plot_sensitivity(result["runs"], output_dir / "reserve_sensitivity.png")
+    _plot_energy_sensitivity(result["runs"], output_dir / "energy_model_sensitivity.png")
     _plot_site_flights(run_data, output_dir / "site_flight_counts.png")
+    _write_submission_workbook(chosen_rows, output_dir / "problem1_submission.xlsx")
+
+
+def _write_submission_workbook(chosen_rows: list[dict], output_path: Path) -> None:
+    template_path = ROOT / "docs" / "结果提交模板.xlsx"
+    workbook = load_workbook(template_path)
+    worksheet = workbook["Q1_单点组批"]
+    headers = [cell.value for cell in worksheet[1]]
+    worksheet.delete_rows(2, max(worksheet.max_row - 1, 1))
+    for index, batch in enumerate(chosen_rows, start=1):
+        worksheet.append([
+            f"Q1-{index:03d}", batch["site"], batch["aircraft"],
+            ",".join(batch["boxes"]), batch["mass_kg"], batch["volume_m3"],
+            batch["flight_time_s"], batch["energy_kwh"], batch["return_soc_percent"],
+        ])
+    actual_headers = [cell.value for cell in worksheet[1]]
+    if actual_headers[:9] != headers[:9]:
+        raise AssertionError("Problem 1 submission workbook headers changed unexpectedly")
+    workbook.save(output_path)
 
 
 def _plot_safe_payloads(run_data: dict, output_path: Path) -> None:
@@ -545,7 +725,12 @@ def _plot_safe_payloads(run_data: dict, output_path: Path) -> None:
 
 
 def _plot_sensitivity(runs: list[dict], output_path: Path) -> None:
-    runs = sorted(runs, key=lambda item: item["reserve_fraction"])
+    runs = sorted(
+        (item for item in runs if math.isclose(item["horizontal_energy_scale"], 1.0)),
+        key=lambda item: item["reserve_fraction"],
+    )
+    if not runs:
+        return
     reserve = [item["reserve_fraction"] * 100 for item in runs]
     flights = [item["summary"]["flight_count"] for item in runs]
     energies = [item["summary"]["total_energy_kwh"] for item in runs]
@@ -567,6 +752,30 @@ def _plot_sensitivity(runs: list[dict], output_path: Path) -> None:
     plt.close(figure)
 
 
+def _plot_energy_sensitivity(runs: list[dict], output_path: Path) -> None:
+    runs = sorted(
+        (item for item in runs if math.isclose(item["reserve_fraction"], 0.2)),
+        key=lambda item: item["horizontal_energy_scale"],
+    )
+    if not runs:
+        return
+    scales = [item["horizontal_energy_scale"] for item in runs]
+    payload_values = [
+        min(row["max_safe_payload_kg"] for row in item["safe_payloads"])
+        for item in runs
+    ]
+    flight_counts = [item["summary"]["flight_count"] for item in runs]
+    figure, axes = plt.subplots(1, 2, figsize=(10, 4), layout="constrained")
+    axes[0].plot(scales, payload_values, marker="o", color="#1769aa")
+    axes[0].set(title="能耗假设倍率与最小安全载荷", xlabel="水平能耗率倍率（基准=1）", ylabel="15×3组合中的最小安全载荷（kg）")
+    axes[0].grid(alpha=0.25)
+    axes[1].plot(scales, flight_counts, marker="s", color="#c0392b")
+    axes[1].set(title="能耗假设倍率与组批架次", xlabel="水平能耗率倍率（基准=1）", ylabel="往返架次")
+    axes[1].grid(alpha=0.25)
+    figure.savefig(output_path, dpi=180)
+    plt.close(figure)
+
+
 def _plot_site_flights(run_data: dict, output_path: Path) -> None:
     sites = list(run_data["partitions"])
     counts = [len(run_data["partitions"][site]) for site in sites]
@@ -582,12 +791,13 @@ def _plot_site_flights(run_data: dict, output_path: Path) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Solve Problem 1 single-site round-trip batches")
     parser.add_argument("--reserve", nargs="+", type=float, help="Override each type's reserve fraction, e.g. 0.1 0.2 0.3")
+    parser.add_argument("--energy-scale", nargs="+", type=float, help="Scale the assumed horizontal energy rate, e.g. 0.8 1.2")
     parser.add_argument("--output", type=Path, default=ROOT / "outputs/problem1")
     arguments = parser.parse_args()
-    result = run(arguments.reserve)
+    result = run(arguments.reserve, arguments.energy_scale)
     write_outputs(result, arguments.output)
     for item in result["runs"]:
-        print(item["reserve_fraction"], item["summary"])
+        print(item["reserve_fraction"], item["horizontal_energy_scale"], item["complete_delivery_feasible"], item["summary"])
     print(f"Wrote results to {arguments.output}")
 
 
