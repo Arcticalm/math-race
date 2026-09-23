@@ -1,0 +1,7 @@
+# Generated solver outputs
+outputs/
+.venv/
+
+# Python caches
+__pycache__/
+*.py[cod]
