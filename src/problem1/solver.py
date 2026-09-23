@@ -9,6 +9,10 @@ from pathlib import Path
 from typing import Iterable
 
 import rasterio
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import numpy as np
 from openpyxl import load_workbook
 from rasterio.transform import rowcol
 
@@ -499,6 +503,80 @@ def write_outputs(result: dict, output_dir: Path) -> None:
         writer.writeheader()
         for item in result["runs"]:
             writer.writerow({"reserve_fraction": item["reserve_fraction"], **item["summary"]})
+
+    with (output_dir / "safe_payloads_sensitivity.csv").open("w", encoding="utf-8-sig", newline="") as stream:
+        fields = ["reserve_fraction", "site", "aircraft", "max_safe_payload_kg", "route_distance_m", "cruise_altitude_m", "empty_round_trip_energy_kwh"]
+        writer = csv.DictWriter(stream, fieldnames=fields)
+        writer.writeheader()
+        for item in result["runs"]:
+            for payload in item["safe_payloads"]:
+                writer.writerow({"reserve_fraction": item["reserve_fraction"], **payload})
+
+    plt.rcParams["font.family"] = "Noto Sans CJK SC"
+    plt.rcParams["axes.unicode_minus"] = False
+    _plot_safe_payloads(run_data, output_dir / "safe_payloads_heatmap.png")
+    _plot_sensitivity(result["runs"], output_dir / "reserve_sensitivity.png")
+    _plot_site_flights(run_data, output_dir / "site_flight_counts.png")
+
+
+def _plot_safe_payloads(run_data: dict, output_path: Path) -> None:
+    rows = run_data["safe_payloads"]
+    sites = list(dict.fromkeys(row["site"] for row in rows))
+    aircraft_types = ["A", "B", "C"]
+    values = np.array([
+        [next(row["max_safe_payload_kg"] for row in rows if row["site"] == site and row["aircraft"] == aircraft)
+         for site in sites]
+        for aircraft in aircraft_types
+    ])
+    figure, axis = plt.subplots(figsize=(14, 4.2), layout="constrained")
+    image = axis.imshow(values, cmap="YlGnBu", aspect="auto", vmin=0)
+    axis.set_xticks(range(len(sites)), sites)
+    axis.set_yticks(range(len(aircraft_types)), [f"机型 {code}" for code in aircraft_types])
+    axis.set_title("各服务区—机型最大安全载荷（kg）")
+    axis.set_xlabel("服务区")
+    for row_index in range(values.shape[0]):
+        for column_index in range(values.shape[1]):
+            axis.text(column_index, row_index, f"{values[row_index, column_index]:.1f}",
+                      ha="center", va="center", fontsize=8,
+                      color="white" if values[row_index, column_index] > values.max() * 0.58 else "black")
+    figure.colorbar(image, ax=axis, label="kg")
+    figure.savefig(output_path, dpi=180)
+    plt.close(figure)
+
+
+def _plot_sensitivity(runs: list[dict], output_path: Path) -> None:
+    runs = sorted(runs, key=lambda item: item["reserve_fraction"])
+    reserve = [item["reserve_fraction"] * 100 for item in runs]
+    flights = [item["summary"]["flight_count"] for item in runs]
+    energies = [item["summary"]["total_energy_kwh"] for item in runs]
+    times = [item["summary"]["total_work_time_s"] / 3600 for item in runs]
+    figure, axes = plt.subplots(1, 2, figsize=(10, 4), layout="constrained")
+    axes[0].plot(reserve, flights, marker="o", color="#1769aa", linewidth=2)
+    axes[0].set(title="返航余量与总架次数", xlabel="返航安全余量（%）", ylabel="往返架次")
+    axes[0].grid(alpha=0.25)
+    axes[1].plot(reserve, energies, marker="o", label="总能耗（kWh）", color="#c0392b")
+    axes[1].set(xlabel="返航安全余量（%）", ylabel="总能耗（kWh）")
+    second_axis = axes[1].twinx()
+    second_axis.plot(reserve, times, marker="s", linestyle="--", label="累计作业时间（h）", color="#16825d")
+    second_axis.set_ylabel("累计作业时间（h）")
+    axes[1].set_title("返航余量与能耗、累计作业时间")
+    axes[1].grid(alpha=0.25)
+    handles = axes[1].get_lines() + second_axis.get_lines()
+    axes[1].legend(handles, [line.get_label() for line in handles], loc="best", fontsize=8)
+    figure.savefig(output_path, dpi=180)
+    plt.close(figure)
+
+
+def _plot_site_flights(run_data: dict, output_path: Path) -> None:
+    sites = list(run_data["partitions"])
+    counts = [len(run_data["partitions"][site]) for site in sites]
+    figure, axis = plt.subplots(figsize=(11, 4), layout="constrained")
+    bars = axis.bar(sites, counts, color="#3478a8")
+    axis.bar_label(bars, padding=2)
+    axis.set(title="基准返航余量下各服务区往返架次数", xlabel="服务区", ylabel="架次")
+    axis.grid(axis="y", alpha=0.25)
+    figure.savefig(output_path, dpi=180)
+    plt.close(figure)
 
 
 def main() -> None:

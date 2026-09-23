@@ -1,0 +1,4037 @@
+{
+  "model": {
+    "energy_calibration": "usable_energy_kwh / empty_standard_range_m as baseline horizontal energy per meter; check one-way range against payload-adjusted outbound and empty return ranges",
+    "reserve_basis": "aircraft return SOC lower bound unless --reserve scenarios override all types",
+    "dem": "data/镇龙乡地理空间数据/镇龙乡及周边地理数据/数字高程模型数据（DEM）/镇龙乡及周边30米DEM.tif",
+    "crs": "EPSG:4326; great-circle distance used for horizontal legs"
+  },
+  "runs": [
+    {
+      "reserve_fraction": 0.1,
+      "safe_payloads": [
+        {
+          "site": "S001",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 3063.411326288906,
+          "cruise_altitude_m": 273.0566101074219,
+          "empty_round_trip_energy_kwh": 1.3165122674842529
+        },
+        {
+          "site": "S001",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 3063.411326288906,
+          "cruise_altitude_m": 273.0566101074219,
+          "empty_round_trip_energy_kwh": 1.2776290042236256
+        },
+        {
+          "site": "S001",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 3063.411326288906,
+          "cruise_altitude_m": 273.0566101074219,
+          "empty_round_trip_energy_kwh": 3.090851368702457
+        },
+        {
+          "site": "S002",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 7435.278518338766,
+          "cruise_altitude_m": 308.9542541503906,
+          "empty_round_trip_energy_kwh": 3.1001263328328905
+        },
+        {
+          "site": "S002",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 7435.278518338766,
+          "cruise_altitude_m": 308.9542541503906,
+          "empty_round_trip_energy_kwh": 3.00814858852008
+        },
+        {
+          "site": "S002",
+          "aircraft": "C",
+          "max_safe_payload_kg": 78.36850906237788,
+          "route_distance_m": 7435.278518338766,
+          "cruise_altitude_m": 308.9542541503906,
+          "empty_round_trip_energy_kwh": 7.199999999999999
+        },
+        {
+          "site": "S003",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 7261.075570364676,
+          "cruise_altitude_m": 561.8041381835938,
+          "empty_round_trip_energy_kwh": 3.1559037328528228
+        },
+        {
+          "site": "S003",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 7261.075570364676,
+          "cruise_altitude_m": 561.8041381835938,
+          "empty_round_trip_energy_kwh": 3.063509251861978
+        },
+        {
+          "site": "S003",
+          "aircraft": "C",
+          "max_safe_payload_kg": 78.25264297726177,
+          "route_distance_m": 7261.075570364676,
+          "cruise_altitude_m": 561.8041381835938,
+          "empty_round_trip_energy_kwh": 7.199999999999999
+        },
+        {
+          "site": "S004",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 7745.662441501595,
+          "cruise_altitude_m": 398.2391662597656,
+          "empty_round_trip_energy_kwh": 3.279238756262706
+        },
+        {
+          "site": "S004",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 7745.662441501595,
+          "cruise_altitude_m": 398.2391662597656,
+          "empty_round_trip_energy_kwh": 3.1819695192433235
+        },
+        {
+          "site": "S004",
+          "aircraft": "C",
+          "max_safe_payload_kg": 74.569313707219,
+          "route_distance_m": 7745.662441501595,
+          "cruise_altitude_m": 398.2391662597656,
+          "empty_round_trip_energy_kwh": 7.199999999999999
+        },
+        {
+          "site": "S005",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 5302.02013115008,
+          "cruise_altitude_m": 326.410888671875,
+          "empty_round_trip_energy_kwh": 2.2535428500120083
+        },
+        {
+          "site": "S005",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 5302.02013115008,
+          "cruise_altitude_m": 326.410888671875,
+          "empty_round_trip_energy_kwh": 2.186675257640217
+        },
+        {
+          "site": "S005",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 5302.02013115008,
+          "cruise_altitude_m": 326.410888671875,
+          "empty_round_trip_energy_kwh": 5.313520172860585
+        },
+        {
+          "site": "S006",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 3181.0333082558964,
+          "cruise_altitude_m": 366.09783935546875,
+          "empty_round_trip_energy_kwh": 1.3875905551279843
+        },
+        {
+          "site": "S006",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 3181.0333082558964,
+          "cruise_altitude_m": 366.09783935546875,
+          "empty_round_trip_energy_kwh": 1.347993313232814
+        },
+        {
+          "site": "S006",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 3181.0333082558964,
+          "cruise_altitude_m": 366.09783935546875,
+          "empty_round_trip_energy_kwh": 3.2482386943139674
+        },
+        {
+          "site": "S007",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 4533.827897987457,
+          "cruise_altitude_m": 501.8304748535156,
+          "empty_round_trip_energy_kwh": 2.0112805109155016
+        },
+        {
+          "site": "S007",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 4533.827897987457,
+          "cruise_altitude_m": 501.8304748535156,
+          "empty_round_trip_energy_kwh": 1.9533263110131993
+        },
+        {
+          "site": "S007",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 4533.827897987457,
+          "cruise_altitude_m": 501.8304748535156,
+          "empty_round_trip_energy_kwh": 4.670308852677486
+        },
+        {
+          "site": "S008",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 8109.473184927932,
+          "cruise_altitude_m": 372.9093322753906,
+          "empty_round_trip_energy_kwh": 3.3994873677619957
+        },
+        {
+          "site": "S008",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 8109.473184927932,
+          "cruise_altitude_m": 372.9093322753906,
+          "empty_round_trip_energy_kwh": 3.299085467643727
+        },
+        {
+          "site": "S008",
+          "aircraft": "C",
+          "max_safe_payload_kg": 71.1086299723135,
+          "route_distance_m": 8109.473184927932,
+          "cruise_altitude_m": 372.9093322753906,
+          "empty_round_trip_energy_kwh": 7.2
+        },
+        {
+          "site": "S009",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 5722.680393214653,
+          "cruise_altitude_m": 293.2289123535156,
+          "empty_round_trip_energy_kwh": 2.393926476391099
+        },
+        {
+          "site": "S009",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 5722.680393214653,
+          "cruise_altitude_m": 293.2289123535156,
+          "empty_round_trip_energy_kwh": 2.323240675151039
+        },
+        {
+          "site": "S009",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 5722.680393214653,
+          "cruise_altitude_m": 293.2289123535156,
+          "empty_round_trip_energy_kwh": 5.686544052679954
+        },
+        {
+          "site": "S010",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 4778.43990162097,
+          "cruise_altitude_m": 435.63653564453125,
+          "empty_round_trip_energy_kwh": 2.06820474813911
+        },
+        {
+          "site": "S010",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 4778.43990162097,
+          "cruise_altitude_m": 435.63653564453125,
+          "empty_round_trip_energy_kwh": 2.00859110338851
+        },
+        {
+          "site": "S010",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 4778.43990162097,
+          "cruise_altitude_m": 435.63653564453125,
+          "empty_round_trip_energy_kwh": 4.852782183631606
+        },
+        {
+          "site": "S011",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 2817.1517251516107,
+          "cruise_altitude_m": 293.3490295410156,
+          "empty_round_trip_energy_kwh": 1.222002988410741
+        },
+        {
+          "site": "S011",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 2817.1517251516107,
+          "cruise_altitude_m": 293.3490295410156,
+          "empty_round_trip_energy_kwh": 1.186257717471059
+        },
+        {
+          "site": "S011",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 2817.1517251516107,
+          "cruise_altitude_m": 293.3490295410156,
+          "empty_round_trip_energy_kwh": 2.860349874072284
+        },
+        {
+          "site": "S012",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 7398.449561287365,
+          "cruise_altitude_m": 413.3009948730469,
+          "empty_round_trip_energy_kwh": 3.134380861615882
+        },
+        {
+          "site": "S012",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 7398.449561287365,
+          "cruise_altitude_m": 413.3009948730469,
+          "empty_round_trip_energy_kwh": 3.042017087313587
+        },
+        {
+          "site": "S012",
+          "aircraft": "C",
+          "max_safe_payload_kg": 78.01651532413626,
+          "route_distance_m": 7398.449561287365,
+          "cruise_altitude_m": 413.3009948730469,
+          "empty_round_trip_energy_kwh": 7.199999999999999
+        },
+        {
+          "site": "S013",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 4848.706999909826,
+          "cruise_altitude_m": 399.18182373046875,
+          "empty_round_trip_energy_kwh": 2.0738790048721434
+        },
+        {
+          "site": "S013",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 4848.706999909826,
+          "cruise_altitude_m": 399.18182373046875,
+          "empty_round_trip_energy_kwh": 2.014103627714176
+        },
+        {
+          "site": "S013",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 4848.706999909826,
+          "cruise_altitude_m": 399.18182373046875,
+          "empty_round_trip_energy_kwh": 4.890905454625271
+        },
+        {
+          "site": "S014",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 5410.9170943694,
+          "cruise_altitude_m": 591.9473876953125,
+          "empty_round_trip_energy_kwh": 2.422096452231748
+        },
+        {
+          "site": "S014",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 5410.9170943694,
+          "cruise_altitude_m": 591.9473876953125,
+          "empty_round_trip_energy_kwh": 2.351834421328119
+        },
+        {
+          "site": "S014",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 5410.9170943694,
+          "cruise_altitude_m": 591.9473876953125,
+          "empty_round_trip_energy_kwh": 5.5991884605867055
+        },
+        {
+          "site": "S015",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 6019.113948538039,
+          "cruise_altitude_m": 571.7992553710938,
+          "empty_round_trip_energy_kwh": 2.623130635439933
+        },
+        {
+          "site": "S015",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 6019.113948538039,
+          "cruise_altitude_m": 571.7992553710938,
+          "empty_round_trip_energy_kwh": 2.548200770132621
+        },
+        {
+          "site": "S015",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 6019.113948538039,
+          "cruise_altitude_m": 571.7992553710938,
+          "empty_round_trip_energy_kwh": 6.142374354643366
+        }
+      ],
+      "route_metadata": {
+        "S001": {
+          "distance_m": 3063.411326288906,
+          "max_ground_elevation_m": 223.05661010742188
+        },
+        "S002": {
+          "distance_m": 7435.278518338766,
+          "max_ground_elevation_m": 258.9542541503906
+        },
+        "S003": {
+          "distance_m": 7261.075570364676,
+          "max_ground_elevation_m": 511.80413818359375
+        },
+        "S004": {
+          "distance_m": 7745.662441501595,
+          "max_ground_elevation_m": 348.2391662597656
+        },
+        "S005": {
+          "distance_m": 5302.02013115008,
+          "max_ground_elevation_m": 276.410888671875
+        },
+        "S006": {
+          "distance_m": 3181.0333082558964,
+          "max_ground_elevation_m": 316.09783935546875
+        },
+        "S007": {
+          "distance_m": 4533.827897987457,
+          "max_ground_elevation_m": 451.8304748535156
+        },
+        "S008": {
+          "distance_m": 8109.473184927932,
+          "max_ground_elevation_m": 322.9093322753906
+        },
+        "S009": {
+          "distance_m": 5722.680393214653,
+          "max_ground_elevation_m": 243.22891235351562
+        },
+        "S010": {
+          "distance_m": 4778.43990162097,
+          "max_ground_elevation_m": 385.63653564453125
+        },
+        "S011": {
+          "distance_m": 2817.1517251516107,
+          "max_ground_elevation_m": 243.34902954101562
+        },
+        "S012": {
+          "distance_m": 7398.449561287365,
+          "max_ground_elevation_m": 363.3009948730469
+        },
+        "S013": {
+          "distance_m": 4848.706999909826,
+          "max_ground_elevation_m": 349.18182373046875
+        },
+        "S014": {
+          "distance_m": 5410.9170943694,
+          "max_ground_elevation_m": 541.9473876953125
+        },
+        "S015": {
+          "distance_m": 6019.113948538039,
+          "max_ground_elevation_m": 521.7992553710938
+        }
+      },
+      "partitions": {
+        "S001": [
+          {
+            "site": "S001",
+            "aircraft": "C",
+            "boxes": [
+              "S001-MED-01",
+              "S001-MED-02",
+              "S001-WAT-01",
+              "S001-WAT-02",
+              "S001-WAT-03",
+              "S001-WAT-04",
+              "S001-WAT-05"
+            ],
+            "mass_kg": 76.0,
+            "volume_m3": 0.159,
+            "energy_kwh": 2.9262373909118784,
+            "flight_time_s": 619.4267416985468,
+            "work_time_s": 1561.4267416985467,
+            "range_budget_m": 13036.763521404078,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 4.273762609088122
+          },
+          {
+            "site": "S001",
+            "aircraft": "C",
+            "boxes": [
+              "S001-WAT-06",
+              "S001-WAT-07",
+              "S001-WAT-08",
+              "S001-FOD-01",
+              "S001-FOD-02",
+              "S001-FOD-03",
+              "S001-HYG-01",
+              "S001-HYG-02"
+            ],
+            "mass_kg": 78.0,
+            "volume_m3": 0.23500000000000001,
+            "energy_kwh": 3.004662059347582,
+            "flight_time_s": 619.4267416985468,
+            "work_time_s": 1627.4267416985467,
+            "range_budget_m": 12521.704948325252,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 4.1953379406524185
+          }
+        ],
+        "S002": [
+          {
+            "site": "S002",
+            "aircraft": "B",
+            "boxes": [
+              "S002-MED-01",
+              "S002-WAT-01",
+              "S002-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 2.72189802120557,
+            "flight_time_s": 1189.8900418657418,
+            "work_time_s": 1819.8900418657418,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 0.87810197879443
+          },
+          {
+            "site": "S002",
+            "aircraft": "C",
+            "boxes": [
+              "S002-WAT-02",
+              "S002-WAT-03",
+              "S002-WAT-04",
+              "S002-FOD-02",
+              "S002-HYG-01"
+            ],
+            "mass_kg": 56.0,
+            "volume_m3": 0.14400000000000002,
+            "energy_kwh": 5.739333605245894,
+            "flight_time_s": 1235.0081265825384,
+            "work_time_s": 2045.0081265825384,
+            "range_budget_m": 17800.73173996606,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 1.4606663947541065
+          }
+        ],
+        "S003": [
+          {
+            "site": "S003",
+            "aircraft": "B",
+            "boxes": [
+              "S003-MED-01",
+              "S003-WAT-01",
+              "S003-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 2.7791017852578164,
+            "flight_time_s": 1450.2428120512277,
+            "work_time_s": 2080.2428120512277,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 0.8208982147421837
+          },
+          {
+            "site": "S003",
+            "aircraft": "C",
+            "boxes": [
+              "S003-WAT-02",
+              "S003-WAT-03",
+              "S003-WAT-04",
+              "S003-FOD-02",
+              "S003-HYG-01"
+            ],
+            "mass_kg": 56.0,
+            "volume_m3": 0.14400000000000002,
+            "energy_kwh": 5.7632815788989635,
+            "flight_time_s": 1559.8108581124256,
+            "work_time_s": 2369.8108581124256,
+            "range_budget_m": 17800.73173996606,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 1.4367184211010366
+          }
+        ],
+        "S004": [
+          {
+            "site": "S004",
+            "aircraft": "C",
+            "boxes": [
+              "S004-MED-01",
+              "S004-WAT-01",
+              "S004-WAT-02",
+              "S004-WAT-03",
+              "S004-FOD-01",
+              "S004-HYG-01"
+            ],
+            "mass_kg": 59.0,
+            "volume_m3": 0.156,
+            "energy_kwh": 6.176858606791459,
+            "flight_time_s": 1429.1854914677908,
+            "work_time_s": 2305.1854914677906,
+            "range_budget_m": 17133.115065734753,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 1.0231413932085411
+          }
+        ],
+        "S005": [
+          {
+            "site": "S005",
+            "aircraft": "C",
+            "boxes": [
+              "S005-MED-01",
+              "S005-WAT-01",
+              "S005-WAT-02",
+              "S005-WAT-03",
+              "S005-FOD-01",
+              "S005-HYG-01"
+            ],
+            "mass_kg": 59.0,
+            "volume_m3": 0.156,
+            "energy_kwh": 4.238735064547415,
+            "flight_time_s": 1004.0456170960524,
+            "work_time_s": 1880.0456170960524,
+            "range_budget_m": 17133.115065734753,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 2.9612649354525855
+          }
+        ],
+        "S006": [
+          {
+            "site": "S006",
+            "aircraft": "C",
+            "boxes": [
+              "S006-MED-01",
+              "S006-WAT-01",
+              "S006-WAT-02",
+              "S006-WAT-03",
+              "S006-FOD-01",
+              "S006-HYG-01"
+            ],
+            "mass_kg": 59.0,
+            "volume_m3": 0.156,
+            "energy_kwh": 2.593934934324972,
+            "flight_time_s": 684.8638852739633,
+            "work_time_s": 1560.8638852739632,
+            "range_budget_m": 17133.115065734753,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 4.606065065675028
+          }
+        ],
+        "S007": [
+          {
+            "site": "S007",
+            "aircraft": "C",
+            "boxes": [
+              "S007-MED-01",
+              "S007-WAT-01",
+              "S007-WAT-02",
+              "S007-FOD-01",
+              "S007-HYG-01"
+            ],
+            "mass_kg": 45.0,
+            "volume_m3": 0.129,
+            "energy_kwh": 3.403284441394841,
+            "flight_time_s": 1079.2252411346558,
+            "work_time_s": 1889.2252411346558,
+            "range_budget_m": 20093.75,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 3.7967155586051593
+          }
+        ],
+        "S008": [
+          {
+            "site": "S008",
+            "aircraft": "C",
+            "boxes": [
+              "S008-MED-01",
+              "S008-WAT-01",
+              "S008-WAT-02",
+              "S008-FOD-01",
+              "S008-HYG-01"
+            ],
+            "mass_kg": 45.0,
+            "volume_m3": 0.129,
+            "energy_kwh": 5.857451478257397,
+            "flight_time_s": 1393.7598894194273,
+            "work_time_s": 2203.759889419427,
+            "range_budget_m": 20093.75,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 1.3425485217426028
+          }
+        ],
+        "S009": [
+          {
+            "site": "S009",
+            "aircraft": "B",
+            "boxes": [
+              "S009-MED-01",
+              "S009-WAT-01",
+              "S009-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 2.102431078237294,
+            "flight_time_s": 930.77979054711,
+            "work_time_s": 1560.77979054711,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 1.497568921762706
+          }
+        ],
+        "S010": [
+          {
+            "site": "S010",
+            "aircraft": "B",
+            "boxes": [
+              "S010-MED-01",
+              "S010-WAT-01",
+              "S010-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 1.821004406007365,
+            "flight_time_s": 924.5722391614418,
+            "work_time_s": 1554.5722391614418,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 1.7789955939926352
+          }
+        ],
+        "S011": [
+          {
+            "site": "S011",
+            "aircraft": "B",
+            "boxes": [
+              "S011-MED-01",
+              "S011-WAT-01",
+              "S011-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 1.0759658121278484,
+            "flight_time_s": 556.678806680371,
+            "work_time_s": 1186.678806680371,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 2.524034187872152
+          }
+        ],
+        "S012": [
+          {
+            "site": "S012",
+            "aircraft": "B",
+            "boxes": [
+              "S012-MED-01",
+              "S012-WAT-01",
+              "S012-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 2.7551934702444854,
+            "flight_time_s": 1293.8014006521175,
+            "work_time_s": 1923.8014006521175,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 0.8448065297555147
+          }
+        ],
+        "S013": [
+          {
+            "site": "S013",
+            "aircraft": "B",
+            "boxes": [
+              "S013-MED-01",
+              "S013-WAT-01",
+              "S013-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 1.8245337426160748,
+            "flight_time_s": 880.4009414593309,
+            "work_time_s": 1510.4009414593309,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 1.7754662573839253
+          }
+        ],
+        "S014": [
+          {
+            "site": "S014",
+            "aircraft": "B",
+            "boxes": [
+              "S014-MED-01",
+              "S014-WAT-01",
+              "S014-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 2.1372327174195584,
+            "flight_time_s": 1238.5984478690452,
+            "work_time_s": 1868.5984478690452,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 1.4627672825804416
+          }
+        ],
+        "S015": [
+          {
+            "site": "S015",
+            "aircraft": "B",
+            "boxes": [
+              "S015-MED-01",
+              "S015-WAT-01",
+              "S015-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 2.3108457316251445,
+            "flight_time_s": 1199.5741010160095,
+            "work_time_s": 1829.5741010160095,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 1.2891542683748556
+          }
+        ]
+      },
+      "summary": {
+        "box_count": 80,
+        "flight_count": 18,
+        "total_energy_kwh": 59.23198592446156,
+        "total_work_time_s": 32777.29117378634
+      }
+    },
+    {
+      "reserve_fraction": 0.15,
+      "safe_payloads": [
+        {
+          "site": "S001",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 3063.411326288906,
+          "cruise_altitude_m": 273.0566101074219,
+          "empty_round_trip_energy_kwh": 1.3165122674842529
+        },
+        {
+          "site": "S001",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 3063.411326288906,
+          "cruise_altitude_m": 273.0566101074219,
+          "empty_round_trip_energy_kwh": 1.2776290042236256
+        },
+        {
+          "site": "S001",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 3063.411326288906,
+          "cruise_altitude_m": 273.0566101074219,
+          "empty_round_trip_energy_kwh": 3.090851368702457
+        },
+        {
+          "site": "S002",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 7435.278518338766,
+          "cruise_altitude_m": 308.9542541503906,
+          "empty_round_trip_energy_kwh": 3.1001263328328905
+        },
+        {
+          "site": "S002",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 7435.278518338766,
+          "cruise_altitude_m": 308.9542541503906,
+          "empty_round_trip_energy_kwh": 3.00814858852008
+        },
+        {
+          "site": "S002",
+          "aircraft": "C",
+          "max_safe_payload_kg": 73.981328042579,
+          "route_distance_m": 7435.278518338766,
+          "cruise_altitude_m": 308.9542541503906,
+          "empty_round_trip_energy_kwh": 6.799999999999999
+        },
+        {
+          "site": "S003",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 7261.075570364676,
+          "cruise_altitude_m": 561.8041381835938,
+          "empty_round_trip_energy_kwh": 3.1559037328528228
+        },
+        {
+          "site": "S003",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 7261.075570364676,
+          "cruise_altitude_m": 561.8041381835938,
+          "empty_round_trip_energy_kwh": 3.063509251861978
+        },
+        {
+          "site": "S003",
+          "aircraft": "C",
+          "max_safe_payload_kg": 73.77692296542683,
+          "route_distance_m": 7261.075570364676,
+          "cruise_altitude_m": 561.8041381835938,
+          "empty_round_trip_energy_kwh": 6.8
+        },
+        {
+          "site": "S004",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 7745.662441501595,
+          "cruise_altitude_m": 398.2391662597656,
+          "empty_round_trip_energy_kwh": 3.279238756262706
+        },
+        {
+          "site": "S004",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 7745.662441501595,
+          "cruise_altitude_m": 398.2391662597656,
+          "empty_round_trip_energy_kwh": 3.1819695192433235
+        },
+        {
+          "site": "S004",
+          "aircraft": "C",
+          "max_safe_payload_kg": 69.54662480779326,
+          "route_distance_m": 7745.662441501595,
+          "cruise_altitude_m": 398.2391662597656,
+          "empty_round_trip_energy_kwh": 6.799999999999999
+        },
+        {
+          "site": "S005",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 5302.02013115008,
+          "cruise_altitude_m": 326.410888671875,
+          "empty_round_trip_energy_kwh": 2.2535428500120083
+        },
+        {
+          "site": "S005",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 5302.02013115008,
+          "cruise_altitude_m": 326.410888671875,
+          "empty_round_trip_energy_kwh": 2.186675257640217
+        },
+        {
+          "site": "S005",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 5302.02013115008,
+          "cruise_altitude_m": 326.410888671875,
+          "empty_round_trip_energy_kwh": 5.313520172860585
+        },
+        {
+          "site": "S006",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 3181.0333082558964,
+          "cruise_altitude_m": 366.09783935546875,
+          "empty_round_trip_energy_kwh": 1.3875905551279843
+        },
+        {
+          "site": "S006",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 3181.0333082558964,
+          "cruise_altitude_m": 366.09783935546875,
+          "empty_round_trip_energy_kwh": 1.347993313232814
+        },
+        {
+          "site": "S006",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 3181.0333082558964,
+          "cruise_altitude_m": 366.09783935546875,
+          "empty_round_trip_energy_kwh": 3.2482386943139674
+        },
+        {
+          "site": "S007",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 4533.827897987457,
+          "cruise_altitude_m": 501.8304748535156,
+          "empty_round_trip_energy_kwh": 2.0112805109155016
+        },
+        {
+          "site": "S007",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 4533.827897987457,
+          "cruise_altitude_m": 501.8304748535156,
+          "empty_round_trip_energy_kwh": 1.9533263110131993
+        },
+        {
+          "site": "S007",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 4533.827897987457,
+          "cruise_altitude_m": 501.8304748535156,
+          "empty_round_trip_energy_kwh": 4.670308852677486
+        },
+        {
+          "site": "S008",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 8109.473184927932,
+          "cruise_altitude_m": 372.9093322753906,
+          "empty_round_trip_energy_kwh": 3.3994873677619957
+        },
+        {
+          "site": "S008",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 8109.473184927932,
+          "cruise_altitude_m": 372.9093322753906,
+          "empty_round_trip_energy_kwh": 3.299085467643727
+        },
+        {
+          "site": "S008",
+          "aircraft": "C",
+          "max_safe_payload_kg": 65.51529305348139,
+          "route_distance_m": 8109.473184927932,
+          "cruise_altitude_m": 372.9093322753906,
+          "empty_round_trip_energy_kwh": 6.8
+        },
+        {
+          "site": "S009",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 5722.680393214653,
+          "cruise_altitude_m": 293.2289123535156,
+          "empty_round_trip_energy_kwh": 2.393926476391099
+        },
+        {
+          "site": "S009",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 5722.680393214653,
+          "cruise_altitude_m": 293.2289123535156,
+          "empty_round_trip_energy_kwh": 2.323240675151039
+        },
+        {
+          "site": "S009",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 5722.680393214653,
+          "cruise_altitude_m": 293.2289123535156,
+          "empty_round_trip_energy_kwh": 5.686544052679954
+        },
+        {
+          "site": "S010",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 4778.43990162097,
+          "cruise_altitude_m": 435.63653564453125,
+          "empty_round_trip_energy_kwh": 2.06820474813911
+        },
+        {
+          "site": "S010",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 4778.43990162097,
+          "cruise_altitude_m": 435.63653564453125,
+          "empty_round_trip_energy_kwh": 2.00859110338851
+        },
+        {
+          "site": "S010",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 4778.43990162097,
+          "cruise_altitude_m": 435.63653564453125,
+          "empty_round_trip_energy_kwh": 4.852782183631606
+        },
+        {
+          "site": "S011",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 2817.1517251516107,
+          "cruise_altitude_m": 293.3490295410156,
+          "empty_round_trip_energy_kwh": 1.222002988410741
+        },
+        {
+          "site": "S011",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 2817.1517251516107,
+          "cruise_altitude_m": 293.3490295410156,
+          "empty_round_trip_energy_kwh": 1.186257717471059
+        },
+        {
+          "site": "S011",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 2817.1517251516107,
+          "cruise_altitude_m": 293.3490295410156,
+          "empty_round_trip_energy_kwh": 2.860349874072284
+        },
+        {
+          "site": "S012",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 7398.449561287365,
+          "cruise_altitude_m": 413.3009948730469,
+          "empty_round_trip_energy_kwh": 3.134380861615882
+        },
+        {
+          "site": "S012",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 7398.449561287365,
+          "cruise_altitude_m": 413.3009948730469,
+          "empty_round_trip_energy_kwh": 3.042017087313587
+        },
+        {
+          "site": "S012",
+          "aircraft": "C",
+          "max_safe_payload_kg": 73.54829100084956,
+          "route_distance_m": 7398.449561287365,
+          "cruise_altitude_m": 413.3009948730469,
+          "empty_round_trip_energy_kwh": 6.799999999999999
+        },
+        {
+          "site": "S013",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 4848.706999909826,
+          "cruise_altitude_m": 399.18182373046875,
+          "empty_round_trip_energy_kwh": 2.0738790048721434
+        },
+        {
+          "site": "S013",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 4848.706999909826,
+          "cruise_altitude_m": 399.18182373046875,
+          "empty_round_trip_energy_kwh": 2.014103627714176
+        },
+        {
+          "site": "S013",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 4848.706999909826,
+          "cruise_altitude_m": 399.18182373046875,
+          "empty_round_trip_energy_kwh": 4.890905454625271
+        },
+        {
+          "site": "S014",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 5410.9170943694,
+          "cruise_altitude_m": 591.9473876953125,
+          "empty_round_trip_energy_kwh": 2.422096452231748
+        },
+        {
+          "site": "S014",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 5410.9170943694,
+          "cruise_altitude_m": 591.9473876953125,
+          "empty_round_trip_energy_kwh": 2.351834421328119
+        },
+        {
+          "site": "S014",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 5410.9170943694,
+          "cruise_altitude_m": 591.9473876953125,
+          "empty_round_trip_energy_kwh": 5.5991884605867055
+        },
+        {
+          "site": "S015",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 6019.113948538039,
+          "cruise_altitude_m": 571.7992553710938,
+          "empty_round_trip_energy_kwh": 2.623130635439933
+        },
+        {
+          "site": "S015",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 6019.113948538039,
+          "cruise_altitude_m": 571.7992553710938,
+          "empty_round_trip_energy_kwh": 2.548200770132621
+        },
+        {
+          "site": "S015",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 6019.113948538039,
+          "cruise_altitude_m": 571.7992553710938,
+          "empty_round_trip_energy_kwh": 6.142374354643366
+        }
+      ],
+      "route_metadata": {
+        "S001": {
+          "distance_m": 3063.411326288906,
+          "max_ground_elevation_m": 223.05661010742188
+        },
+        "S002": {
+          "distance_m": 7435.278518338766,
+          "max_ground_elevation_m": 258.9542541503906
+        },
+        "S003": {
+          "distance_m": 7261.075570364676,
+          "max_ground_elevation_m": 511.80413818359375
+        },
+        "S004": {
+          "distance_m": 7745.662441501595,
+          "max_ground_elevation_m": 348.2391662597656
+        },
+        "S005": {
+          "distance_m": 5302.02013115008,
+          "max_ground_elevation_m": 276.410888671875
+        },
+        "S006": {
+          "distance_m": 3181.0333082558964,
+          "max_ground_elevation_m": 316.09783935546875
+        },
+        "S007": {
+          "distance_m": 4533.827897987457,
+          "max_ground_elevation_m": 451.8304748535156
+        },
+        "S008": {
+          "distance_m": 8109.473184927932,
+          "max_ground_elevation_m": 322.9093322753906
+        },
+        "S009": {
+          "distance_m": 5722.680393214653,
+          "max_ground_elevation_m": 243.22891235351562
+        },
+        "S010": {
+          "distance_m": 4778.43990162097,
+          "max_ground_elevation_m": 385.63653564453125
+        },
+        "S011": {
+          "distance_m": 2817.1517251516107,
+          "max_ground_elevation_m": 243.34902954101562
+        },
+        "S012": {
+          "distance_m": 7398.449561287365,
+          "max_ground_elevation_m": 363.3009948730469
+        },
+        "S013": {
+          "distance_m": 4848.706999909826,
+          "max_ground_elevation_m": 349.18182373046875
+        },
+        "S014": {
+          "distance_m": 5410.9170943694,
+          "max_ground_elevation_m": 541.9473876953125
+        },
+        "S015": {
+          "distance_m": 6019.113948538039,
+          "max_ground_elevation_m": 521.7992553710938
+        }
+      },
+      "partitions": {
+        "S001": [
+          {
+            "site": "S001",
+            "aircraft": "C",
+            "boxes": [
+              "S001-MED-01",
+              "S001-MED-02",
+              "S001-WAT-01",
+              "S001-WAT-02",
+              "S001-WAT-03",
+              "S001-WAT-04",
+              "S001-WAT-05"
+            ],
+            "mass_kg": 76.0,
+            "volume_m3": 0.159,
+            "energy_kwh": 2.9262373909118784,
+            "flight_time_s": 619.4267416985468,
+            "work_time_s": 1561.4267416985467,
+            "range_budget_m": 13036.763521404078,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 3.8737626090881214
+          },
+          {
+            "site": "S001",
+            "aircraft": "C",
+            "boxes": [
+              "S001-WAT-06",
+              "S001-WAT-07",
+              "S001-WAT-08",
+              "S001-FOD-01",
+              "S001-FOD-02",
+              "S001-FOD-03",
+              "S001-HYG-01",
+              "S001-HYG-02"
+            ],
+            "mass_kg": 78.0,
+            "volume_m3": 0.23500000000000001,
+            "energy_kwh": 3.004662059347582,
+            "flight_time_s": 619.4267416985468,
+            "work_time_s": 1627.4267416985467,
+            "range_budget_m": 12521.704948325252,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 3.7953379406524177
+          }
+        ],
+        "S002": [
+          {
+            "site": "S002",
+            "aircraft": "B",
+            "boxes": [
+              "S002-MED-01",
+              "S002-WAT-01",
+              "S002-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 2.72189802120557,
+            "flight_time_s": 1189.8900418657418,
+            "work_time_s": 1819.8900418657418,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 0.6781019787944298
+          },
+          {
+            "site": "S002",
+            "aircraft": "C",
+            "boxes": [
+              "S002-WAT-02",
+              "S002-WAT-03",
+              "S002-WAT-04",
+              "S002-FOD-02",
+              "S002-HYG-01"
+            ],
+            "mass_kg": 56.0,
+            "volume_m3": 0.14400000000000002,
+            "energy_kwh": 5.739333605245894,
+            "flight_time_s": 1235.0081265825384,
+            "work_time_s": 2045.0081265825384,
+            "range_budget_m": 17800.73173996606,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 1.0606663947541062
+          }
+        ],
+        "S003": [
+          {
+            "site": "S003",
+            "aircraft": "B",
+            "boxes": [
+              "S003-MED-01",
+              "S003-WAT-01",
+              "S003-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 2.7791017852578164,
+            "flight_time_s": 1450.2428120512277,
+            "work_time_s": 2080.2428120512277,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 0.6208982147421835
+          },
+          {
+            "site": "S003",
+            "aircraft": "C",
+            "boxes": [
+              "S003-WAT-02",
+              "S003-WAT-03",
+              "S003-WAT-04",
+              "S003-FOD-02",
+              "S003-HYG-01"
+            ],
+            "mass_kg": 56.0,
+            "volume_m3": 0.14400000000000002,
+            "energy_kwh": 5.7632815788989635,
+            "flight_time_s": 1559.8108581124256,
+            "work_time_s": 2369.8108581124256,
+            "range_budget_m": 17800.73173996606,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 1.0367184211010363
+          }
+        ],
+        "S004": [
+          {
+            "site": "S004",
+            "aircraft": "C",
+            "boxes": [
+              "S004-MED-01",
+              "S004-WAT-01",
+              "S004-WAT-02",
+              "S004-WAT-03",
+              "S004-FOD-01",
+              "S004-HYG-01"
+            ],
+            "mass_kg": 59.0,
+            "volume_m3": 0.156,
+            "energy_kwh": 6.176858606791459,
+            "flight_time_s": 1429.1854914677908,
+            "work_time_s": 2305.1854914677906,
+            "range_budget_m": 17133.115065734753,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 0.6231413932085408
+          }
+        ],
+        "S005": [
+          {
+            "site": "S005",
+            "aircraft": "C",
+            "boxes": [
+              "S005-MED-01",
+              "S005-WAT-01",
+              "S005-WAT-02",
+              "S005-WAT-03",
+              "S005-FOD-01",
+              "S005-HYG-01"
+            ],
+            "mass_kg": 59.0,
+            "volume_m3": 0.156,
+            "energy_kwh": 4.238735064547415,
+            "flight_time_s": 1004.0456170960524,
+            "work_time_s": 1880.0456170960524,
+            "range_budget_m": 17133.115065734753,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 2.561264935452585
+          }
+        ],
+        "S006": [
+          {
+            "site": "S006",
+            "aircraft": "C",
+            "boxes": [
+              "S006-MED-01",
+              "S006-WAT-01",
+              "S006-WAT-02",
+              "S006-WAT-03",
+              "S006-FOD-01",
+              "S006-HYG-01"
+            ],
+            "mass_kg": 59.0,
+            "volume_m3": 0.156,
+            "energy_kwh": 2.593934934324972,
+            "flight_time_s": 684.8638852739633,
+            "work_time_s": 1560.8638852739632,
+            "range_budget_m": 17133.115065734753,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 4.206065065675028
+          }
+        ],
+        "S007": [
+          {
+            "site": "S007",
+            "aircraft": "C",
+            "boxes": [
+              "S007-MED-01",
+              "S007-WAT-01",
+              "S007-WAT-02",
+              "S007-FOD-01",
+              "S007-HYG-01"
+            ],
+            "mass_kg": 45.0,
+            "volume_m3": 0.129,
+            "energy_kwh": 3.403284441394841,
+            "flight_time_s": 1079.2252411346558,
+            "work_time_s": 1889.2252411346558,
+            "range_budget_m": 20093.75,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 3.396715558605159
+          }
+        ],
+        "S008": [
+          {
+            "site": "S008",
+            "aircraft": "C",
+            "boxes": [
+              "S008-MED-01",
+              "S008-WAT-01",
+              "S008-WAT-02",
+              "S008-FOD-01",
+              "S008-HYG-01"
+            ],
+            "mass_kg": 45.0,
+            "volume_m3": 0.129,
+            "energy_kwh": 5.857451478257397,
+            "flight_time_s": 1393.7598894194273,
+            "work_time_s": 2203.759889419427,
+            "range_budget_m": 20093.75,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 0.9425485217426024
+          }
+        ],
+        "S009": [
+          {
+            "site": "S009",
+            "aircraft": "B",
+            "boxes": [
+              "S009-MED-01",
+              "S009-WAT-01",
+              "S009-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 2.102431078237294,
+            "flight_time_s": 930.77979054711,
+            "work_time_s": 1560.77979054711,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 1.2975689217627058
+          }
+        ],
+        "S010": [
+          {
+            "site": "S010",
+            "aircraft": "B",
+            "boxes": [
+              "S010-MED-01",
+              "S010-WAT-01",
+              "S010-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 1.821004406007365,
+            "flight_time_s": 924.5722391614418,
+            "work_time_s": 1554.5722391614418,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 1.578995593992635
+          }
+        ],
+        "S011": [
+          {
+            "site": "S011",
+            "aircraft": "B",
+            "boxes": [
+              "S011-MED-01",
+              "S011-WAT-01",
+              "S011-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 1.0759658121278484,
+            "flight_time_s": 556.678806680371,
+            "work_time_s": 1186.678806680371,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 2.3240341878721518
+          }
+        ],
+        "S012": [
+          {
+            "site": "S012",
+            "aircraft": "B",
+            "boxes": [
+              "S012-MED-01",
+              "S012-WAT-01",
+              "S012-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 2.7551934702444854,
+            "flight_time_s": 1293.8014006521175,
+            "work_time_s": 1923.8014006521175,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 0.6448065297555146
+          }
+        ],
+        "S013": [
+          {
+            "site": "S013",
+            "aircraft": "B",
+            "boxes": [
+              "S013-MED-01",
+              "S013-WAT-01",
+              "S013-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 1.8245337426160748,
+            "flight_time_s": 880.4009414593309,
+            "work_time_s": 1510.4009414593309,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 1.575466257383925
+          }
+        ],
+        "S014": [
+          {
+            "site": "S014",
+            "aircraft": "B",
+            "boxes": [
+              "S014-MED-01",
+              "S014-WAT-01",
+              "S014-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 2.1372327174195584,
+            "flight_time_s": 1238.5984478690452,
+            "work_time_s": 1868.5984478690452,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 1.2627672825804415
+          }
+        ],
+        "S015": [
+          {
+            "site": "S015",
+            "aircraft": "B",
+            "boxes": [
+              "S015-MED-01",
+              "S015-WAT-01",
+              "S015-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 2.3108457316251445,
+            "flight_time_s": 1199.5741010160095,
+            "work_time_s": 1829.5741010160095,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 1.0891542683748554
+          }
+        ]
+      },
+      "summary": {
+        "box_count": 80,
+        "flight_count": 18,
+        "total_energy_kwh": 59.23198592446156,
+        "total_work_time_s": 32777.29117378634
+      }
+    },
+    {
+      "reserve_fraction": 0.2,
+      "safe_payloads": [
+        {
+          "site": "S001",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 3063.411326288906,
+          "cruise_altitude_m": 273.0566101074219,
+          "empty_round_trip_energy_kwh": 1.3165122674842529
+        },
+        {
+          "site": "S001",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 3063.411326288906,
+          "cruise_altitude_m": 273.0566101074219,
+          "empty_round_trip_energy_kwh": 1.2776290042236256
+        },
+        {
+          "site": "S001",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 3063.411326288906,
+          "cruise_altitude_m": 273.0566101074219,
+          "empty_round_trip_energy_kwh": 3.090851368702457
+        },
+        {
+          "site": "S002",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 7435.278518338766,
+          "cruise_altitude_m": 308.9542541503906,
+          "empty_round_trip_energy_kwh": 3.1001263328328905
+        },
+        {
+          "site": "S002",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 7435.278518338766,
+          "cruise_altitude_m": 308.9542541503906,
+          "empty_round_trip_energy_kwh": 3.00814858852008
+        },
+        {
+          "site": "S002",
+          "aircraft": "C",
+          "max_safe_payload_kg": 68.55430084833452,
+          "route_distance_m": 7435.278518338766,
+          "cruise_altitude_m": 308.9542541503906,
+          "empty_round_trip_energy_kwh": 6.4
+        },
+        {
+          "site": "S003",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 7261.075570364676,
+          "cruise_altitude_m": 561.8041381835938,
+          "empty_round_trip_energy_kwh": 3.1559037328528228
+        },
+        {
+          "site": "S003",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 7261.075570364676,
+          "cruise_altitude_m": 561.8041381835938,
+          "empty_round_trip_energy_kwh": 3.063509251861978
+        },
+        {
+          "site": "S003",
+          "aircraft": "C",
+          "max_safe_payload_kg": 68.23549018466188,
+          "route_distance_m": 7261.075570364676,
+          "cruise_altitude_m": 561.8041381835938,
+          "empty_round_trip_energy_kwh": 6.3999999999999995
+        },
+        {
+          "site": "S004",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 7745.662441501595,
+          "cruise_altitude_m": 398.2391662597656,
+          "empty_round_trip_energy_kwh": 3.279238756262706
+        },
+        {
+          "site": "S004",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 7745.662441501595,
+          "cruise_altitude_m": 398.2391662597656,
+          "empty_round_trip_energy_kwh": 3.1819695192433235
+        },
+        {
+          "site": "S004",
+          "aircraft": "C",
+          "max_safe_payload_kg": 63.25931100733154,
+          "route_distance_m": 7745.662441501595,
+          "cruise_altitude_m": 398.2391662597656,
+          "empty_round_trip_energy_kwh": 6.4
+        },
+        {
+          "site": "S005",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 5302.02013115008,
+          "cruise_altitude_m": 326.410888671875,
+          "empty_round_trip_energy_kwh": 2.2535428500120083
+        },
+        {
+          "site": "S005",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 5302.02013115008,
+          "cruise_altitude_m": 326.410888671875,
+          "empty_round_trip_energy_kwh": 2.186675257640217
+        },
+        {
+          "site": "S005",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 5302.02013115008,
+          "cruise_altitude_m": 326.410888671875,
+          "empty_round_trip_energy_kwh": 5.313520172860585
+        },
+        {
+          "site": "S006",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 3181.0333082558964,
+          "cruise_altitude_m": 366.09783935546875,
+          "empty_round_trip_energy_kwh": 1.3875905551279843
+        },
+        {
+          "site": "S006",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 3181.0333082558964,
+          "cruise_altitude_m": 366.09783935546875,
+          "empty_round_trip_energy_kwh": 1.347993313232814
+        },
+        {
+          "site": "S006",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 3181.0333082558964,
+          "cruise_altitude_m": 366.09783935546875,
+          "empty_round_trip_energy_kwh": 3.2482386943139674
+        },
+        {
+          "site": "S007",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 4533.827897987457,
+          "cruise_altitude_m": 501.8304748535156,
+          "empty_round_trip_energy_kwh": 2.0112805109155016
+        },
+        {
+          "site": "S007",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 4533.827897987457,
+          "cruise_altitude_m": 501.8304748535156,
+          "empty_round_trip_energy_kwh": 1.9533263110131993
+        },
+        {
+          "site": "S007",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 4533.827897987457,
+          "cruise_altitude_m": 501.8304748535156,
+          "empty_round_trip_energy_kwh": 4.670308852677486
+        },
+        {
+          "site": "S008",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 8109.473184927932,
+          "cruise_altitude_m": 372.9093322753906,
+          "empty_round_trip_energy_kwh": 3.3994873677619957
+        },
+        {
+          "site": "S008",
+          "aircraft": "B",
+          "max_safe_payload_kg": 28.632453771565512,
+          "route_distance_m": 8109.473184927932,
+          "cruise_altitude_m": 372.9093322753906,
+          "empty_round_trip_energy_kwh": 3.2
+        },
+        {
+          "site": "S008",
+          "aircraft": "C",
+          "max_safe_payload_kg": 58.435840766971026,
+          "route_distance_m": 8109.473184927932,
+          "cruise_altitude_m": 372.9093322753906,
+          "empty_round_trip_energy_kwh": 6.4
+        },
+        {
+          "site": "S009",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 5722.680393214653,
+          "cruise_altitude_m": 293.2289123535156,
+          "empty_round_trip_energy_kwh": 2.393926476391099
+        },
+        {
+          "site": "S009",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 5722.680393214653,
+          "cruise_altitude_m": 293.2289123535156,
+          "empty_round_trip_energy_kwh": 2.323240675151039
+        },
+        {
+          "site": "S009",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 5722.680393214653,
+          "cruise_altitude_m": 293.2289123535156,
+          "empty_round_trip_energy_kwh": 5.686544052679954
+        },
+        {
+          "site": "S010",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 4778.43990162097,
+          "cruise_altitude_m": 435.63653564453125,
+          "empty_round_trip_energy_kwh": 2.06820474813911
+        },
+        {
+          "site": "S010",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 4778.43990162097,
+          "cruise_altitude_m": 435.63653564453125,
+          "empty_round_trip_energy_kwh": 2.00859110338851
+        },
+        {
+          "site": "S010",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 4778.43990162097,
+          "cruise_altitude_m": 435.63653564453125,
+          "empty_round_trip_energy_kwh": 4.852782183631606
+        },
+        {
+          "site": "S011",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 2817.1517251516107,
+          "cruise_altitude_m": 293.3490295410156,
+          "empty_round_trip_energy_kwh": 1.222002988410741
+        },
+        {
+          "site": "S011",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 2817.1517251516107,
+          "cruise_altitude_m": 293.3490295410156,
+          "empty_round_trip_energy_kwh": 1.186257717471059
+        },
+        {
+          "site": "S011",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 2817.1517251516107,
+          "cruise_altitude_m": 293.3490295410156,
+          "empty_round_trip_energy_kwh": 2.860349874072284
+        },
+        {
+          "site": "S012",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 7398.449561287365,
+          "cruise_altitude_m": 413.3009948730469,
+          "empty_round_trip_energy_kwh": 3.134380861615882
+        },
+        {
+          "site": "S012",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 7398.449561287365,
+          "cruise_altitude_m": 413.3009948730469,
+          "empty_round_trip_energy_kwh": 3.042017087313587
+        },
+        {
+          "site": "S012",
+          "aircraft": "C",
+          "max_safe_payload_kg": 68.01467178965129,
+          "route_distance_m": 7398.449561287365,
+          "cruise_altitude_m": 413.3009948730469,
+          "empty_round_trip_energy_kwh": 6.4
+        },
+        {
+          "site": "S013",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 4848.706999909826,
+          "cruise_altitude_m": 399.18182373046875,
+          "empty_round_trip_energy_kwh": 2.0738790048721434
+        },
+        {
+          "site": "S013",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 4848.706999909826,
+          "cruise_altitude_m": 399.18182373046875,
+          "empty_round_trip_energy_kwh": 2.014103627714176
+        },
+        {
+          "site": "S013",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 4848.706999909826,
+          "cruise_altitude_m": 399.18182373046875,
+          "empty_round_trip_energy_kwh": 4.890905454625271
+        },
+        {
+          "site": "S014",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 5410.9170943694,
+          "cruise_altitude_m": 591.9473876953125,
+          "empty_round_trip_energy_kwh": 2.422096452231748
+        },
+        {
+          "site": "S014",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 5410.9170943694,
+          "cruise_altitude_m": 591.9473876953125,
+          "empty_round_trip_energy_kwh": 2.351834421328119
+        },
+        {
+          "site": "S014",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 5410.9170943694,
+          "cruise_altitude_m": 591.9473876953125,
+          "empty_round_trip_energy_kwh": 5.5991884605867055
+        },
+        {
+          "site": "S015",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 6019.113948538039,
+          "cruise_altitude_m": 571.7992553710938,
+          "empty_round_trip_energy_kwh": 2.623130635439933
+        },
+        {
+          "site": "S015",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 6019.113948538039,
+          "cruise_altitude_m": 571.7992553710938,
+          "empty_round_trip_energy_kwh": 2.548200770132621
+        },
+        {
+          "site": "S015",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 6019.113948538039,
+          "cruise_altitude_m": 571.7992553710938,
+          "empty_round_trip_energy_kwh": 6.142374354643366
+        }
+      ],
+      "route_metadata": {
+        "S001": {
+          "distance_m": 3063.411326288906,
+          "max_ground_elevation_m": 223.05661010742188
+        },
+        "S002": {
+          "distance_m": 7435.278518338766,
+          "max_ground_elevation_m": 258.9542541503906
+        },
+        "S003": {
+          "distance_m": 7261.075570364676,
+          "max_ground_elevation_m": 511.80413818359375
+        },
+        "S004": {
+          "distance_m": 7745.662441501595,
+          "max_ground_elevation_m": 348.2391662597656
+        },
+        "S005": {
+          "distance_m": 5302.02013115008,
+          "max_ground_elevation_m": 276.410888671875
+        },
+        "S006": {
+          "distance_m": 3181.0333082558964,
+          "max_ground_elevation_m": 316.09783935546875
+        },
+        "S007": {
+          "distance_m": 4533.827897987457,
+          "max_ground_elevation_m": 451.8304748535156
+        },
+        "S008": {
+          "distance_m": 8109.473184927932,
+          "max_ground_elevation_m": 322.9093322753906
+        },
+        "S009": {
+          "distance_m": 5722.680393214653,
+          "max_ground_elevation_m": 243.22891235351562
+        },
+        "S010": {
+          "distance_m": 4778.43990162097,
+          "max_ground_elevation_m": 385.63653564453125
+        },
+        "S011": {
+          "distance_m": 2817.1517251516107,
+          "max_ground_elevation_m": 243.34902954101562
+        },
+        "S012": {
+          "distance_m": 7398.449561287365,
+          "max_ground_elevation_m": 363.3009948730469
+        },
+        "S013": {
+          "distance_m": 4848.706999909826,
+          "max_ground_elevation_m": 349.18182373046875
+        },
+        "S014": {
+          "distance_m": 5410.9170943694,
+          "max_ground_elevation_m": 541.9473876953125
+        },
+        "S015": {
+          "distance_m": 6019.113948538039,
+          "max_ground_elevation_m": 521.7992553710938
+        }
+      },
+      "partitions": {
+        "S001": [
+          {
+            "site": "S001",
+            "aircraft": "C",
+            "boxes": [
+              "S001-MED-01",
+              "S001-MED-02",
+              "S001-WAT-01",
+              "S001-WAT-02",
+              "S001-WAT-03",
+              "S001-WAT-04",
+              "S001-WAT-05"
+            ],
+            "mass_kg": 76.0,
+            "volume_m3": 0.159,
+            "energy_kwh": 2.9262373909118784,
+            "flight_time_s": 619.4267416985468,
+            "work_time_s": 1561.4267416985467,
+            "range_budget_m": 13036.763521404078,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 3.473762609088122
+          },
+          {
+            "site": "S001",
+            "aircraft": "C",
+            "boxes": [
+              "S001-WAT-06",
+              "S001-WAT-07",
+              "S001-WAT-08",
+              "S001-FOD-01",
+              "S001-FOD-02",
+              "S001-FOD-03",
+              "S001-HYG-01",
+              "S001-HYG-02"
+            ],
+            "mass_kg": 78.0,
+            "volume_m3": 0.23500000000000001,
+            "energy_kwh": 3.004662059347582,
+            "flight_time_s": 619.4267416985468,
+            "work_time_s": 1627.4267416985467,
+            "range_budget_m": 12521.704948325252,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 3.3953379406524182
+          }
+        ],
+        "S002": [
+          {
+            "site": "S002",
+            "aircraft": "B",
+            "boxes": [
+              "S002-MED-01",
+              "S002-WAT-01",
+              "S002-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 2.72189802120557,
+            "flight_time_s": 1189.8900418657418,
+            "work_time_s": 1819.8900418657418,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 0.47810197879443006
+          },
+          {
+            "site": "S002",
+            "aircraft": "C",
+            "boxes": [
+              "S002-WAT-02",
+              "S002-WAT-03",
+              "S002-WAT-04",
+              "S002-FOD-02",
+              "S002-HYG-01"
+            ],
+            "mass_kg": 56.0,
+            "volume_m3": 0.14400000000000002,
+            "energy_kwh": 5.739333605245894,
+            "flight_time_s": 1235.0081265825384,
+            "work_time_s": 2045.0081265825384,
+            "range_budget_m": 17800.73173996606,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 0.6606663947541067
+          }
+        ],
+        "S003": [
+          {
+            "site": "S003",
+            "aircraft": "B",
+            "boxes": [
+              "S003-MED-01",
+              "S003-WAT-01",
+              "S003-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 2.7791017852578164,
+            "flight_time_s": 1450.2428120512277,
+            "work_time_s": 2080.2428120512277,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 0.4208982147421838
+          },
+          {
+            "site": "S003",
+            "aircraft": "C",
+            "boxes": [
+              "S003-WAT-02",
+              "S003-WAT-03",
+              "S003-WAT-04",
+              "S003-FOD-02",
+              "S003-HYG-01"
+            ],
+            "mass_kg": 56.0,
+            "volume_m3": 0.14400000000000002,
+            "energy_kwh": 5.7632815788989635,
+            "flight_time_s": 1559.8108581124256,
+            "work_time_s": 2369.8108581124256,
+            "range_budget_m": 17800.73173996606,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 0.6367184211010368
+          }
+        ],
+        "S004": [
+          {
+            "site": "S004",
+            "aircraft": "C",
+            "boxes": [
+              "S004-MED-01",
+              "S004-WAT-01",
+              "S004-WAT-02",
+              "S004-WAT-03",
+              "S004-FOD-01",
+              "S004-HYG-01"
+            ],
+            "mass_kg": 59.0,
+            "volume_m3": 0.156,
+            "energy_kwh": 6.176858606791459,
+            "flight_time_s": 1429.1854914677908,
+            "work_time_s": 2305.1854914677906,
+            "range_budget_m": 17133.115065734753,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 0.22314139320854132
+          }
+        ],
+        "S005": [
+          {
+            "site": "S005",
+            "aircraft": "C",
+            "boxes": [
+              "S005-MED-01",
+              "S005-WAT-01",
+              "S005-WAT-02",
+              "S005-WAT-03",
+              "S005-FOD-01",
+              "S005-HYG-01"
+            ],
+            "mass_kg": 59.0,
+            "volume_m3": 0.156,
+            "energy_kwh": 4.238735064547415,
+            "flight_time_s": 1004.0456170960524,
+            "work_time_s": 1880.0456170960524,
+            "range_budget_m": 17133.115065734753,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 2.1612649354525857
+          }
+        ],
+        "S006": [
+          {
+            "site": "S006",
+            "aircraft": "C",
+            "boxes": [
+              "S006-MED-01",
+              "S006-WAT-01",
+              "S006-WAT-02",
+              "S006-WAT-03",
+              "S006-FOD-01",
+              "S006-HYG-01"
+            ],
+            "mass_kg": 59.0,
+            "volume_m3": 0.156,
+            "energy_kwh": 2.593934934324972,
+            "flight_time_s": 684.8638852739633,
+            "work_time_s": 1560.8638852739632,
+            "range_budget_m": 17133.115065734753,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 3.8060650656750283
+          }
+        ],
+        "S007": [
+          {
+            "site": "S007",
+            "aircraft": "C",
+            "boxes": [
+              "S007-MED-01",
+              "S007-WAT-01",
+              "S007-WAT-02",
+              "S007-FOD-01",
+              "S007-HYG-01"
+            ],
+            "mass_kg": 45.0,
+            "volume_m3": 0.129,
+            "energy_kwh": 3.403284441394841,
+            "flight_time_s": 1079.2252411346558,
+            "work_time_s": 1889.2252411346558,
+            "range_budget_m": 20093.75,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 2.9967155586051595
+          }
+        ],
+        "S008": [
+          {
+            "site": "S008",
+            "aircraft": "C",
+            "boxes": [
+              "S008-MED-01",
+              "S008-WAT-01",
+              "S008-WAT-02",
+              "S008-FOD-01",
+              "S008-HYG-01"
+            ],
+            "mass_kg": 45.0,
+            "volume_m3": 0.129,
+            "energy_kwh": 5.857451478257397,
+            "flight_time_s": 1393.7598894194273,
+            "work_time_s": 2203.759889419427,
+            "range_budget_m": 20093.75,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 0.5425485217426029
+          }
+        ],
+        "S009": [
+          {
+            "site": "S009",
+            "aircraft": "B",
+            "boxes": [
+              "S009-MED-01",
+              "S009-WAT-01",
+              "S009-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 2.102431078237294,
+            "flight_time_s": 930.77979054711,
+            "work_time_s": 1560.77979054711,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 1.097568921762706
+          }
+        ],
+        "S010": [
+          {
+            "site": "S010",
+            "aircraft": "B",
+            "boxes": [
+              "S010-MED-01",
+              "S010-WAT-01",
+              "S010-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 1.821004406007365,
+            "flight_time_s": 924.5722391614418,
+            "work_time_s": 1554.5722391614418,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 1.3789955939926353
+          }
+        ],
+        "S011": [
+          {
+            "site": "S011",
+            "aircraft": "B",
+            "boxes": [
+              "S011-MED-01",
+              "S011-WAT-01",
+              "S011-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 1.0759658121278484,
+            "flight_time_s": 556.678806680371,
+            "work_time_s": 1186.678806680371,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 2.1240341878721516
+          }
+        ],
+        "S012": [
+          {
+            "site": "S012",
+            "aircraft": "B",
+            "boxes": [
+              "S012-MED-01",
+              "S012-WAT-01",
+              "S012-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 2.7551934702444854,
+            "flight_time_s": 1293.8014006521175,
+            "work_time_s": 1923.8014006521175,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 0.4448065297555148
+          }
+        ],
+        "S013": [
+          {
+            "site": "S013",
+            "aircraft": "B",
+            "boxes": [
+              "S013-MED-01",
+              "S013-WAT-01",
+              "S013-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 1.8245337426160748,
+            "flight_time_s": 880.4009414593309,
+            "work_time_s": 1510.4009414593309,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 1.3754662573839254
+          }
+        ],
+        "S014": [
+          {
+            "site": "S014",
+            "aircraft": "B",
+            "boxes": [
+              "S014-MED-01",
+              "S014-WAT-01",
+              "S014-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 2.1372327174195584,
+            "flight_time_s": 1238.5984478690452,
+            "work_time_s": 1868.5984478690452,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 1.0627672825804417
+          }
+        ],
+        "S015": [
+          {
+            "site": "S015",
+            "aircraft": "B",
+            "boxes": [
+              "S015-MED-01",
+              "S015-WAT-01",
+              "S015-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 2.3108457316251445,
+            "flight_time_s": 1199.5741010160095,
+            "work_time_s": 1829.5741010160095,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 0.8891542683748557
+          }
+        ]
+      },
+      "summary": {
+        "box_count": 80,
+        "flight_count": 18,
+        "total_energy_kwh": 59.23198592446156,
+        "total_work_time_s": 32777.29117378634
+      }
+    },
+    {
+      "reserve_fraction": 0.25,
+      "safe_payloads": [
+        {
+          "site": "S001",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 3063.411326288906,
+          "cruise_altitude_m": 273.0566101074219,
+          "empty_round_trip_energy_kwh": 1.3165122674842529
+        },
+        {
+          "site": "S001",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 3063.411326288906,
+          "cruise_altitude_m": 273.0566101074219,
+          "empty_round_trip_energy_kwh": 1.2776290042236256
+        },
+        {
+          "site": "S001",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 3063.411326288906,
+          "cruise_altitude_m": 273.0566101074219,
+          "empty_round_trip_energy_kwh": 3.090851368702457
+        },
+        {
+          "site": "S002",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 7435.278518338766,
+          "cruise_altitude_m": 308.9542541503906,
+          "empty_round_trip_energy_kwh": 3.1001263328328905
+        },
+        {
+          "site": "S002",
+          "aircraft": "B",
+          "max_safe_payload_kg": 29.883627453054096,
+          "route_distance_m": 7435.278518338766,
+          "cruise_altitude_m": 308.9542541503906,
+          "empty_round_trip_energy_kwh": 3.0
+        },
+        {
+          "site": "S002",
+          "aircraft": "C",
+          "max_safe_payload_kg": 61.64427873585864,
+          "route_distance_m": 7435.278518338766,
+          "cruise_altitude_m": 308.9542541503906,
+          "empty_round_trip_energy_kwh": 6.0
+        },
+        {
+          "site": "S003",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 7261.075570364676,
+          "cruise_altitude_m": 561.8041381835938,
+          "empty_round_trip_energy_kwh": 3.1559037328528228
+        },
+        {
+          "site": "S003",
+          "aircraft": "B",
+          "max_safe_payload_kg": 29.05023976396275,
+          "route_distance_m": 7261.075570364676,
+          "cruise_altitude_m": 561.8041381835938,
+          "empty_round_trip_energy_kwh": 3.0
+        },
+        {
+          "site": "S003",
+          "aircraft": "C",
+          "max_safe_payload_kg": 61.179704593371675,
+          "route_distance_m": 7261.075570364676,
+          "cruise_altitude_m": 561.8041381835938,
+          "empty_round_trip_energy_kwh": 6.0
+        },
+        {
+          "site": "S004",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 7745.662441501595,
+          "cruise_altitude_m": 398.2391662597656,
+          "empty_round_trip_energy_kwh": 3.279238756262706
+        },
+        {
+          "site": "S004",
+          "aircraft": "B",
+          "max_safe_payload_kg": 27.21626941648153,
+          "route_distance_m": 7745.662441501595,
+          "cruise_altitude_m": 398.2391662597656,
+          "empty_round_trip_energy_kwh": 3.0
+        },
+        {
+          "site": "S004",
+          "aircraft": "C",
+          "max_safe_payload_kg": 55.12001032061164,
+          "route_distance_m": 7745.662441501595,
+          "cruise_altitude_m": 398.2391662597656,
+          "empty_round_trip_energy_kwh": 6.0
+        },
+        {
+          "site": "S005",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 5302.02013115008,
+          "cruise_altitude_m": 326.410888671875,
+          "empty_round_trip_energy_kwh": 2.2535428500120083
+        },
+        {
+          "site": "S005",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 5302.02013115008,
+          "cruise_altitude_m": 326.410888671875,
+          "empty_round_trip_energy_kwh": 2.186675257640217
+        },
+        {
+          "site": "S005",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 5302.02013115008,
+          "cruise_altitude_m": 326.410888671875,
+          "empty_round_trip_energy_kwh": 5.313520172860585
+        },
+        {
+          "site": "S006",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 3181.0333082558964,
+          "cruise_altitude_m": 366.09783935546875,
+          "empty_round_trip_energy_kwh": 1.3875905551279843
+        },
+        {
+          "site": "S006",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 3181.0333082558964,
+          "cruise_altitude_m": 366.09783935546875,
+          "empty_round_trip_energy_kwh": 1.347993313232814
+        },
+        {
+          "site": "S006",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 3181.0333082558964,
+          "cruise_altitude_m": 366.09783935546875,
+          "empty_round_trip_energy_kwh": 3.2482386943139674
+        },
+        {
+          "site": "S007",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 4533.827897987457,
+          "cruise_altitude_m": 501.8304748535156,
+          "empty_round_trip_energy_kwh": 2.0112805109155016
+        },
+        {
+          "site": "S007",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 4533.827897987457,
+          "cruise_altitude_m": 501.8304748535156,
+          "empty_round_trip_energy_kwh": 1.9533263110131993
+        },
+        {
+          "site": "S007",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 4533.827897987457,
+          "cruise_altitude_m": 501.8304748535156,
+          "empty_round_trip_energy_kwh": 4.670308852677486
+        },
+        {
+          "site": "S008",
+          "aircraft": "A",
+          "max_safe_payload_kg": 24.116042442688293,
+          "route_distance_m": 8109.473184927932,
+          "cruise_altitude_m": 372.9093322753906,
+          "empty_round_trip_energy_kwh": 3.375
+        },
+        {
+          "site": "S008",
+          "aircraft": "B",
+          "max_safe_payload_kg": 25.273004167922753,
+          "route_distance_m": 8109.473184927932,
+          "cruise_altitude_m": 372.9093322753906,
+          "empty_round_trip_energy_kwh": 3.0
+        },
+        {
+          "site": "S008",
+          "aircraft": "C",
+          "max_safe_payload_kg": 49.11235518221727,
+          "route_distance_m": 8109.473184927932,
+          "cruise_altitude_m": 372.9093322753906,
+          "empty_round_trip_energy_kwh": 6.0
+        },
+        {
+          "site": "S009",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 5722.680393214653,
+          "cruise_altitude_m": 293.2289123535156,
+          "empty_round_trip_energy_kwh": 2.393926476391099
+        },
+        {
+          "site": "S009",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 5722.680393214653,
+          "cruise_altitude_m": 293.2289123535156,
+          "empty_round_trip_energy_kwh": 2.323240675151039
+        },
+        {
+          "site": "S009",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 5722.680393214653,
+          "cruise_altitude_m": 293.2289123535156,
+          "empty_round_trip_energy_kwh": 5.686544052679954
+        },
+        {
+          "site": "S010",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 4778.43990162097,
+          "cruise_altitude_m": 435.63653564453125,
+          "empty_round_trip_energy_kwh": 2.06820474813911
+        },
+        {
+          "site": "S010",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 4778.43990162097,
+          "cruise_altitude_m": 435.63653564453125,
+          "empty_round_trip_energy_kwh": 2.00859110338851
+        },
+        {
+          "site": "S010",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 4778.43990162097,
+          "cruise_altitude_m": 435.63653564453125,
+          "empty_round_trip_energy_kwh": 4.852782183631606
+        },
+        {
+          "site": "S011",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 2817.1517251516107,
+          "cruise_altitude_m": 293.3490295410156,
+          "empty_round_trip_energy_kwh": 1.222002988410741
+        },
+        {
+          "site": "S011",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 2817.1517251516107,
+          "cruise_altitude_m": 293.3490295410156,
+          "empty_round_trip_energy_kwh": 1.186257717471059
+        },
+        {
+          "site": "S011",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 2817.1517251516107,
+          "cruise_altitude_m": 293.3490295410156,
+          "empty_round_trip_energy_kwh": 2.860349874072284
+        },
+        {
+          "site": "S012",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 7398.449561287365,
+          "cruise_altitude_m": 413.3009948730469,
+          "empty_round_trip_energy_kwh": 3.134380861615882
+        },
+        {
+          "site": "S012",
+          "aircraft": "B",
+          "max_safe_payload_kg": 29.38699333911057,
+          "route_distance_m": 7398.449561287365,
+          "cruise_altitude_m": 413.3009948730469,
+          "empty_round_trip_energy_kwh": 3.0
+        },
+        {
+          "site": "S012",
+          "aircraft": "C",
+          "max_safe_payload_kg": 60.961029880220806,
+          "route_distance_m": 7398.449561287365,
+          "cruise_altitude_m": 413.3009948730469,
+          "empty_round_trip_energy_kwh": 6.0
+        },
+        {
+          "site": "S013",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 4848.706999909826,
+          "cruise_altitude_m": 399.18182373046875,
+          "empty_round_trip_energy_kwh": 2.0738790048721434
+        },
+        {
+          "site": "S013",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 4848.706999909826,
+          "cruise_altitude_m": 399.18182373046875,
+          "empty_round_trip_energy_kwh": 2.014103627714176
+        },
+        {
+          "site": "S013",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 4848.706999909826,
+          "cruise_altitude_m": 399.18182373046875,
+          "empty_round_trip_energy_kwh": 4.890905454625271
+        },
+        {
+          "site": "S014",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 5410.9170943694,
+          "cruise_altitude_m": 591.9473876953125,
+          "empty_round_trip_energy_kwh": 2.422096452231748
+        },
+        {
+          "site": "S014",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 5410.9170943694,
+          "cruise_altitude_m": 591.9473876953125,
+          "empty_round_trip_energy_kwh": 2.351834421328119
+        },
+        {
+          "site": "S014",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 5410.9170943694,
+          "cruise_altitude_m": 591.9473876953125,
+          "empty_round_trip_energy_kwh": 5.5991884605867055
+        },
+        {
+          "site": "S015",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 6019.113948538039,
+          "cruise_altitude_m": 571.7992553710938,
+          "empty_round_trip_energy_kwh": 2.623130635439933
+        },
+        {
+          "site": "S015",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 6019.113948538039,
+          "cruise_altitude_m": 571.7992553710938,
+          "empty_round_trip_energy_kwh": 2.548200770132621
+        },
+        {
+          "site": "S015",
+          "aircraft": "C",
+          "max_safe_payload_kg": 78.3438173657366,
+          "route_distance_m": 6019.113948538039,
+          "cruise_altitude_m": 571.7992553710938,
+          "empty_round_trip_energy_kwh": 6.0
+        }
+      ],
+      "route_metadata": {
+        "S001": {
+          "distance_m": 3063.411326288906,
+          "max_ground_elevation_m": 223.05661010742188
+        },
+        "S002": {
+          "distance_m": 7435.278518338766,
+          "max_ground_elevation_m": 258.9542541503906
+        },
+        "S003": {
+          "distance_m": 7261.075570364676,
+          "max_ground_elevation_m": 511.80413818359375
+        },
+        "S004": {
+          "distance_m": 7745.662441501595,
+          "max_ground_elevation_m": 348.2391662597656
+        },
+        "S005": {
+          "distance_m": 5302.02013115008,
+          "max_ground_elevation_m": 276.410888671875
+        },
+        "S006": {
+          "distance_m": 3181.0333082558964,
+          "max_ground_elevation_m": 316.09783935546875
+        },
+        "S007": {
+          "distance_m": 4533.827897987457,
+          "max_ground_elevation_m": 451.8304748535156
+        },
+        "S008": {
+          "distance_m": 8109.473184927932,
+          "max_ground_elevation_m": 322.9093322753906
+        },
+        "S009": {
+          "distance_m": 5722.680393214653,
+          "max_ground_elevation_m": 243.22891235351562
+        },
+        "S010": {
+          "distance_m": 4778.43990162097,
+          "max_ground_elevation_m": 385.63653564453125
+        },
+        "S011": {
+          "distance_m": 2817.1517251516107,
+          "max_ground_elevation_m": 243.34902954101562
+        },
+        "S012": {
+          "distance_m": 7398.449561287365,
+          "max_ground_elevation_m": 363.3009948730469
+        },
+        "S013": {
+          "distance_m": 4848.706999909826,
+          "max_ground_elevation_m": 349.18182373046875
+        },
+        "S014": {
+          "distance_m": 5410.9170943694,
+          "max_ground_elevation_m": 541.9473876953125
+        },
+        "S015": {
+          "distance_m": 6019.113948538039,
+          "max_ground_elevation_m": 521.7992553710938
+        }
+      },
+      "partitions": {
+        "S001": [
+          {
+            "site": "S001",
+            "aircraft": "C",
+            "boxes": [
+              "S001-MED-01",
+              "S001-MED-02",
+              "S001-WAT-01",
+              "S001-WAT-02",
+              "S001-WAT-03",
+              "S001-WAT-04",
+              "S001-WAT-05"
+            ],
+            "mass_kg": 76.0,
+            "volume_m3": 0.159,
+            "energy_kwh": 2.9262373909118784,
+            "flight_time_s": 619.4267416985468,
+            "work_time_s": 1561.4267416985467,
+            "range_budget_m": 13036.763521404078,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 3.0737626090881216
+          },
+          {
+            "site": "S001",
+            "aircraft": "C",
+            "boxes": [
+              "S001-WAT-06",
+              "S001-WAT-07",
+              "S001-WAT-08",
+              "S001-FOD-01",
+              "S001-FOD-02",
+              "S001-FOD-03",
+              "S001-HYG-01",
+              "S001-HYG-02"
+            ],
+            "mass_kg": 78.0,
+            "volume_m3": 0.23500000000000001,
+            "energy_kwh": 3.004662059347582,
+            "flight_time_s": 619.4267416985468,
+            "work_time_s": 1627.4267416985467,
+            "range_budget_m": 12521.704948325252,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 2.995337940652418
+          }
+        ],
+        "S002": [
+          {
+            "site": "S002",
+            "aircraft": "B",
+            "boxes": [
+              "S002-MED-01",
+              "S002-WAT-01",
+              "S002-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 2.72189802120557,
+            "flight_time_s": 1189.8900418657418,
+            "work_time_s": 1819.8900418657418,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 0.2781019787944299
+          },
+          {
+            "site": "S002",
+            "aircraft": "C",
+            "boxes": [
+              "S002-WAT-02",
+              "S002-WAT-03",
+              "S002-WAT-04",
+              "S002-FOD-02",
+              "S002-HYG-01"
+            ],
+            "mass_kg": 56.0,
+            "volume_m3": 0.14400000000000002,
+            "energy_kwh": 5.739333605245894,
+            "flight_time_s": 1235.0081265825384,
+            "work_time_s": 2045.0081265825384,
+            "range_budget_m": 17800.73173996606,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 0.26066639475410636
+          }
+        ],
+        "S003": [
+          {
+            "site": "S003",
+            "aircraft": "B",
+            "boxes": [
+              "S003-MED-01",
+              "S003-WAT-01",
+              "S003-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 2.7791017852578164,
+            "flight_time_s": 1450.2428120512277,
+            "work_time_s": 2080.2428120512277,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 0.22089821474218363
+          },
+          {
+            "site": "S003",
+            "aircraft": "C",
+            "boxes": [
+              "S003-WAT-02",
+              "S003-WAT-03",
+              "S003-WAT-04",
+              "S003-FOD-02",
+              "S003-HYG-01"
+            ],
+            "mass_kg": 56.0,
+            "volume_m3": 0.14400000000000002,
+            "energy_kwh": 5.7632815788989635,
+            "flight_time_s": 1559.8108581124256,
+            "work_time_s": 2369.8108581124256,
+            "range_budget_m": 17800.73173996606,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 0.23671842110103647
+          }
+        ],
+        "S004": [
+          {
+            "site": "S004",
+            "aircraft": "B",
+            "boxes": [
+              "S004-MED-01",
+              "S004-WAT-01"
+            ],
+            "mass_kg": 17.0,
+            "volume_m3": 0.039,
+            "energy_kwh": 2.5863165225912823,
+            "flight_time_s": 1355.772436047869,
+            "work_time_s": 1925.772436047869,
+            "range_budget_m": 22881.14596157825,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 0.4136834774087177
+          },
+          {
+            "site": "S004",
+            "aircraft": "C",
+            "boxes": [
+              "S004-WAT-02",
+              "S004-WAT-03",
+              "S004-FOD-01",
+              "S004-HYG-01"
+            ],
+            "mass_kg": 42.0,
+            "volume_m3": 0.117,
+            "energy_kwh": 5.539956839091937,
+            "flight_time_s": 1429.1854914677908,
+            "work_time_s": 2173.1854914677906,
+            "range_budget_m": 20674.41904577538,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 0.46004316090806263
+          }
+        ],
+        "S005": [
+          {
+            "site": "S005",
+            "aircraft": "C",
+            "boxes": [
+              "S005-MED-01",
+              "S005-WAT-01",
+              "S005-WAT-02",
+              "S005-WAT-03",
+              "S005-FOD-01",
+              "S005-HYG-01"
+            ],
+            "mass_kg": 59.0,
+            "volume_m3": 0.156,
+            "energy_kwh": 4.238735064547415,
+            "flight_time_s": 1004.0456170960524,
+            "work_time_s": 1880.0456170960524,
+            "range_budget_m": 17133.115065734753,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 1.7612649354525853
+          }
+        ],
+        "S006": [
+          {
+            "site": "S006",
+            "aircraft": "C",
+            "boxes": [
+              "S006-MED-01",
+              "S006-WAT-01",
+              "S006-WAT-02",
+              "S006-WAT-03",
+              "S006-FOD-01",
+              "S006-HYG-01"
+            ],
+            "mass_kg": 59.0,
+            "volume_m3": 0.156,
+            "energy_kwh": 2.593934934324972,
+            "flight_time_s": 684.8638852739633,
+            "work_time_s": 1560.8638852739632,
+            "range_budget_m": 17133.115065734753,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 3.406065065675028
+          }
+        ],
+        "S007": [
+          {
+            "site": "S007",
+            "aircraft": "C",
+            "boxes": [
+              "S007-MED-01",
+              "S007-WAT-01",
+              "S007-WAT-02",
+              "S007-FOD-01",
+              "S007-HYG-01"
+            ],
+            "mass_kg": 45.0,
+            "volume_m3": 0.129,
+            "energy_kwh": 3.403284441394841,
+            "flight_time_s": 1079.2252411346558,
+            "work_time_s": 1889.2252411346558,
+            "range_budget_m": 20093.75,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 2.596715558605159
+          }
+        ],
+        "S008": [
+          {
+            "site": "S008",
+            "aircraft": "C",
+            "boxes": [
+              "S008-MED-01",
+              "S008-WAT-01",
+              "S008-WAT-02",
+              "S008-FOD-01",
+              "S008-HYG-01"
+            ],
+            "mass_kg": 45.0,
+            "volume_m3": 0.129,
+            "energy_kwh": 5.857451478257397,
+            "flight_time_s": 1393.7598894194273,
+            "work_time_s": 2203.759889419427,
+            "range_budget_m": 20093.75,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 0.14254852174260257
+          }
+        ],
+        "S009": [
+          {
+            "site": "S009",
+            "aircraft": "B",
+            "boxes": [
+              "S009-MED-01",
+              "S009-WAT-01",
+              "S009-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 2.102431078237294,
+            "flight_time_s": 930.77979054711,
+            "work_time_s": 1560.77979054711,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 0.8975689217627059
+          }
+        ],
+        "S010": [
+          {
+            "site": "S010",
+            "aircraft": "B",
+            "boxes": [
+              "S010-MED-01",
+              "S010-WAT-01",
+              "S010-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 1.821004406007365,
+            "flight_time_s": 924.5722391614418,
+            "work_time_s": 1554.5722391614418,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 1.178995593992635
+          }
+        ],
+        "S011": [
+          {
+            "site": "S011",
+            "aircraft": "B",
+            "boxes": [
+              "S011-MED-01",
+              "S011-WAT-01",
+              "S011-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 1.0759658121278484,
+            "flight_time_s": 556.678806680371,
+            "work_time_s": 1186.678806680371,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 1.9240341878721516
+          }
+        ],
+        "S012": [
+          {
+            "site": "S012",
+            "aircraft": "B",
+            "boxes": [
+              "S012-MED-01",
+              "S012-WAT-01",
+              "S012-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 2.7551934702444854,
+            "flight_time_s": 1293.8014006521175,
+            "work_time_s": 1923.8014006521175,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 0.24480652975551465
+          }
+        ],
+        "S013": [
+          {
+            "site": "S013",
+            "aircraft": "B",
+            "boxes": [
+              "S013-MED-01",
+              "S013-WAT-01",
+              "S013-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 1.8245337426160748,
+            "flight_time_s": 880.4009414593309,
+            "work_time_s": 1510.4009414593309,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 1.1754662573839252
+          }
+        ],
+        "S014": [
+          {
+            "site": "S014",
+            "aircraft": "B",
+            "boxes": [
+              "S014-MED-01",
+              "S014-WAT-01",
+              "S014-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 2.1372327174195584,
+            "flight_time_s": 1238.5984478690452,
+            "work_time_s": 1868.5984478690452,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 0.8627672825804416
+          }
+        ],
+        "S015": [
+          {
+            "site": "S015",
+            "aircraft": "B",
+            "boxes": [
+              "S015-MED-01",
+              "S015-WAT-01",
+              "S015-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 2.3108457316251445,
+            "flight_time_s": 1199.5741010160095,
+            "work_time_s": 1829.5741010160095,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 0.6891542683748555
+          }
+        ]
+      },
+      "summary": {
+        "box_count": 80,
+        "flight_count": 19,
+        "total_energy_kwh": 61.18140067935332,
+        "total_work_time_s": 34571.06360983421
+      }
+    },
+    {
+      "reserve_fraction": 0.3,
+      "safe_payloads": [
+        {
+          "site": "S001",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 3063.411326288906,
+          "cruise_altitude_m": 273.0566101074219,
+          "empty_round_trip_energy_kwh": 1.3165122674842529
+        },
+        {
+          "site": "S001",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 3063.411326288906,
+          "cruise_altitude_m": 273.0566101074219,
+          "empty_round_trip_energy_kwh": 1.2776290042236256
+        },
+        {
+          "site": "S001",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 3063.411326288906,
+          "cruise_altitude_m": 273.0566101074219,
+          "empty_round_trip_energy_kwh": 3.090851368702457
+        },
+        {
+          "site": "S002",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 7435.278518338766,
+          "cruise_altitude_m": 308.9542541503906,
+          "empty_round_trip_energy_kwh": 3.1001263328328905
+        },
+        {
+          "site": "S002",
+          "aircraft": "B",
+          "max_safe_payload_kg": 26.58057646864029,
+          "route_distance_m": 7435.278518338766,
+          "cruise_altitude_m": 308.9542541503906,
+          "empty_round_trip_energy_kwh": 2.8
+        },
+        {
+          "site": "S002",
+          "aircraft": "C",
+          "max_safe_payload_kg": 52.481158901198434,
+          "route_distance_m": 7435.278518338766,
+          "cruise_altitude_m": 308.9542541503906,
+          "empty_round_trip_energy_kwh": 5.6
+        },
+        {
+          "site": "S003",
+          "aircraft": "A",
+          "max_safe_payload_kg": 24.77302107771929,
+          "route_distance_m": 7261.075570364676,
+          "cruise_altitude_m": 561.8041381835938,
+          "empty_round_trip_energy_kwh": 3.1499999999999995
+        },
+        {
+          "site": "S003",
+          "aircraft": "B",
+          "max_safe_payload_kg": 25.443715148404262,
+          "route_distance_m": 7261.075570364676,
+          "cruise_altitude_m": 561.8041381835938,
+          "empty_round_trip_energy_kwh": 2.8
+        },
+        {
+          "site": "S003",
+          "aircraft": "C",
+          "max_safe_payload_kg": 51.8402872449571,
+          "route_distance_m": 7261.075570364676,
+          "cruise_altitude_m": 561.8041381835938,
+          "empty_round_trip_energy_kwh": 5.6
+        },
+        {
+          "site": "S004",
+          "aircraft": "A",
+          "max_safe_payload_kg": 19.603213036272848,
+          "route_distance_m": 7745.662441501595,
+          "cruise_altitude_m": 398.2391662597656,
+          "empty_round_trip_energy_kwh": 3.15
+        },
+        {
+          "site": "S004",
+          "aircraft": "B",
+          "max_safe_payload_kg": 23.19341761135601,
+          "route_distance_m": 7745.662441501595,
+          "cruise_altitude_m": 398.2391662597656,
+          "empty_round_trip_energy_kwh": 2.8
+        },
+        {
+          "site": "S004",
+          "aircraft": "C",
+          "max_safe_payload_kg": 44.03754580522989,
+          "route_distance_m": 7745.662441501595,
+          "cruise_altitude_m": 398.2391662597656,
+          "empty_round_trip_energy_kwh": 5.6
+        },
+        {
+          "site": "S005",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 5302.02013115008,
+          "cruise_altitude_m": 326.410888671875,
+          "empty_round_trip_energy_kwh": 2.2535428500120083
+        },
+        {
+          "site": "S005",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 5302.02013115008,
+          "cruise_altitude_m": 326.410888671875,
+          "empty_round_trip_energy_kwh": 2.186675257640217
+        },
+        {
+          "site": "S005",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 5302.02013115008,
+          "cruise_altitude_m": 326.410888671875,
+          "empty_round_trip_energy_kwh": 5.313520172860585
+        },
+        {
+          "site": "S006",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 3181.0333082558964,
+          "cruise_altitude_m": 366.09783935546875,
+          "empty_round_trip_energy_kwh": 1.3875905551279843
+        },
+        {
+          "site": "S006",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 3181.0333082558964,
+          "cruise_altitude_m": 366.09783935546875,
+          "empty_round_trip_energy_kwh": 1.347993313232814
+        },
+        {
+          "site": "S006",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 3181.0333082558964,
+          "cruise_altitude_m": 366.09783935546875,
+          "empty_round_trip_energy_kwh": 3.2482386943139674
+        },
+        {
+          "site": "S007",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 4533.827897987457,
+          "cruise_altitude_m": 501.8304748535156,
+          "empty_round_trip_energy_kwh": 2.0112805109155016
+        },
+        {
+          "site": "S007",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 4533.827897987457,
+          "cruise_altitude_m": 501.8304748535156,
+          "empty_round_trip_energy_kwh": 1.9533263110131993
+        },
+        {
+          "site": "S007",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 4533.827897987457,
+          "cruise_altitude_m": 501.8304748535156,
+          "empty_round_trip_energy_kwh": 4.670308852677486
+        },
+        {
+          "site": "S008",
+          "aircraft": "A",
+          "max_safe_payload_kg": 13.516993738600114,
+          "route_distance_m": 8109.473184927932,
+          "cruise_altitude_m": 372.9093322753906,
+          "empty_round_trip_energy_kwh": 3.1499999999999995
+        },
+        {
+          "site": "S008",
+          "aircraft": "B",
+          "max_safe_payload_kg": 20.731701705386417,
+          "route_distance_m": 8109.473184927932,
+          "cruise_altitude_m": 372.9093322753906,
+          "empty_round_trip_energy_kwh": 2.8
+        },
+        {
+          "site": "S008",
+          "aircraft": "C",
+          "max_safe_payload_kg": 36.0009194735021,
+          "route_distance_m": 8109.473184927932,
+          "cruise_altitude_m": 372.9093322753906,
+          "empty_round_trip_energy_kwh": 5.6
+        },
+        {
+          "site": "S009",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 5722.680393214653,
+          "cruise_altitude_m": 293.2289123535156,
+          "empty_round_trip_energy_kwh": 2.393926476391099
+        },
+        {
+          "site": "S009",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 5722.680393214653,
+          "cruise_altitude_m": 293.2289123535156,
+          "empty_round_trip_energy_kwh": 2.323240675151039
+        },
+        {
+          "site": "S009",
+          "aircraft": "C",
+          "max_safe_payload_kg": 78.94372776252946,
+          "route_distance_m": 5722.680393214653,
+          "cruise_altitude_m": 293.2289123535156,
+          "empty_round_trip_energy_kwh": 5.6
+        },
+        {
+          "site": "S010",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 4778.43990162097,
+          "cruise_altitude_m": 435.63653564453125,
+          "empty_round_trip_energy_kwh": 2.06820474813911
+        },
+        {
+          "site": "S010",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 4778.43990162097,
+          "cruise_altitude_m": 435.63653564453125,
+          "empty_round_trip_energy_kwh": 2.00859110338851
+        },
+        {
+          "site": "S010",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 4778.43990162097,
+          "cruise_altitude_m": 435.63653564453125,
+          "empty_round_trip_energy_kwh": 4.852782183631606
+        },
+        {
+          "site": "S011",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 2817.1517251516107,
+          "cruise_altitude_m": 293.3490295410156,
+          "empty_round_trip_energy_kwh": 1.222002988410741
+        },
+        {
+          "site": "S011",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 2817.1517251516107,
+          "cruise_altitude_m": 293.3490295410156,
+          "empty_round_trip_energy_kwh": 1.186257717471059
+        },
+        {
+          "site": "S011",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 2817.1517251516107,
+          "cruise_altitude_m": 293.3490295410156,
+          "empty_round_trip_energy_kwh": 2.860349874072284
+        },
+        {
+          "site": "S012",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 7398.449561287365,
+          "cruise_altitude_m": 413.3009948730469,
+          "empty_round_trip_energy_kwh": 3.134380861615882
+        },
+        {
+          "site": "S012",
+          "aircraft": "B",
+          "max_safe_payload_kg": 25.92769652137282,
+          "route_distance_m": 7398.449561287365,
+          "cruise_altitude_m": 413.3009948730469,
+          "empty_round_trip_energy_kwh": 2.8
+        },
+        {
+          "site": "S012",
+          "aircraft": "C",
+          "max_safe_payload_kg": 51.59794805957709,
+          "route_distance_m": 7398.449561287365,
+          "cruise_altitude_m": 413.3009948730469,
+          "empty_round_trip_energy_kwh": 5.6
+        },
+        {
+          "site": "S013",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 4848.706999909826,
+          "cruise_altitude_m": 399.18182373046875,
+          "empty_round_trip_energy_kwh": 2.0738790048721434
+        },
+        {
+          "site": "S013",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 4848.706999909826,
+          "cruise_altitude_m": 399.18182373046875,
+          "empty_round_trip_energy_kwh": 2.014103627714176
+        },
+        {
+          "site": "S013",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 4848.706999909826,
+          "cruise_altitude_m": 399.18182373046875,
+          "empty_round_trip_energy_kwh": 4.890905454625271
+        },
+        {
+          "site": "S014",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 5410.9170943694,
+          "cruise_altitude_m": 591.9473876953125,
+          "empty_round_trip_energy_kwh": 2.422096452231748
+        },
+        {
+          "site": "S014",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 5410.9170943694,
+          "cruise_altitude_m": 591.9473876953125,
+          "empty_round_trip_energy_kwh": 2.351834421328119
+        },
+        {
+          "site": "S014",
+          "aircraft": "C",
+          "max_safe_payload_kg": 80.0,
+          "route_distance_m": 5410.9170943694,
+          "cruise_altitude_m": 591.9473876953125,
+          "empty_round_trip_energy_kwh": 5.5991884605867055
+        },
+        {
+          "site": "S015",
+          "aircraft": "A",
+          "max_safe_payload_kg": 25.0,
+          "route_distance_m": 6019.113948538039,
+          "cruise_altitude_m": 571.7992553710938,
+          "empty_round_trip_energy_kwh": 2.623130635439933
+        },
+        {
+          "site": "S015",
+          "aircraft": "B",
+          "max_safe_payload_kg": 30.0,
+          "route_distance_m": 6019.113948538039,
+          "cruise_altitude_m": 571.7992553710938,
+          "empty_round_trip_energy_kwh": 2.548200770132621
+        },
+        {
+          "site": "S015",
+          "aircraft": "C",
+          "max_safe_payload_kg": 72.87609950827384,
+          "route_distance_m": 6019.113948538039,
+          "cruise_altitude_m": 571.7992553710938,
+          "empty_round_trip_energy_kwh": 5.599999999999999
+        }
+      ],
+      "route_metadata": {
+        "S001": {
+          "distance_m": 3063.411326288906,
+          "max_ground_elevation_m": 223.05661010742188
+        },
+        "S002": {
+          "distance_m": 7435.278518338766,
+          "max_ground_elevation_m": 258.9542541503906
+        },
+        "S003": {
+          "distance_m": 7261.075570364676,
+          "max_ground_elevation_m": 511.80413818359375
+        },
+        "S004": {
+          "distance_m": 7745.662441501595,
+          "max_ground_elevation_m": 348.2391662597656
+        },
+        "S005": {
+          "distance_m": 5302.02013115008,
+          "max_ground_elevation_m": 276.410888671875
+        },
+        "S006": {
+          "distance_m": 3181.0333082558964,
+          "max_ground_elevation_m": 316.09783935546875
+        },
+        "S007": {
+          "distance_m": 4533.827897987457,
+          "max_ground_elevation_m": 451.8304748535156
+        },
+        "S008": {
+          "distance_m": 8109.473184927932,
+          "max_ground_elevation_m": 322.9093322753906
+        },
+        "S009": {
+          "distance_m": 5722.680393214653,
+          "max_ground_elevation_m": 243.22891235351562
+        },
+        "S010": {
+          "distance_m": 4778.43990162097,
+          "max_ground_elevation_m": 385.63653564453125
+        },
+        "S011": {
+          "distance_m": 2817.1517251516107,
+          "max_ground_elevation_m": 243.34902954101562
+        },
+        "S012": {
+          "distance_m": 7398.449561287365,
+          "max_ground_elevation_m": 363.3009948730469
+        },
+        "S013": {
+          "distance_m": 4848.706999909826,
+          "max_ground_elevation_m": 349.18182373046875
+        },
+        "S014": {
+          "distance_m": 5410.9170943694,
+          "max_ground_elevation_m": 541.9473876953125
+        },
+        "S015": {
+          "distance_m": 6019.113948538039,
+          "max_ground_elevation_m": 521.7992553710938
+        }
+      },
+      "partitions": {
+        "S001": [
+          {
+            "site": "S001",
+            "aircraft": "C",
+            "boxes": [
+              "S001-MED-01",
+              "S001-MED-02",
+              "S001-WAT-01",
+              "S001-WAT-02",
+              "S001-WAT-03",
+              "S001-WAT-04",
+              "S001-WAT-05"
+            ],
+            "mass_kg": 76.0,
+            "volume_m3": 0.159,
+            "energy_kwh": 2.9262373909118784,
+            "flight_time_s": 619.4267416985468,
+            "work_time_s": 1561.4267416985467,
+            "range_budget_m": 13036.763521404078,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 2.6737626090881212
+          },
+          {
+            "site": "S001",
+            "aircraft": "C",
+            "boxes": [
+              "S001-WAT-06",
+              "S001-WAT-07",
+              "S001-WAT-08",
+              "S001-FOD-01",
+              "S001-FOD-02",
+              "S001-FOD-03",
+              "S001-HYG-01",
+              "S001-HYG-02"
+            ],
+            "mass_kg": 78.0,
+            "volume_m3": 0.23500000000000001,
+            "energy_kwh": 3.004662059347582,
+            "flight_time_s": 619.4267416985468,
+            "work_time_s": 1627.4267416985467,
+            "range_budget_m": 12521.704948325252,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 2.5953379406524175
+          }
+        ],
+        "S002": [
+          {
+            "site": "S002",
+            "aircraft": "C",
+            "boxes": [
+              "S002-MED-01",
+              "S002-WAT-01",
+              "S002-WAT-02",
+              "S002-FOD-01"
+            ],
+            "mass_kg": 39.0,
+            "volume_m3": 0.094,
+            "energy_kwh": 5.18729491680091,
+            "flight_time_s": 1235.0081265825384,
+            "work_time_s": 1979.0081265825384,
+            "range_budget_m": 21234.703085063848,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 0.4127050831990893
+          },
+          {
+            "site": "S002",
+            "aircraft": "C",
+            "boxes": [
+              "S002-WAT-03",
+              "S002-WAT-04",
+              "S002-FOD-02",
+              "S002-HYG-01"
+            ],
+            "mass_kg": 42.0,
+            "volume_m3": 0.117,
+            "energy_kwh": 5.265265173092263,
+            "flight_time_s": 1235.0081265825384,
+            "work_time_s": 1979.0081265825384,
+            "range_budget_m": 20674.41904577538,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 0.33473482690773704
+          }
+        ],
+        "S003": [
+          {
+            "site": "S003",
+            "aircraft": "C",
+            "boxes": [
+              "S003-MED-01",
+              "S003-WAT-01",
+              "S003-WAT-02",
+              "S003-FOD-01"
+            ],
+            "mass_kg": 39.0,
+            "volume_m3": 0.094,
+            "energy_kwh": 5.20764072545939,
+            "flight_time_s": 1559.8108581124256,
+            "work_time_s": 2303.8108581124256,
+            "range_budget_m": 21234.703085063848,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 0.3923592745406097
+          },
+          {
+            "site": "S003",
+            "aircraft": "C",
+            "boxes": [
+              "S003-WAT-03",
+              "S003-WAT-04",
+              "S003-FOD-02",
+              "S003-HYG-01"
+            ],
+            "mass_kg": 42.0,
+            "volume_m3": 0.117,
+            "energy_kwh": 5.286702317713443,
+            "flight_time_s": 1559.8108581124256,
+            "work_time_s": 2303.8108581124256,
+            "range_budget_m": 20674.41904577538,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 0.3132976822865565
+          }
+        ],
+        "S004": [
+          {
+            "site": "S004",
+            "aircraft": "B",
+            "boxes": [
+              "S004-MED-01",
+              "S004-WAT-01"
+            ],
+            "mass_kg": 17.0,
+            "volume_m3": 0.039,
+            "energy_kwh": 2.5863165225912823,
+            "flight_time_s": 1355.772436047869,
+            "work_time_s": 1925.772436047869,
+            "range_budget_m": 22881.14596157825,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 0.21368347740871751
+          },
+          {
+            "site": "S004",
+            "aircraft": "C",
+            "boxes": [
+              "S004-WAT-02",
+              "S004-WAT-03",
+              "S004-FOD-01",
+              "S004-HYG-01"
+            ],
+            "mass_kg": 42.0,
+            "volume_m3": 0.117,
+            "energy_kwh": 5.539956839091937,
+            "flight_time_s": 1429.1854914677908,
+            "work_time_s": 2173.1854914677906,
+            "range_budget_m": 20674.41904577538,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 0.060043160908062276
+          }
+        ],
+        "S005": [
+          {
+            "site": "S005",
+            "aircraft": "C",
+            "boxes": [
+              "S005-MED-01",
+              "S005-WAT-01",
+              "S005-WAT-02",
+              "S005-WAT-03",
+              "S005-FOD-01",
+              "S005-HYG-01"
+            ],
+            "mass_kg": 59.0,
+            "volume_m3": 0.156,
+            "energy_kwh": 4.238735064547415,
+            "flight_time_s": 1004.0456170960524,
+            "work_time_s": 1880.0456170960524,
+            "range_budget_m": 17133.115065734753,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 1.361264935452585
+          }
+        ],
+        "S006": [
+          {
+            "site": "S006",
+            "aircraft": "C",
+            "boxes": [
+              "S006-MED-01",
+              "S006-WAT-01",
+              "S006-WAT-02",
+              "S006-WAT-03",
+              "S006-FOD-01",
+              "S006-HYG-01"
+            ],
+            "mass_kg": 59.0,
+            "volume_m3": 0.156,
+            "energy_kwh": 2.593934934324972,
+            "flight_time_s": 684.8638852739633,
+            "work_time_s": 1560.8638852739632,
+            "range_budget_m": 17133.115065734753,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 3.0060650656750276
+          }
+        ],
+        "S007": [
+          {
+            "site": "S007",
+            "aircraft": "C",
+            "boxes": [
+              "S007-MED-01",
+              "S007-WAT-01",
+              "S007-WAT-02",
+              "S007-FOD-01",
+              "S007-HYG-01"
+            ],
+            "mass_kg": 45.0,
+            "volume_m3": 0.129,
+            "energy_kwh": 3.403284441394841,
+            "flight_time_s": 1079.2252411346558,
+            "work_time_s": 1889.2252411346558,
+            "range_budget_m": 20093.75,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 2.1967155586051588
+          }
+        ],
+        "S008": [
+          {
+            "site": "S008",
+            "aircraft": "C",
+            "boxes": [
+              "S008-MED-01",
+              "S008-WAT-01",
+              "S008-WAT-02"
+            ],
+            "mass_kg": 31.0,
+            "volume_m3": 0.066,
+            "energy_kwh": 5.483504272460986,
+            "flight_time_s": 1393.7598894194273,
+            "work_time_s": 2071.759889419427,
+            "range_budget_m": 22622.964734045556,
+            "return_range_budget_m": 26000.0,
+            "reserve_kwh": 0.1164957275390135
+          },
+          {
+            "site": "S008",
+            "aircraft": "B",
+            "boxes": [
+              "S008-FOD-01",
+              "S008-HYG-01"
+            ],
+            "mass_kg": 14.0,
+            "volume_m3": 0.063,
+            "energy_kwh": 2.5986977197657324,
+            "flight_time_s": 1335.890111994297,
+            "work_time_s": 1905.890111994297,
+            "range_budget_m": 24174.47171404175,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 0.20130228023426744
+          }
+        ],
+        "S009": [
+          {
+            "site": "S009",
+            "aircraft": "B",
+            "boxes": [
+              "S009-MED-01",
+              "S009-WAT-01",
+              "S009-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 2.102431078237294,
+            "flight_time_s": 930.77979054711,
+            "work_time_s": 1560.77979054711,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 0.6975689217627057
+          }
+        ],
+        "S010": [
+          {
+            "site": "S010",
+            "aircraft": "B",
+            "boxes": [
+              "S010-MED-01",
+              "S010-WAT-01",
+              "S010-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 1.821004406007365,
+            "flight_time_s": 924.5722391614418,
+            "work_time_s": 1554.5722391614418,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 0.9789955939926349
+          }
+        ],
+        "S011": [
+          {
+            "site": "S011",
+            "aircraft": "B",
+            "boxes": [
+              "S011-MED-01",
+              "S011-WAT-01",
+              "S011-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 1.0759658121278484,
+            "flight_time_s": 556.678806680371,
+            "work_time_s": 1186.678806680371,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 1.7240341878721515
+          }
+        ],
+        "S012": [
+          {
+            "site": "S012",
+            "aircraft": "B",
+            "boxes": [
+              "S012-MED-01",
+              "S012-WAT-01",
+              "S012-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 2.7551934702444854,
+            "flight_time_s": 1293.8014006521175,
+            "work_time_s": 1923.8014006521175,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 0.04480652975551447
+          }
+        ],
+        "S013": [
+          {
+            "site": "S013",
+            "aircraft": "B",
+            "boxes": [
+              "S013-MED-01",
+              "S013-WAT-01",
+              "S013-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 1.8245337426160748,
+            "flight_time_s": 880.4009414593309,
+            "work_time_s": 1510.4009414593309,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 0.975466257383925
+          }
+        ],
+        "S014": [
+          {
+            "site": "S014",
+            "aircraft": "B",
+            "boxes": [
+              "S014-MED-01",
+              "S014-WAT-01",
+              "S014-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 2.1372327174195584,
+            "flight_time_s": 1238.5984478690452,
+            "work_time_s": 1868.5984478690452,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 0.6627672825804414
+          }
+        ],
+        "S015": [
+          {
+            "site": "S015",
+            "aircraft": "B",
+            "boxes": [
+              "S015-MED-01",
+              "S015-WAT-01",
+              "S015-FOD-01"
+            ],
+            "mass_kg": 25.0,
+            "volume_m3": 0.067,
+            "energy_kwh": 2.3108457316251445,
+            "flight_time_s": 1199.5741010160095,
+            "work_time_s": 1829.5741010160095,
+            "range_budget_m": 18871.29070824723,
+            "return_range_budget_m": 28000.0,
+            "reserve_kwh": 0.4891542683748553
+          }
+        ]
+      },
+      "summary": {
+        "box_count": 80,
+        "flight_count": 20,
+        "total_energy_kwh": 67.3494393357804,
+        "total_work_time_s": 36595.6398526065
+      }
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 # Generated solver outputs
-outputs/
+!.outputs/
 .venv/
+.vscode/
 
 # Python caches
 __pycache__/

@@ -17,6 +17,7 @@ class ProblemOneInputTests(unittest.TestCase):
         self.assertEqual(base.code, "O01")
         self.assertEqual(len(sites), 15)
         self.assertEqual(sum(map(len, boxes.values())), 80)
+        
 
 
 class ProblemOnePhysicsTests(unittest.TestCase):
