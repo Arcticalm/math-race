@@ -1,0 +1,216 @@
+{
+  "evaluation_results": [
+    {
+      "split": "1M_train",
+      "samples": 512,
+      "actual_mean_loss": 5.3447,
+      "baseline_r2": 0.2961,
+      "baseline_rmse": 0.2722,
+      "baseline_spearman": 0.5473,
+      "quality_r2": 0.2974,
+      "quality_rmse": 0.272,
+      "quality_spearman": 0.5469
+    },
+    {
+      "split": "1M_test",
+      "samples": 256,
+      "actual_mean_loss": 5.2823,
+      "baseline_r2": 0.358,
+      "baseline_rmse": 0.2225,
+      "baseline_spearman": 0.6266,
+      "quality_r2": 0.3586,
+      "quality_rmse": 0.2224,
+      "quality_spearman": 0.6282
+    },
+    {
+      "split": "60M_test",
+      "samples": 256,
+      "actual_mean_loss": 3.8229,
+      "baseline_r2": 0.2111,
+      "baseline_rmse": 0.1944,
+      "baseline_spearman": 0.5604,
+      "quality_r2": 0.2107,
+      "quality_rmse": 0.1945,
+      "quality_spearman": 0.5611
+    },
+    {
+      "split": "1B_test",
+      "samples": 64,
+      "actual_mean_loss": 2.2256,
+      "baseline_r2": -8.7667,
+      "baseline_rmse": 0.1623,
+      "baseline_spearman": 0.373,
+      "quality_r2": -8.5013,
+      "quality_rmse": 0.1601,
+      "quality_spearman": 0.366
+    },
+    {
+      "split": "10B_est",
+      "samples": 63,
+      "actual_mean_loss": 1.7975,
+      "baseline_r2": -4.5172,
+      "baseline_rmse": 0.2258,
+      "baseline_spearman": -0.4562,
+      "quality_r2": -4.5466,
+      "quality_rmse": 0.2264,
+      "quality_spearman": -0.4552
+    },
+    {
+      "split": "70B_est",
+      "samples": 63,
+      "actual_mean_loss": 1.4145,
+      "baseline_r2": -4.1557,
+      "baseline_rmse": 0.2365,
+      "baseline_spearman": -0.5201,
+      "quality_r2": -4.1821,
+      "quality_rmse": 0.2371,
+      "quality_spearman": -0.5184
+    }
+  ],
+  "domain_utilities": [
+    {
+      "domain": "enron_emails",
+      "standalone_loss_b": 0.9596,
+      "quality_Q": 0.5188,
+      "is_unmonitored_loss": true
+    },
+    {
+      "domain": "philpapers",
+      "standalone_loss_b": 1.1962,
+      "quality_Q": 0.5537,
+      "is_unmonitored_loss": true
+    },
+    {
+      "domain": "ubuntu_irc",
+      "standalone_loss_b": 3.2908,
+      "quality_Q": 0.5323,
+      "is_unmonitored_loss": false
+    },
+    {
+      "domain": "nih_exporter",
+      "standalone_loss_b": 3.3046,
+      "quality_Q": 0.5462,
+      "is_unmonitored_loss": true
+    },
+    {
+      "domain": "hackernews",
+      "standalone_loss_b": 3.584,
+      "quality_Q": 0.5367,
+      "is_unmonitored_loss": false
+    },
+    {
+      "domain": "dm_mathematics",
+      "standalone_loss_b": 4.2137,
+      "quality_Q": 0.6014,
+      "is_unmonitored_loss": false
+    },
+    {
+      "domain": "europarl",
+      "standalone_loss_b": 4.2817,
+      "quality_Q": 0.4798,
+      "is_unmonitored_loss": true
+    },
+    {
+      "domain": "gutenberg_pg_19",
+      "standalone_loss_b": 5.1965,
+      "quality_Q": 0.5011,
+      "is_unmonitored_loss": false
+    },
+    {
+      "domain": "pubmed_abstracts",
+      "standalone_loss_b": 5.2792,
+      "quality_Q": 0.5807,
+      "is_unmonitored_loss": false
+    },
+    {
+      "domain": "stackexchange",
+      "standalone_loss_b": 5.3043,
+      "quality_Q": 0.5546,
+      "is_unmonitored_loss": false
+    },
+    {
+      "domain": "wikipedia_en",
+      "standalone_loss_b": 5.4351,
+      "quality_Q": 0.4597,
+      "is_unmonitored_loss": false
+    },
+    {
+      "domain": "uspto_backgrounds",
+      "standalone_loss_b": 5.448,
+      "quality_Q": 0.5634,
+      "is_unmonitored_loss": false
+    },
+    {
+      "domain": "pile_cc",
+      "standalone_loss_b": 5.4984,
+      "quality_Q": 0.5321,
+      "is_unmonitored_loss": false
+    },
+    {
+      "domain": "pubmed_central",
+      "standalone_loss_b": 5.5581,
+      "quality_Q": 0.5807,
+      "is_unmonitored_loss": false
+    },
+    {
+      "domain": "arxiv",
+      "standalone_loss_b": 5.6242,
+      "quality_Q": 0.6326,
+      "is_unmonitored_loss": false
+    },
+    {
+      "domain": "github",
+      "standalone_loss_b": 5.6869,
+      "quality_Q": 0.4669,
+      "is_unmonitored_loss": false
+    },
+    {
+      "domain": "freelaw",
+      "standalone_loss_b": 5.7164,
+      "quality_Q": 0.4804,
+      "is_unmonitored_loss": false
+    }
+  ],
+  "optimal_recipes": {
+    "unconstrained_corner": {
+      "arxiv": 0.0,
+      "freelaw": 0.0,
+      "nih_exporter": 0.0,
+      "pubmed_central": 0.0,
+      "wikipedia_en": 0.0,
+      "dm_mathematics": 0.0,
+      "github": 0.0,
+      "philpapers": 0.0,
+      "stackexchange": 0.0,
+      "enron_emails": 1.0,
+      "gutenberg_pg_19": 0.0,
+      "pile_cc": 0.0,
+      "ubuntu_irc": 0.0,
+      "europarl": 0.0,
+      "hackernews": 0.0,
+      "pubmed_abstracts": 0.0,
+      "uspto_backgrounds": 0.0
+    },
+    "unconstrained_loss": 0.9287,
+    "realistic_regularized": {
+      "arxiv": 0.0017,
+      "freelaw": 0.0037,
+      "nih_exporter": 0.058,
+      "pubmed_central": 0.0043,
+      "wikipedia_en": 0.0272,
+      "dm_mathematics": 0.2352,
+      "github": 0.0051,
+      "philpapers": 0.0551,
+      "stackexchange": 0.0292,
+      "enron_emails": 0.026,
+      "gutenberg_pg_19": 0.0926,
+      "pile_cc": 0.0095,
+      "ubuntu_irc": 0.176,
+      "europarl": 0.1171,
+      "hackernews": 0.1201,
+      "pubmed_abstracts": 0.0286,
+      "uspto_backgrounds": 0.0105
+    },
+    "realistic_loss": 3.9243
+  }
+}

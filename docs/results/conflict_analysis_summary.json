@@ -1,0 +1,176 @@
+{
+  "domain_summary": {
+    "arxiv": {
+      "total_records": 1419,
+      "conflict_count": 206,
+      "conflict_rate": 0.1452,
+      "mean_ci": 0.1802,
+      "std_ci": 0.0657,
+      "mean_q_base": 0.638,
+      "mean_q_resolved": 0.6326,
+      "q_diff_pct": -0.85
+    },
+    "book": {
+      "total_records": 171,
+      "conflict_count": 57,
+      "conflict_rate": 0.3333,
+      "mean_ci": 0.1791,
+      "std_ci": 0.1174,
+      "mean_q_base": 0.5106,
+      "mean_q_resolved": 0.5011,
+      "q_diff_pct": -1.86
+    },
+    "c4": {
+      "total_records": 10000,
+      "conflict_count": 5780,
+      "conflict_rate": 0.578,
+      "mean_ci": 0.274,
+      "std_ci": 0.1419,
+      "mean_q_base": 0.5363,
+      "mean_q_resolved": 0.5099,
+      "q_diff_pct": -4.93
+    },
+    "commoncrawl": {
+      "total_records": 9640,
+      "conflict_count": 1351,
+      "conflict_rate": 0.1401,
+      "mean_ci": 0.1462,
+      "std_ci": 0.091,
+      "mean_q_base": 0.5366,
+      "mean_q_resolved": 0.5321,
+      "q_diff_pct": -0.84
+    },
+    "github": {
+      "total_records": 10000,
+      "conflict_count": 1501,
+      "conflict_rate": 0.1501,
+      "mean_ci": 0.1493,
+      "std_ci": 0.0944,
+      "mean_q_base": 0.4716,
+      "mean_q_resolved": 0.4669,
+      "q_diff_pct": -0.99
+    },
+    "stackexchange": {
+      "total_records": 10000,
+      "conflict_count": 810,
+      "conflict_rate": 0.081,
+      "mean_ci": 0.1233,
+      "std_ci": 0.0831,
+      "mean_q_base": 0.5573,
+      "mean_q_resolved": 0.5546,
+      "q_diff_pct": -0.49
+    },
+    "wikipedia": {
+      "total_records": 10000,
+      "conflict_count": 390,
+      "conflict_rate": 0.039,
+      "mean_ci": 0.1095,
+      "std_ci": 0.0736,
+      "mean_q_base": 0.4608,
+      "mean_q_resolved": 0.4597,
+      "q_diff_pct": -0.25
+    }
+  },
+  "representative_samples": [
+    {
+      "id": "BkiUd0E5qhDBdMC-Fcd6",
+      "domain": "arxiv",
+      "s_cog": 0.9185,
+      "s_surf": 0.6476,
+      "conflict_index": 0.271,
+      "q_base": 0.6601,
+      "q_resolved": 0.6371,
+      "text_snippet": "\\section{Supplemental Material: \\\\ Sign-changing photon-mediated atomic interactions in multimode cavity QED}  \\subsecti"
+    },
+    {
+      "id": "BkiUbCM5jDKDx8o5qk9R",
+      "domain": "arxiv",
+      "s_cog": 0.8927,
+      "s_surf": 0.6275,
+      "conflict_index": 0.2652,
+      "q_base": 0.6569,
+      "q_resolved": 0.6358,
+      "text_snippet": "\\section{Introduction}  Galaxies can have a complex kinematic structure, due to the superimposition of multiple componen"
+    },
+    {
+      "id": "BkiUdafxaL3SuhsxKGrm",
+      "domain": "arxiv",
+      "s_cog": 0.9172,
+      "s_surf": 0.6552,
+      "conflict_index": 0.262,
+      "q_base": 0.6807,
+      "q_resolved": 0.66,
+      "text_snippet": "\\section{Introduction} Thermoelectric systems are heat engines which, by using the electron gas formed by their conducti"
+    },
+    {
+      "id": "BkiUdMg4eIXhx5LdSlN-",
+      "domain": "arxiv",
+      "s_cog": 0.8479,
+      "s_surf": 0.5939,
+      "conflict_index": 0.254,
+      "q_base": 0.6412,
+      "q_resolved": 0.6241,
+      "text_snippet": "\\section{Introduction}  The issue of how to create open-ended evolution in an artificial system is one the open problems"
+    },
+    {
+      "id": "BkiUdJQ4ubng-JcX4VCP",
+      "domain": "arxiv",
+      "s_cog": 0.9166,
+      "s_surf": 0.6613,
+      "conflict_index": 0.2553,
+      "q_base": 0.6959,
+      "q_resolved": 0.6769,
+      "text_snippet": "\\section{Introduction} \\vspace{-0.1cm}  Translating a spoken language, in other words recognizing speech and automatical"
+    },
+    {
+      "id": "BkiUfXDxK1ThhAqzYsFE",
+      "domain": "arxiv",
+      "s_cog": 0.918,
+      "s_surf": 0.6613,
+      "conflict_index": 0.2567,
+      "q_base": 0.6615,
+      "q_resolved": 0.6431,
+      "text_snippet": "\\section{Introduction}  VERITAS and other Imaging Air Cherenkov Telescopes (IACTs) record images of Cherenkov showers in"
+    },
+    {
+      "id": "BkiUakrxK5YsWOzBAUlJ",
+      "domain": "arxiv",
+      "s_cog": 0.8997,
+      "s_surf": 0.6273,
+      "conflict_index": 0.2724,
+      "q_base": 0.68,
+      "q_resolved": 0.6559,
+      "text_snippet": "\\section{Introduction} Computer Vision research aims to converge at human-like abilities to interpret and extract useful"
+    },
+    {
+      "id": "BkiUd2Y4ubnhDSvJRyHO",
+      "domain": "arxiv",
+      "s_cog": 0.8471,
+      "s_surf": 0.5931,
+      "conflict_index": 0.254,
+      "q_base": 0.6308,
+      "q_resolved": 0.614,
+      "text_snippet": "\\section{Introduction} Despite twelve years of intesive experimental and theoretical studies of copper-oxide based super"
+    },
+    {
+      "id": "BkiUdd4241xg-QyzEflc",
+      "domain": "arxiv",
+      "s_cog": 0.886,
+      "s_surf": 0.6067,
+      "conflict_index": 0.2793,
+      "q_base": 0.6388,
+      "q_resolved": 0.614,
+      "text_snippet": "\\section{Introduction}\\label{sec:1} The blazars are the most extreme class of radio-loud active galactic nuclei (AGNs) i"
+    },
+    {
+      "id": "BkiUbb04dbjiU9i0yjOT",
+      "domain": "arxiv",
+      "s_cog": 0.8875,
+      "s_surf": 0.6147,
+      "conflict_index": 0.2729,
+      "q_base": 0.6473,
+      "q_resolved": 0.6241,
+      "text_snippet": "\\section{\\label{sec1}Introduction} Inflation, a quasi-exponential expansion of the very early Universe, is a required su"
+    }
+  ]
+}

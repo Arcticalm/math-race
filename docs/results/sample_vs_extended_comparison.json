@@ -1,0 +1,28 @@
+[
+  {
+    "domain": "arxiv",
+    "sample_n": 1419,
+    "sample_q": 0.6287,
+    "sample_std": 0.0366,
+    "extended_n": 17523,
+    "extended_q": 0.6278,
+    "extended_std": 0.038,
+    "diff": -0.0009,
+    "t_statistic": 1.159,
+    "p_value": 0.24654757133524133,
+    "is_consistent": true
+  },
+  {
+    "domain": "github",
+    "sample_n": 10000,
+    "sample_q": 0.4972,
+    "sample_std": 0.0584,
+    "extended_n": 203752,
+    "extended_q": 0.4964,
+    "extended_std": 0.0588,
+    "diff": -0.0008,
+    "t_statistic": 1.398,
+    "p_value": 0.16215308151098437,
+    "is_consistent": true
+  }
+]

@@ -1,0 +1,112 @@
+{
+  "fineweb_edu": {
+    "low": -0.06764394104480743,
+    "high": 3.4482863593101545,
+    "direction": "positive"
+  },
+  "fluency_en": {
+    "low": 0.01818487806525411,
+    "high": 0.9992635191893195,
+    "direction": "positive"
+  },
+  "ad_en": {
+    "low": 0.008190211967465565,
+    "high": 0.9997262783268163,
+    "direction": "negative"
+  },
+  "modernbert_cleanliness": {
+    "low": 1.0000499151811095,
+    "high": 4.999999064205304,
+    "direction": "positive"
+  },
+  "modernbert_readability": {
+    "low": 1.0000542597071802,
+    "high": 4.9958455294854955,
+    "direction": "positive"
+  },
+  "modernbert_reasoning": {
+    "low": 0.005603099753747207,
+    "high": 4.999982885803599,
+    "direction": "positive"
+  },
+  "modernbert_professionalism": {
+    "low": 1.0001972826118057,
+    "high": 4.999966953986339,
+    "direction": "positive"
+  },
+  "qurater": {
+    "low": 0.02831501987053319,
+    "high": 2.99009755640373,
+    "direction": "positive"
+  },
+  "dsir_books": {
+    "low": -88395.3635729202,
+    "high": -168.4894835791497,
+    "direction": "positive"
+  },
+  "dsir_wiki": {
+    "low": -95484.9261250732,
+    "high": -167.34835012134985,
+    "direction": "positive"
+  },
+  "dsir_math": {
+    "low": -74533.282681362,
+    "high": -164.26027551504964,
+    "direction": "positive"
+  },
+  "rps_doc_word_count": {
+    "low": 2.0794415416798357,
+    "high": 9.72076985897145,
+    "direction": "log_positive"
+  },
+  "rps_doc_num_sentences": {
+    "low": 0.6931471805599453,
+    "high": 7.159066223818159,
+    "direction": "log_positive"
+  },
+  "rps_doc_unigram_entropy": {
+    "low": 1.79175947,
+    "high": 6.50827229585,
+    "direction": "positive"
+  },
+  "rps_doc_frac_unique_words": {
+    "low": 13.60733038083409,
+    "high": 100.0,
+    "direction": "positive"
+  },
+  "rps_doc_frac_no_alph_words": {
+    "low": 16.02276814949409,
+    "high": 100.0,
+    "direction": "negative"
+  },
+  "rps_doc_frac_chars_top_2gram": {
+    "low": 0.0,
+    "high": 25.0,
+    "direction": "negative"
+  },
+  "rps_doc_frac_chars_top_3gram": {
+    "low": 0.0,
+    "high": 26.0,
+    "direction": "negative"
+  },
+  "rps_lines_uppercase_letter_fraction": {
+    "low": 0.9145282408552939,
+    "high": 55.5858506455921,
+    "direction": "negative"
+  },
+  "rps_lines_ending_with_terminal_punctution_mark": {
+    "low": 0.0,
+    "high": 100.0,
+    "direction": "positive"
+  },
+  "rps_lines_numerical_chars_fraction": {
+    "low": 0.0,
+    "high": 26.12879658855101,
+    "direction": "negative"
+  },
+  "rps_doc_mean_word_length": {
+    "low": 3.830719012649038,
+    "high": 19.5,
+    "direction": "positive"
+  }
+}
