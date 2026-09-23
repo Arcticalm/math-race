@@ -30,7 +30,11 @@ from problem1.q1_quality_evaluation import (
     compare_sample_vs_extended
 )
 from problem1.q1_conflict_resolution import (
-    analyze_conflicts_in_dataset
+    analyze_conflicts_in_dataset,
+    compare_conflict_sample_vs_extended
+)
+from problem1.q1_text_verification import (
+    verify_quality_with_raw_texts
 )
 from problem1.q1_domain_mapping import (
     build_17_domain_quality_vector,
@@ -119,7 +123,7 @@ def main():
     # -------------------------------------------------------------
     # Step 3: Quality Conflict Analysis & Adaptive Resolution
     # -------------------------------------------------------------
-    print("\n[Step 3/5] Performing Conflict Analysis & Adaptive Resolution...")
+    print("\n[Step 3/6] Performing Conflict Analysis & Adaptive Resolution...")
     conflict_res_a1 = analyze_conflicts_in_dataset(PATH_A1_SAMPLE, bounds, weights, conflict_threshold=0.25)
     conflict_path = RESULTS_DIR / "conflict_analysis_summary.json"
     with open(conflict_path, "w", encoding="utf-8") as f:
@@ -131,6 +135,25 @@ def main():
     for dom, ds in conflict_res_a1["domain_summary"].items():
         print(f"    {dom:<15} {ds['total_records']:<15} {ds['conflict_rate']*100:.2f}%{'':<9} {ds['mean_ci']:<10} {ds['mean_q_base']:<10} {ds['mean_q_resolved']:<12}")
 
+    print("\n  Verifying Conflict Consistency on Extended Sets A2 (arxiv) and A3 (github)...")
+    conflict_res_a2 = analyze_conflicts_in_dataset(PATH_A2_ARXIV, bounds, weights, default_domain="arxiv")
+    conflict_res_a3 = analyze_conflicts_in_dataset(PATH_A3_GITHUB, bounds, weights, default_domain="github", max_records=50000)
+
+    conflict_comp = compare_conflict_sample_vs_extended(
+        conflict_res_a1["domain_summary"],
+        conflict_res_a2["domain_summary"],
+        conflict_res_a3["domain_summary"]
+    )
+    conflict_comp_path = RESULTS_DIR / "conflict_sample_vs_extended_comparison.json"
+    with open(conflict_comp_path, "w", encoding="utf-8") as f:
+        json.dump(conflict_comp, f, indent=2, ensure_ascii=False)
+
+    print("  ✓ Conflict Consistency Table (Sample A1 vs Extended A2/A3):")
+    print(f"    {'Domain':<10} {'Sample Rate':<14} {'Ext Rate':<12} {'Diff Rate':<12} {'Sample CI':<12} {'Ext CI':<10} {'Consistent?'}")
+    print("    " + "-" * 82)
+    for cc in conflict_comp:
+        print(f"    {cc['domain']:<10} {cc['sample_conflict_rate']*100:.2f}%{'':<7} {cc['extended_conflict_rate']*100:.2f}%{'':<5} {cc['diff_conflict_rate']*100:+.2f}%{'':<6} {cc['sample_mean_ci']:<12.4f} {cc['extended_mean_ci']:<10.4f} {cc['is_consistent']}")
+
     # Update 7 domain quality with resolved scores
     resolved_domain_q_7 = {}
     for dom in QUALITY_DOMAINS:
@@ -140,7 +163,7 @@ def main():
     # -------------------------------------------------------------
     # Step 4: Cross-System Domain Mapping (7 Domains -> 17 Domains)
     # -------------------------------------------------------------
-    print("\n[Step 4/5] Mapping 7 SlimPajama Quality Domains to 17 The Pile Mixture Domains...")
+    print("\n[Step 4/6] Mapping 7 SlimPajama Quality Domains to 17 The Pile Mixture Domains...")
     q_17 = build_17_domain_quality_vector(resolved_domain_q_7)
     q17_path = RESULTS_DIR / "q1_domain_quality_scores_17"
     save_17_domain_quality(q_17, q17_path)
@@ -152,7 +175,7 @@ def main():
     # -------------------------------------------------------------
     # Step 5: Simplex Mixture Modeling & Multi-Scale Extrapolation
     # -------------------------------------------------------------
-    print("\n[Step 5/5] Fitting 17-Domain Mixture Model & Evaluating Multi-Scale Generalization...")
+    print("\n[Step 5/6] Fitting 17-Domain Mixture Model & Evaluating Multi-Scale Generalization...")
     mixture_res = run_full_mixture_pipeline(q_17)
 
     mix_path = RESULTS_DIR / "mixture_modeling_results.json"
@@ -165,9 +188,13 @@ def main():
     for r in mixture_res["evaluation_results"]:
         print(f"    {r['split']:<14} {r['samples']:<10} {r['actual_mean_loss']:<14.4f} {r['baseline_r2']:<14.4f} {r['quality_r2']:<14.4f} {r['quality_spearman']:<10.4f}")
 
-    print("\n  ✓ Top 5 Most Effective Domains (Lowest Standalone Loss b_i):")
-    for d in mixture_res["domain_utilities"][:5]:
-        print(f"    - {d['domain']:25s}: standalone loss = {d['standalone_loss_b']:.4f}, Q = {d['quality_Q']:.4f}")
+    print("\n  ✓ Individual Domain Validation Loss Metrics on 1M Test Set:")
+    for dom, m in list(mixture_res["individual_domain_metrics_1m"].items())[:6]:
+        print(f"    - {dom:20s}: R² = {m['r2']:.4f}, RMSE = {m['rmse']:.4f}, Spearman = {m['spearman']:.4f}")
+
+    print("\n  ✓ Top 5 Most Effective Training Domains (Lowest Cross-Domain Transfer Loss):")
+    for d in mixture_res["transfer_analysis"][:5]:
+        print(f"    - {d['training_domain']:20s}: in-domain = {d['in_domain_loss']}, cross-transfer = {d['cross_domain_transfer_loss']}, Q = {d['quality_Q']:.4f}")
 
     print("\n  ✓ Optimal Training Mixture p* (Realistic Capacity-Constrained & Diversity-Regularized):")
     top_p_real = sorted(mixture_res["optimal_recipes"]["realistic_regularized"].items(), key=lambda x: x[1], reverse=True)
@@ -182,6 +209,16 @@ def main():
         if w > 0.01:
             print(f"    - {dom:25s}: {w*100:6.2f}%")
     print(f"    -> Predicted 1M Loss: {mixture_res['optimal_recipes']['unconstrained_loss']:.4f}")
+
+    # -------------------------------------------------------------
+    # Step 6: Raw Text Inspection & Score Reliability Verification
+    # -------------------------------------------------------------
+    print("\n[Step 6/6] Verifying Score Reliability against Raw Text Content (A1 & A18)...")
+    text_verif = verify_quality_with_raw_texts(bounds, weights, max_records=8000)
+    verif_path = RESULTS_DIR / "raw_text_verification.json"
+    with open(verif_path, "w", encoding="utf-8") as f:
+        json.dump(text_verif, f, indent=2, ensure_ascii=False)
+    print("  ✓ Verified scoring reliability with raw excerpts. Saved to raw_text_verification.json")
 
     elapsed = time.time() - start_time
     print("\n" + "=" * 70)

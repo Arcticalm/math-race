@@ -11,15 +11,10 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from problem1.config import ALL_INDICATORS, MIXTURE_DOMAINS, QUALITY_DOMAINS
 from problem1.q1_preprocessing import (
-    scalarize_list_indicator,
-    normalize_record,
-    compute_normalization_bounds
+    scalarize_list_indicator
 )
 from problem1.q1_quality_evaluation import (
-    compute_critic_weights,
-    compute_cv_weights,
-    compute_combined_weights,
-    evaluate_sample_score
+    compute_combined_weights
 )
 from problem1.q1_conflict_resolution import (
     compute_conflict_index,
@@ -101,6 +96,33 @@ class TestProblem1(unittest.TestCase):
         self.assertTrue(np.all(opt_p >= -1e-6))
         self.assertLess(opt_loss, np.mean(y))
 
+    def test_conflict_comparison(self):
+        from problem1.q1_conflict_resolution import compare_conflict_sample_vs_extended
+        a1_mock = {
+            "arxiv": {"total_records": 1000, "conflict_rate": 0.14, "mean_ci": 0.18, "mean_q_base": 0.63, "mean_q_resolved": 0.62},
+            "github": {"total_records": 2000, "conflict_rate": 0.15, "mean_ci": 0.15, "mean_q_base": 0.47, "mean_q_resolved": 0.46}
+        }
+        a2_mock = {
+            "arxiv": {"total_records": 10000, "conflict_rate": 0.13, "mean_ci": 0.178, "mean_q_base": 0.63, "mean_q_resolved": 0.62}
+        }
+        a3_mock = {
+            "github": {"total_records": 50000, "conflict_rate": 0.148, "mean_ci": 0.148, "mean_q_base": 0.47, "mean_q_resolved": 0.46}
+        }
+        comp = compare_conflict_sample_vs_extended(a1_mock, a2_mock, a3_mock)
+        self.assertEqual(len(comp), 2)
+        self.assertTrue(comp[0]["is_consistent"])
+        self.assertTrue(comp[1]["is_consistent"])
+
+    def test_transfer_matrix(self):
+        N, D, K = 30, 17, 13
+        P = np.random.dirichlet(np.ones(D), size=N)
+        B_true = np.random.uniform(3.0, 6.0, size=(D, K))
+        L = P @ B_true + np.random.normal(0, 0.01, size=(N, K))
+        reg = P.T @ P + 1e-3 * np.eye(D)
+        B_est = np.linalg.solve(reg, P.T @ L)
+        self.assertEqual(B_est.shape, (D, K))
+
 
 if __name__ == "__main__":
     unittest.main()
+

@@ -221,7 +221,57 @@ def run_full_mixture_pipeline(
             "quality_spearman": m_qual["spearman"],
         })
 
-    # 5. Domain marginal utilities (b_i coefficients)
+    # 5. Fit 17 x 13 Transfer Matrix B: L_(N x 13) approx P_(N x 17) @ B_(17 x 13)
+    reg_mat_13 = P_train.T @ P_train + 1e-3 * np.eye(len(MIXTURE_DOMAINS))
+    B_17x13 = np.linalg.solve(reg_mat_13, P_train.T @ L_train)
+
+    # Evaluate individual 13 domain metrics on 1M test set
+    P_test_1m, L_test_1m, y_test_1m, _ = load_mixture_and_loss(PATH_A6_TEST_MIX_1M, PATH_A7_TEST_LOSS_1M)
+    pred_L_test_1m = P_test_1m @ B_17x13
+    individual_domain_metrics = {}
+    for j, dom in enumerate(LOSS_DOMAINS):
+        m_dom = compute_metrics(L_test_1m[:, j], pred_L_test_1m[:, j])
+        individual_domain_metrics[dom] = m_dom
+
+    # In-domain vs Cross-domain transfer analysis
+    # For monitored domains, in-domain loss is B[dom_idx, loss_dom_idx]
+    transfer_analysis = []
+    for i, tr_dom in enumerate(MIXTURE_DOMAINS):
+        row_b = B_17x13[i, :]
+        mean_cross = float(np.mean(row_b))
+        in_dom_loss = None
+        if tr_dom in LOSS_DOMAINS:
+            loss_idx = LOSS_DOMAINS.index(tr_dom)
+            in_dom_loss = round(float(row_b[loss_idx]), 4)
+            # Other 12 domains
+            other_losses = [row_b[k] for k in range(len(LOSS_DOMAINS)) if k != loss_idx]
+            cross_transfer_eff = round(float(np.mean(other_losses)), 4)
+        else:
+            cross_transfer_eff = round(mean_cross, 4)
+
+        transfer_analysis.append({
+            "training_domain": tr_dom,
+            "in_domain_loss": in_dom_loss,
+            "cross_domain_transfer_loss": cross_transfer_eff,
+            "overall_standalone_loss": round(mean_cross, 4),
+            "quality_Q": round(float(q_17.get(tr_dom, 0.5)), 4),
+            "is_unmonitored": tr_dom in UNMONITORED_LOSS_DOMAINS
+        })
+
+    transfer_analysis.sort(key=lambda x: x["overall_standalone_loss"])
+
+    # 6. Save 17 x 13 Transfer Matrix to CSV
+    from problem1.config import RESULTS_DIR
+    transfer_csv_path = RESULTS_DIR / "domain_transfer_matrix_17x13.csv"
+    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    with open(transfer_csv_path, "w", encoding="utf-8", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(["training_domain"] + [f"val_loss_{d}" for d in LOSS_DOMAINS] + ["mean_transfer_loss"])
+        for i, dom in enumerate(MIXTURE_DOMAINS):
+            row_vals = [round(float(v), 4) for v in B_17x13[i, :]]
+            writer.writerow([dom] + row_vals + [round(float(np.mean(row_vals)), 4)])
+
+    # 7. Domain marginal utilities (b_i coefficients for overall loss)
     domain_utilities = []
     for i, dom in enumerate(MIXTURE_DOMAINS):
         b_val = float(model_baseline.b_linear[i])
@@ -233,10 +283,9 @@ def run_full_mixture_pipeline(
             "is_unmonitored_loss": dom in UNMONITORED_LOSS_DOMAINS
         })
 
-    # Sort domains by effectiveness (lower standalone loss is better)
     domain_utilities.sort(key=lambda x: x["standalone_loss_b"])
 
-    # 6. Optimize recipe
+    # 8. Optimize recipe
     max_caps = np.max(P_train, axis=0)
 
     # A) Theoretical corner / unconstrained solution
@@ -259,6 +308,9 @@ def run_full_mixture_pipeline(
 
     return {
         "evaluation_results": results_table,
+        "individual_domain_metrics_1m": individual_domain_metrics,
+        "transfer_analysis": transfer_analysis,
         "domain_utilities": domain_utilities,
         "optimal_recipes": optimal_recipes
     }
+

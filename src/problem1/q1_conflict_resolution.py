@@ -4,7 +4,7 @@
 import math
 import numpy as np
 from pathlib import Path
-from typing import Dict, Tuple, Any
+from typing import Dict, Tuple, Any, List
 
 from problem1.q1_preprocessing import (
     stream_jsonl_xz,
@@ -135,3 +135,61 @@ def analyze_conflicts_in_dataset(
         "domain_summary": summary,
         "representative_samples": representative_samples
     }
+
+
+def compare_conflict_sample_vs_extended(
+    a1_conflict_summary: Dict[str, Any],
+    a2_conflict_summary: Dict[str, Any],
+    a3_conflict_summary: Dict[str, Any]
+) -> List[Dict[str, Any]]:
+    """Compare conflict statistics between A1 sample and A2/A3 extended sets."""
+    comparisons = []
+
+    # 1. Compare arxiv
+    s_arxiv = a1_conflict_summary.get("arxiv")
+    e_arxiv = a2_conflict_summary.get("arxiv")
+    if s_arxiv and e_arxiv:
+        diff_rate = round(e_arxiv["conflict_rate"] - s_arxiv["conflict_rate"], 4)
+        diff_ci = round(e_arxiv["mean_ci"] - s_arxiv["mean_ci"], 4)
+        comparisons.append({
+            "domain": "arxiv",
+            "sample_n": s_arxiv["total_records"],
+            "sample_conflict_rate": s_arxiv["conflict_rate"],
+            "sample_mean_ci": s_arxiv["mean_ci"],
+            "sample_q_base": s_arxiv["mean_q_base"],
+            "sample_q_resolved": s_arxiv["mean_q_resolved"],
+            "extended_n": e_arxiv["total_records"],
+            "extended_conflict_rate": e_arxiv["conflict_rate"],
+            "extended_mean_ci": e_arxiv["mean_ci"],
+            "extended_q_base": e_arxiv["mean_q_base"],
+            "extended_q_resolved": e_arxiv["mean_q_resolved"],
+            "diff_conflict_rate": diff_rate,
+            "diff_mean_ci": diff_ci,
+            "is_consistent": bool(abs(diff_rate) < 0.05 and abs(diff_ci) < 0.03)
+        })
+
+    # 2. Compare github
+    s_github = a1_conflict_summary.get("github")
+    e_github = a3_conflict_summary.get("github")
+    if s_github and e_github:
+        diff_rate = round(e_github["conflict_rate"] - s_github["conflict_rate"], 4)
+        diff_ci = round(e_github["mean_ci"] - s_github["mean_ci"], 4)
+        comparisons.append({
+            "domain": "github",
+            "sample_n": s_github["total_records"],
+            "sample_conflict_rate": s_github["conflict_rate"],
+            "sample_mean_ci": s_github["mean_ci"],
+            "sample_q_base": s_github["mean_q_base"],
+            "sample_q_resolved": s_github["mean_q_resolved"],
+            "extended_n": e_github["total_records"],
+            "extended_conflict_rate": e_github["conflict_rate"],
+            "extended_mean_ci": e_github["mean_ci"],
+            "extended_q_base": e_github["mean_q_base"],
+            "extended_q_resolved": e_github["mean_q_resolved"],
+            "diff_conflict_rate": diff_rate,
+            "diff_mean_ci": diff_ci,
+            "is_consistent": bool(abs(diff_rate) < 0.05 and abs(diff_ci) < 0.03)
+        })
+
+    return comparisons
+
