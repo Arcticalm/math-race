@@ -5,6 +5,7 @@ import copy
 import csv
 import json
 import math
+import random
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
@@ -295,7 +296,8 @@ def _shift_sortie(sortie, delay_s: float) -> None:
 
 
 def coordinate_transport_starts(sorties, boxes, intervals: list[dict], batteries,
-                                step_s: float = 60.0, maximum_delay_s: float = 1800.0) -> tuple[list, dict]:
+                                step_s: float = 60.0, maximum_delay_s: float = 1800.0,
+                                passes: int = 3, order_seed: int | None = None) -> tuple[list, dict]:
     schedule = copy.deepcopy(sorties)
     gaps_by_sortie: dict[str, list[dict]] = {}
     for interval in intervals:
@@ -314,12 +316,15 @@ def coordinate_transport_starts(sorties, boxes, intervals: list[dict], batteries
     current_gaps = [item for values in gaps_by_sortie.values() for item in values]
     current_peak, current_load = _peak_gap_load(current_gaps)
     current_lateness = _weighted_expected_lateness(schedule, boxes)
-    for _ in range(3):
+    rng = random.Random(order_seed)
+    for _ in range(max(1, passes)):
         improved = False
         ordered = sorted(schedule, key=lambda sortie: (
             -sum(item["end_s"] - item["start_s"] for item in gaps_by_sortie.get(sortie.code, [])),
             sortie.prep_start_s,
         ))
+        if order_seed is not None:
+            rng.shuffle(ordered)
         for sortie in ordered:
             original_delay = delays[sortie.code]
             best = (current_peak, current_load, current_lateness, sum(delays.values()), original_delay)
@@ -362,7 +367,8 @@ def coordinate_transport_starts(sorties, boxes, intervals: list[dict], batteries
         if not improved:
             break
     return schedule, {
-        "method": "three-pass coordinate search over delayed sortie starts",
+        "method": f"{max(1, passes)}-pass coordinate search over delayed sortie starts",
+        "order_seed": order_seed,
         "maximum_delay_s": maximum_delay_s,
         "step_s": step_s,
         "delays_s": {code: delay for code, delay in delays.items() if delay > 0},
@@ -662,6 +668,23 @@ def _charge_duration(full_charge_s: float, soc: float) -> float:
     return full_charge_s * 0.35 * (1 - soc) / 0.1
 
 
+def _maximal_overlap_cliques(starts, ends, capacity: int) -> list[tuple[int, ...]]:
+    """Return maximal overloaded cliques for half-open resource intervals."""
+    masks = set()
+    for time_s in sorted(set(starts)):
+        active = 0
+        for index, (start, end) in enumerate(zip(starts, ends)):
+            if start <= time_s + 1e-9 and end > time_s + 1e-7:
+                active |= 1 << index
+        if active.bit_count() > capacity:
+            masks.add(active)
+    maximal = []
+    for mask in sorted(masks, key=int.bit_count, reverse=True):
+        if not any(mask & existing == mask for existing in maximal):
+            maximal.append(mask)
+    return [tuple(index for index in range(len(starts)) if mask & (1 << index)) for mask in maximal]
+
+
 def select_relay_schedule(candidate_groups: list[dict], gap_count: int,
                           search_limit: int = 50000, objective: str = "energy") -> dict:
     """Select interval missions with exact airframe and component capacities."""
@@ -691,15 +714,10 @@ def select_relay_schedule(candidate_groups: list[dict], gap_count: int,
                 continue
             constraints.append(([i for i, c in enumerate(candidates)
                                  if gap in c["covered_gap_ids"]], 1, np.inf))
-        # An interval graph needs exactly its peak overlap number of colors.
-        # Only starts change overlap upward; equal end/start releases first.
+        # Interval graphs need capacity constraints only on maximal cliques.
         for ends, capacity in ((drone_ends, 2), (battery_ends, relay.battery_count)):
-            seen = set()
-            for time_s in sorted(set(starts)):
-                active = tuple(np.flatnonzero((starts <= time_s) & (ends > time_s + 1e-7)))
-                if len(active) > capacity and active not in seen:
-                    constraints.append((active, 0, capacity))
-                    seen.add(active)
+            for active in _maximal_overlap_cliques(starts, ends, capacity):
+                constraints.append((active, 0, capacity))
         matrix = lil_matrix((len(constraints), count))
         for row, (indices, _, _) in enumerate(constraints):
             matrix[row, list(indices)] = 1
@@ -736,30 +754,93 @@ def select_relay_schedule(candidate_groups: list[dict], gap_count: int,
 
 def run(output_dir: Path = OUTPUT_DEFAULT, sample_step_s: float = 10.0,
         relay_candidate_step_s: float = 10.0) -> dict:
-    sorties, transport_metrics, boxes = solve_problem2()
-    phases = build_trajectory(sorties)
-    samples, intervals = screen_direct_links(sorties, phases, sample_step_s)
-    gaps = _merge_gap_intervals(intervals)
-    _assign_gap_ids(intervals, gaps)
+    primary_sorties, primary_metrics, boxes, q2_candidates = solve_problem2(return_candidates=True)
     drones, batteries = load_resources()
-    coordinated_transport, transport_coordination = coordinate_transport_starts(
-        sorties, boxes, intervals, batteries, step_s=60.0,
-    )
-    if transport_coordination["delays_s"]:
-        sorties = coordinated_transport
-        phases = build_trajectory(sorties)
-        samples, intervals = screen_direct_links(sorties, phases, sample_step_s)
-        gaps = _merge_gap_intervals(intervals)
-        _assign_gap_ids(intervals, gaps)
-    relay_candidates = search_relay_candidates(sorties, phases, gaps, relay_candidate_step_s)
     from src.problem3.joint import coordinate_joint_schedule
-    coordinated_sorties, selected, coordination = coordinate_joint_schedule(sorties, relay_candidates)
-    if coordinated_sorties is not None:
-        sorties = coordinated_sorties
-        phases = build_trajectory(sorties)
-        samples, intervals = screen_direct_links(sorties, phases, sample_step_s)
+    alternatives = [
+        {"label": "Q2 primary", "sorties": primary_sorties, "metrics": primary_metrics},
+    ]
+    primary_labels = set(primary_metrics.get("primary_candidate", []))
+    other = [item for item in q2_candidates
+             if not primary_labels.intersection(item["labels"])]
+    if other:
+        reduced_sortie = min(other, key=lambda item: (
+            item["metrics"].get("sortie_count", len(item["sorties"])),
+            item["metrics"].get("weighted_all_expected_tardiness", math.inf),
+            item["metrics"].get("total_energy_kwh", math.inf),
+        ))
+        alternatives.append({
+            "label": "Q2 reduced-sortie alternative: " + " | ".join(reduced_sortie["labels"]),
+            "sorties": reduced_sortie["sorties"], "metrics": reduced_sortie["metrics"],
+        })
+        remaining = [item for item in other if item is not reduced_sortie]
+        energy_candidate = next((item for item in remaining
+                                 if any(label.endswith("/energy") for label in item["labels"])), None)
+        if energy_candidate is not None:
+            alternatives.append({
+                "label": "Q2 energy-oriented alternative: " + " | ".join(energy_candidate["labels"]),
+                "sorties": energy_candidate["sorties"], "metrics": energy_candidate["metrics"],
+            })
+
+    trials = []
+    for alternative in alternatives:
+        trial_sorties = copy.deepcopy(alternative["sorties"])
+        phases = build_trajectory(trial_sorties)
+        samples, intervals = screen_direct_links(trial_sorties, phases, sample_step_s)
         gaps = _merge_gap_intervals(intervals)
         _assign_gap_ids(intervals, gaps)
+        coordinated_transport, transport_coordination = coordinate_transport_starts(
+            trial_sorties, boxes, intervals, batteries, step_s=60.0,
+            maximum_delay_s=3600.0, passes=4, order_seed=11,
+        )
+        trial_sorties = coordinated_transport
+        phases = build_trajectory(trial_sorties)
+        samples, intervals = screen_direct_links(trial_sorties, phases, sample_step_s)
+        gaps = _merge_gap_intervals(intervals)
+        _assign_gap_ids(intervals, gaps)
+        relay_candidates = search_relay_candidates(
+            trial_sorties, phases, gaps, relay_candidate_step_s,
+        )
+        coordinated_sorties, selected, coordination = coordinate_joint_schedule(
+            trial_sorties, relay_candidates,
+        )
+        if coordinated_sorties is not None:
+            trial_sorties = coordinated_sorties
+            phases = build_trajectory(trial_sorties)
+            samples, intervals = screen_direct_links(trial_sorties, phases, sample_step_s)
+            gaps = _merge_gap_intervals(intervals)
+            _assign_gap_ids(intervals, gaps)
+        schedule_info = coordination.get("relay_schedule", {})
+        trial_metric = {
+            "label": alternative["label"], "sortie_count": len(trial_sorties),
+            "gap_count": len(gaps), "gap_duration_s": sum(gap["end_s"] - gap["start_s"] for gap in gaps),
+            "peak_simultaneous_direct_gaps": transport_coordination["peak_simultaneous_direct_gaps"],
+            "weighted_expected_lateness_s": transport_coordination["weighted_expected_lateness_s"],
+            "transport_delays_s": transport_coordination["delays_s"],
+            "candidate_count": sum(group["candidate_count"] for group in relay_candidates),
+            "candidate_cover_possible_gap_count": len(gaps) - len(schedule_info.get("impossible_gap_ids", [])),
+            "relay_cover_feasible": bool(coordination["feasible"]),
+            "relay_solver_status": schedule_info.get("solver_status", ""),
+        }
+        score = (
+            not bool(coordination["feasible"]), len(gaps), trial_metric["gap_duration_s"],
+            trial_metric["weighted_expected_lateness_s"], alternative["metrics"].get("total_energy_kwh", math.inf),
+        )
+        trials.append({
+            "score": score, "sorties": trial_sorties, "phases": phases, "samples": samples,
+            "intervals": intervals, "gaps": gaps, "relay_candidates": relay_candidates,
+            "selected": selected, "coordination": coordination,
+            "transport_coordination": transport_coordination,
+            "transport_metrics": alternative["metrics"], "comparison": trial_metric,
+        })
+    best_trial = min(trials, key=lambda trial: trial["score"])
+    sorties, phases, samples, intervals, gaps = (
+        best_trial[key] for key in ("sorties", "phases", "samples", "intervals", "gaps"))
+    relay_candidates, selected, coordination = (
+        best_trial[key] for key in ("relay_candidates", "selected", "coordination"))
+    transport_coordination = best_trial["transport_coordination"]
+    transport_metrics = best_trial["transport_metrics"]
+    candidate_comparison = [trial["comparison"] for trial in trials]
     flat_candidates = [{"candidate_group": group["group"], **candidate}
                        for group in relay_candidates for candidate in group["candidates"]]
     selected_schedule = coordination.get("relay_schedule", {})
@@ -769,7 +850,7 @@ def run(output_dir: Path = OUTPUT_DEFAULT, sample_step_s: float = 10.0,
                       "feasible_cover": coordination["feasible"],
                       "uncovered_gap_ids": list(selected_schedule.get("uncovered_gap_ids", [])),
                       "impossible_gap_ids": list(selected_schedule.get("impossible_gap_ids", [])),
-                      "method": "joint transport-delay and relay-interval MILP"}
+                      "method": "sequential fixed-transport interval-cover MILP"}
     transport_evaluator = RouteEvaluator(0.2, 1.0)
     try:
         transport_metrics = _validate(sorties, boxes, drones, batteries, transport_evaluator)
@@ -792,6 +873,7 @@ def run(output_dir: Path = OUTPUT_DEFAULT, sample_step_s: float = 10.0,
         "direct_link_threshold_db": link_limits(load_link_parameters())["transport_gateway_db"],
         "sample_step_s": sample_step_s,
         "transport_start_coordination": coordination,
+        "transport_candidate_comparison": candidate_comparison,
         "sample_count": len(samples),
         "direct_gap_sample_count": sum(not item["available"] for item in samples),
         "direct_gap_interval_count": len(gaps),

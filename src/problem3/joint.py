@@ -8,9 +8,9 @@ from src.problem3.solver import select_relay_schedule
 def coordinate_joint_schedule(sorties, relay_candidate_groups):
     """Select a resource-feasible relay cover for the supplied transport plan.
 
-    Transport start coordination is performed before candidate generation. This
-    function keeps that plan unchanged and makes the relay selection contract
-    explicit for the main solver.
+    Transport start coordination and relay candidate generation happen before
+    this call. This function keeps those transport times fixed while solving the
+    binary interval cover and resource assignment MILP.
     """
     declared_gap_ids = {
         int(gap["gap_id"])
@@ -27,7 +27,7 @@ def coordinate_joint_schedule(sorties, relay_candidate_groups):
     gap_count = max(declared_gap_ids | candidate_gap_ids, default=0)
     schedule = select_relay_schedule(relay_candidate_groups, gap_count)
     metrics = {
-        "method": "transport plan fixed after sampled start coordination; relay cover solved by interval MILP",
+        "method": "relay interval-cover MILP after transport start coordination",
         "feasible": bool(schedule["feasible_cover"]),
         "relay_schedule": {key: value for key, value in schedule.items() if key != "selected"},
         "transport_delays_s": {},

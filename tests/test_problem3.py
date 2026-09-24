@@ -24,6 +24,7 @@ from src.problem3.solver import (
     _assign_gap_ids,
     _merge_gap_intervals,
     select_relay_schedule,
+    _maximal_overlap_cliques,
 )
 
 
@@ -113,6 +114,10 @@ class CommunicationPhysicsTests(unittest.TestCase):
                                           "candidates": [candidate([1], 1500, 2000, 1000, 2000)]}], gap_count=2)
         self.assertFalse(missing["feasible_cover"])
         self.assertEqual(missing["uncovered_gap_ids"], [2])
+
+    def test_maximal_interval_cliques_preserve_capacity_constraints(self):
+        cliques = _maximal_overlap_cliques([0, 1, 2, 8], [5, 6, 7, 9], 2)
+        self.assertEqual({frozenset(clique) for clique in cliques}, {frozenset({0, 1, 2})})
 
     def _evaluator(self, raster):
         memory = MemoryFile()
