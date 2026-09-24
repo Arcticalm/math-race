@@ -1,0 +1,9 @@
+﻿方案,可行,架次,总能耗（kWh）,完成时间（s）,加权迟到（全部期望时间）,全部期望时间准时率,硬截止合规率,说明
+minimum_sorties | minimum_work_time | minimum_sorties_merged | minimum_work_time_merged/balanced,True,18,60.656212432551534,10637.578633572322,445798.4045458401,0.875,1.0,feasible heuristic candidate; not a Pareto-optimality certificate
+minimum_sorties | minimum_work_time | minimum_sorties_merged | minimum_work_time_merged/energy,True,18,60.656212432551534,10637.578633572322,445798.4045458401,0.875,1.0,feasible heuristic candidate; not a Pareto-optimality certificate
+minimum_energy | minimum_energy_merged/balanced,True,19,60.55816714751669,9875.461999202495,314906.2095993635,0.875,1.0,feasible heuristic candidate; not a Pareto-optimality certificate
+minimum_energy | minimum_energy_merged/energy,True,19,60.55816714751669,9875.461999202495,314906.2095993635,0.875,1.0,feasible heuristic candidate; not a Pareto-optimality certificate
+constructive/balanced,True,31,81.82379438434599,10112.388551671855,114024.43336490939,0.8875,1.0,feasible heuristic candidate; not a Pareto-optimality certificate
+constructive/energy,True,31,78.96694314743418,15283.41089855333,310067.74172843597,0.8625,1.0,feasible heuristic candidate; not a Pareto-optimality certificate
+constructive_merged/balanced,True,25,73.9853708859809,12569.271164984364,312706.1673999756,0.825,1.0,feasible heuristic candidate; not a Pareto-optimality certificate
+constructive_merged/energy,True,25,73.9853708859809,12569.271164984364,312706.1673999756,0.825,1.0,feasible heuristic candidate; not a Pareto-optimality certificate

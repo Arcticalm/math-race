@@ -11,7 +11,7 @@ from pathlib import Path
 import rasterio
 
 from src.problem1.solver import Node, load_aircraft, sample_leg
-from src.problem2.solver import (
+from src.problem21.solver import (
     RouteEvaluator,
     _hard_deadlines,
     _charge_duration as transport_charge_duration,

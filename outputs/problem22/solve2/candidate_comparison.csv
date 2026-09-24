@@ -1,0 +1,9 @@
+﻿strategy,sortie_count,total_energy_kwh,makespan_s,weighted_all_expected_tardiness,all_expected_on_time_count,nondominated_among_candidates,selected
+minimum_sorties | minimum_work_time | minimum_sorties_merged | minimum_work_time_merged/balanced,18,60.656212432551534,10637.578633572322,445798.4045458401,70,True,False
+minimum_sorties | minimum_work_time | minimum_sorties_merged | minimum_work_time_merged/energy,18,60.656212432551534,10637.578633572322,445798.4045458401,70,True,False
+minimum_energy | minimum_energy_merged/balanced,19,60.55816714751669,9875.461999202495,314906.2095993635,70,True,False
+minimum_energy | minimum_energy_merged/energy,19,60.55816714751669,9875.461999202495,314906.2095993635,70,True,False
+constructive/balanced,31,81.82379438434599,10112.388551671855,114024.43336490939,71,True,True
+constructive/energy,31,78.96694314743418,15283.41089855333,310067.74172843597,69,True,False
+constructive_merged/balanced,25,73.9853708859809,12569.271164984364,312706.1673999756,66,True,False
+constructive_merged/energy,25,73.9853708859809,12569.271164984364,312706.1673999756,66,True,False

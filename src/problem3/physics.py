@@ -8,7 +8,7 @@ import rasterio
 from openpyxl import load_workbook
 
 from src.problem1.solver import BASE_DATA, DEM_PATH, Node, great_circle_distance_m, load_nodes
-from src.problem2.solver import _rows
+from src.problem21.solver import _rows
 
 
 @dataclass(frozen=True)
