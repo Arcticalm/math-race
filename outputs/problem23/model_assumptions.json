@@ -3,5 +3,5 @@
   "horizontal_energy_scale": 1.0,
   "solver": "exact per-site partitions and constructive partitions, optional two-site merges; CP-SAT or heuristic scheduling for each fixed grouping",
   "optimality_status": "best audited candidate; global Problem 2 optimum unproven",
-  "cp_sat_available": false
+  "cp_sat_available": true
 }
