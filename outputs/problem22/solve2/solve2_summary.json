@@ -1,0 +1,13 @@
+{
+  "feasible": true,
+  "sortie_count": 31,
+  "total_energy_kwh": 81.82379438434599,
+  "makespan_s": 10112.388551671855,
+  "weighted_all_expected_tardiness": 114024.43336490939,
+  "strategy": "constructive/balanced",
+  "optimality_status": "feasible heuristic for complete Problem 2; global optimum unproven",
+  "single_site_partition_status": "exact within each site's complete feasible subset enumeration",
+  "generated_grouping_count": 8,
+  "unique_grouping_count": 4,
+  "feasible_schedule_count": 8
+}

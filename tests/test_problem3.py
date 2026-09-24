@@ -8,7 +8,7 @@ from rasterio.io import MemoryFile
 from rasterio.transform import from_origin
 
 from src.problem1.solver import Node
-from src.problem2.solver import solve as solve_problem2
+from src.problem21.solver import solve as solve_problem2
 from src.problem3.physics import (
     LinkEvaluator,
     certify_moving_link,
