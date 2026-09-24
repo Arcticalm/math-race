@@ -11,6 +11,7 @@ from src.problem1.solver import Node
 from src.problem2.solver import solve as solve_problem2
 from src.problem3.physics import (
     LinkEvaluator,
+    certify_moving_link,
     estimate_relay_mission,
     link_limits,
     load_link_parameters,
@@ -18,12 +19,54 @@ from src.problem3.physics import (
 )
 from src.problem3.solver import (
     build_trajectory,
+    _sample_intervals,
     coordinate_transport_starts,
+    _assign_gap_ids,
+    _merge_gap_intervals,
     select_relay_schedule,
 )
 
 
 class CommunicationPhysicsTests(unittest.TestCase):
+    def test_adjacent_phase_gaps_merge_by_sortie_and_keep_interval_ids(self):
+        intervals = [
+            {"sortie": "Q3-01", "phase": "climb", "start_s": 10.0, "end_s": 20.0,
+             "direct_available": False, "reason": "terrain"},
+            {"sortie": "Q3-01", "phase": "cruise", "start_s": 20.0, "end_s": 30.0,
+             "direct_available": False, "reason": "terrain"},
+            {"sortie": "Q3-01", "phase": "descent", "start_s": 30.1, "end_s": 40.0,
+             "direct_available": False, "reason": "terrain"},
+            {"sortie": "Q3-02", "phase": "cruise", "start_s": 15.0, "end_s": 25.0,
+             "direct_available": False, "reason": "range"},
+            {"sortie": "Q3-01", "phase": "cruise", "start_s": 20.0, "end_s": 25.0,
+             "direct_available": True, "reason": None},
+        ]
+        gaps = _merge_gap_intervals(intervals)
+        _assign_gap_ids(intervals, gaps)
+        self.assertEqual(len(gaps), 3)
+        self.assertEqual([(gap["sortie"], gap["start_s"], gap["end_s"]) for gap in gaps], [
+            ("Q3-01", 10.0, 30.0), ("Q3-02", 15.0, 25.0), ("Q3-01", 30.1, 40.0),
+        ])
+        self.assertEqual({row["gap_id"] for row in intervals if not row["direct_available"]}, {1, 2, 3})
+        self.assertNotIn("gap_id", next(row for row in intervals if row["direct_available"]))
+
+    def test_sample_transitions_leave_no_unreported_time(self):
+        points = [{"sortie": "T1", "phase": "cruise", "time_s": t,
+                   "available": ok, "reason": None}
+                  for t, ok in [(0, True), (10, False), (20, False), (30, True), (40, True)]]
+        rows = _sample_intervals(points)
+        self.assertEqual([(r["start_s"], r["end_s"], r["direct_available"]) for r in rows],
+                         [(0, 30, False), (30, 40, True)])
+        self.assertEqual(sum(r["end_s"] - r["start_s"] for r in rows), 40)
+
+    def test_high_hover_point_requires_actual_climb(self):
+        params = load_relay_parameters()
+        mission = estimate_relay_mission(0, 0, 100, 400, 0, 100, 100, params)
+        self.assertAlmostEqual(mission.outbound_flight_s, 300 / params.climb_speed_mps)
+        self.assertAlmostEqual(mission.return_flight_s, 300 / params.descent_speed_mps)
+        self.assertGreater(mission.energy_kwh, 300 * params.takeoff_mass_kg * 9.80665
+                           / (3600000 * params.climb_efficiency))
+
     def test_workbook_link_limits(self):
         limits = link_limits(load_link_parameters())
         self.assertAlmostEqual(limits["transport_gateway_db"], 122.0)
@@ -81,6 +124,7 @@ class CommunicationPhysicsTests(unittest.TestCase):
         evaluator = LinkEvaluator()
         evaluator.dem.close()
         evaluator.dem = dataset
+        evaluator.dem_values = raster.copy()
         evaluator._memory_file = memory
         return evaluator
 
@@ -122,6 +166,29 @@ class CommunicationPhysicsTests(unittest.TestCase):
             blocked.close()
             blocked._memory_file.close()
 
+    def test_interval_certificate_bounds_moving_obstruction(self):
+        terrain = np.zeros((3, 3), dtype=np.float32)
+        terrain[1, 1] = 150
+        evaluator = self._evaluator(terrain)
+        fixed = Node("G01", 0.0025, 0.0015, 0)
+        start = Node("moving", 0.0005, 0.0014, 0)
+        end = Node("moving", 0.0005, 0.0016, 0)
+        try:
+            self.assertFalse(certify_moving_link(evaluator, start, 100, end, 100,
+                                                  fixed, 100, 90))
+            self.assertTrue(certify_moving_link(evaluator, start, 200, end, 200,
+                                                 fixed, 200, 90))
+            for fraction in np.linspace(0, 1, 31):
+                point = Node("moving", start.longitude,
+                             start.latitude + fraction * (end.latitude - start.latitude), 0)
+                self.assertTrue(evaluator.evaluate(point, 200, fixed, 200, 90).available)
+            evaluator.dem_values[1, 1] = -32767
+            self.assertFalse(certify_moving_link(evaluator, start, 200, end, 200,
+                                                  fixed, 200, 200))
+        finally:
+            evaluator.close()
+            evaluator._memory_file.close()
+
     def test_reconstructed_track_matches_problem2_sortie_times(self):
         sorties, _, _ = solve_problem2()
         phases = build_trajectory(sorties)
@@ -141,7 +208,11 @@ class CommunicationPhysicsTests(unittest.TestCase):
 
         from src.problem3.solver import run
 
-        with TemporaryDirectory() as temporary_directory:
+        from unittest.mock import patch
+        with TemporaryDirectory() as temporary_directory, patch(
+                "src.problem3.solver.search_relay_candidates", return_value=[]), patch(
+                "src.problem3.joint.coordinate_joint_schedule",
+                return_value=(None, [], {"feasible": False, "status": "infeasible fixture"})):
             result = run(Path(temporary_directory), sample_step_s=300, relay_candidate_step_s=300)
             self.assertFalse(result["relay_schedule"]["feasible_cover"])
             self.assertIn("not a feasible Q3 solution", result["status"])

@@ -4,78 +4,617 @@
   "box_count": 80,
   "sortie_count": 31,
   "direct_link_threshold_db": 122.0,
-  "sample_step_s": 60.0,
+  "sample_step_s": 300.0,
   "transport_start_coordination": {
-    "method": "three-pass coordinate search over delayed sortie starts",
-    "maximum_delay_s": 1800.0,
-    "step_s": 60.0,
-    "delays_s": {
-      "Q2-015": 60,
-      "Q2-018": 840,
-      "Q2-019": 360,
-      "Q2-021": 300,
-      "Q2-024": 552.4191275360863,
-      "Q2-026": 1380,
-      "Q2-027": 60,
-      "Q2-029": 300,
-      "Q2-030": 1800,
-      "Q2-031": 360
+    "method": "transport plan fixed after sampled start coordination; relay cover solved by interval MILP",
+    "feasible": false,
+    "relay_schedule": {
+      "feasible_cover": false,
+      "selected_count": 0,
+      "uncovered_gap_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24
+      ],
+      "impossible_gap_ids": [],
+      "best_partial_covered_count": 0,
+      "drone_ready_times": {
+        "R01": 0.0,
+        "R02": 0.0
+      },
+      "energy_component_ready_times": {
+        "RE-01": 0.0,
+        "RE-02": 0.0,
+        "RE-03": 0.0,
+        "RE-04": 0.0,
+        "RE-05": 0.0,
+        "RE-06": 0.0
+      },
+      "objective": "energy",
+      "solver_status": "The problem is infeasible. (HiGHS Status 8: model_status is Infeasible; primal_status is None)",
+      "mip_gap": null,
+      "method": "binary interval-cover MILP with airframe and component overlap cliques; interval coloring"
     },
-    "peak_simultaneous_direct_gaps": 4,
-    "integrated_squared_gap_load_s": 28292.45645344499,
-    "resource_schedule_feasible": true
+    "transport_delays_s": {
+      "Q2-012": 1500,
+      "Q2-014": 1500,
+      "Q2-018": 660,
+      "Q2-019": 660,
+      "Q2-023": 1560,
+      "Q2-024": 552.4191275360863,
+      "Q2-025": 1020,
+      "Q2-026": 1500,
+      "Q2-027": 1380,
+      "Q2-028": 960,
+      "Q2-029": 1680,
+      "Q2-030": 1800,
+      "Q2-031": 1320
+    },
+    "transport_coordination": {
+      "method": "three-pass coordinate search over delayed sortie starts",
+      "maximum_delay_s": 1800.0,
+      "step_s": 60.0,
+      "delays_s": {
+        "Q2-012": 1500,
+        "Q2-014": 1500,
+        "Q2-018": 660,
+        "Q2-019": 660,
+        "Q2-023": 1560,
+        "Q2-024": 552.4191275360863,
+        "Q2-025": 1020,
+        "Q2-026": 1500,
+        "Q2-027": 1380,
+        "Q2-028": 960,
+        "Q2-029": 1680,
+        "Q2-030": 1800,
+        "Q2-031": 1320
+      },
+      "peak_simultaneous_direct_gaps": 5,
+      "integrated_squared_gap_load_s": 43570.76193041055,
+      "weighted_expected_lateness_s": 207825.29798713006,
+      "resource_schedule_feasible": true
+    }
   },
-  "sample_count": 1021,
-  "direct_gap_sample_count": 403,
+  "sample_count": 499,
+  "direct_gap_sample_count": 204,
   "direct_gap_interval_count": 24,
-  "relay_candidate_step_s": 120.0,
-  "relay_candidates_saved_per_group": "best representative for each distinct gap-coverage subset",
+  "relay_candidate_step_s": 300.0,
+  "relay_candidates_saved_per_group": "energy, departure and return representatives per coverage subset",
   "relay_candidate_summary": [
     {
       "group": 1,
-      "covered_sorties": "Q2-008,Q2-009,Q2-010,Q2-011,Q2-012,Q2-013,Q2-014,Q2-015,Q2-016,Q2-017,Q2-018,Q2-019,Q2-020,Q2-021,Q2-022,Q2-023,Q2-024,Q2-026,Q2-027,Q2-028,Q2-029,Q2-030,Q2-031",
-      "gap_count": 23,
-      "gap_start_s": 803.9626477115796,
-      "gap_end_s": 8988.86208053246,
-      "candidate_count": 365
-    },
-    {
-      "group": 2,
-      "covered_sorties": "Q2-025",
-      "gap_count": 1,
-      "gap_start_s": 9007.804133062136,
-      "gap_end_s": 9724.131503304585,
-      "candidate_count": 1
+      "covered_sorties": "Q2-008,Q2-009,Q2-010,Q2-011,Q2-012,Q2-013,Q2-014,Q2-015,Q2-016,Q2-017,Q2-018,Q2-019,Q2-020,Q2-021,Q2-022,Q2-023,Q2-024,Q2-025,Q2-026,Q2-027,Q2-028,Q2-029,Q2-030,Q2-031",
+      "gap_count": 24,
+      "gap_start_s": 661.7471744490508,
+      "gap_end_s": 10771.53316834639,
+      "candidate_count": 3125
     }
   ],
-  "gap_groups_with_relay_candidate": 2,
-  "relay_candidate_feasibility": "candidates are screened for sampled simultaneous relay-access coverage of subsets within overlapping direct-gap components; final continuous communication is not certified",
-  "relay_schedule_feasibility": "greedy maximum uncovered-gap coverage, then energy; only candidates from sampled search are considered",
+  "gap_groups_with_relay_candidate": 1,
+  "relay_candidate_feasibility": "sampled spatial candidates; final feasibility is determined by the independent interval audit",
+  "relay_schedule_feasibility": "joint transport-delay and relay-interval MILP",
   "relay_schedule": {
+    "selected_count": 0,
     "feasible_cover": false,
-    "selected_count": 2,
     "uncovered_gap_ids": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
       11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
       19,
       20,
+      21,
+      22,
       23,
       24
     ],
-    "drone_ready_times": {
-      "R01": 8769.345741816924,
-      "R02": 8585.995669443952
-    },
-    "energy_component_ready_times": {
-      "RE-01": 9971.923448762585,
-      "RE-02": 9741.918555973298,
-      "RE-03": 0.0,
-      "RE-04": 0.0,
-      "RE-05": 0.0,
-      "RE-06": 0.0
-    },
-    "method": "greedy maximum uncovered-gap coverage, then energy; only candidates from sampled search are considered"
+    "impossible_gap_ids": [],
+    "method": "joint transport-delay and relay-interval MILP"
   },
   "DSM_node_elevation_audit_count": 16,
   "continuity_certified": false,
-  "note": "Fixed-step direct-link screening is diagnostic only; failed intervals require relay coverage and final adaptive audit."
+  "communication_validation": {
+    "sample_step_s": 30.0,
+    "minimum_certification_step_s": 1.0,
+    "interval_count": 3089,
+    "uncovered_interval_count": 547,
+    "communication_outage_s": 15574.88662012269,
+    "certified": false,
+    "method": "recursive interval certification with conservative swept-cell LOS bounds"
+  },
+  "transport_validation": {
+    "feasible": true,
+    "violations": [],
+    "hard_deadlines_feasible": true,
+    "resource_schedule_feasible": true,
+    "physics_and_timeline_feasible": true,
+    "box_count": 80,
+    "assigned_box_count": 80,
+    "sortie_count": 31,
+    "total_energy_kwh": 81.82379438434599,
+    "makespan_s": 11132.388551671855,
+    "hard_deadline_check_count": 46,
+    "hard_deadline_compliant_count": 46,
+    "hard_deadline_compliance_rate": 1.0,
+    "all_due_box_count": 80,
+    "all_expected_on_time_count": 69,
+    "all_expected_on_time_rate": 0.8625,
+    "all_expected_tardiness_s": 19932.574044190806,
+    "weighted_all_expected_tardiness": 207825.29798713006,
+    "expected_time_by_item_type": {
+      "医疗物资": {
+        "count": 16,
+        "on_time_count": 16,
+        "on_time_rate": 1.0
+      },
+      "应急食品": {
+        "count": 19,
+        "on_time_count": 17,
+        "on_time_rate": 0.8947368421052632
+      },
+      "生活卫生用品": {
+        "count": 9,
+        "on_time_count": 9,
+        "on_time_rate": 1.0
+      },
+      "饮用水": {
+        "count": 36,
+        "on_time_count": 27,
+        "on_time_rate": 0.75
+      }
+    },
+    "hard_deadline_by_item_type": {
+      "医疗物资": {
+        "constraint_count": 31,
+        "compliant_count": 31,
+        "compliance_rate": 1.0
+      },
+      "应急食品": {
+        "constraint_count": 0,
+        "compliant_count": 0,
+        "compliance_rate": 1.0
+      },
+      "生活卫生用品": {
+        "constraint_count": 0,
+        "compliant_count": 0,
+        "compliance_rate": 1.0
+      },
+      "饮用水": {
+        "constraint_count": 15,
+        "compliant_count": 15,
+        "compliance_rate": 1.0
+      }
+    },
+    "soft_tardiness_s": 19932.574044190806,
+    "weighted_soft_tardiness_s": 207825.29798713006,
+    "soft_on_time_rate": 0.828125,
+    "resource_checks": {
+      "airframe_count": 8,
+      "battery_count": 14,
+      "all_conflicts_clear": true
+    }
+  },
+  "hard_deadline_audit": {
+    "check_count": 46,
+    "passed_count": 46,
+    "failed_count": 0,
+    "passed": true,
+    "checks": [
+      {
+        "sortie": "Q2-003",
+        "box": "S011-MED-01",
+        "kind": "医疗期望送达",
+        "delivery_s": 845.5260700068523,
+        "deadline_s": 10800.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-003",
+        "box": "S011-MED-01",
+        "kind": "首批截止",
+        "delivery_s": 845.5260700068523,
+        "deadline_s": 10800.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-003",
+        "box": "S011-WAT-01",
+        "kind": "首批截止",
+        "delivery_s": 845.5260700068523,
+        "deadline_s": 10800.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-005",
+        "box": "S001-MED-01",
+        "kind": "医疗期望送达",
+        "delivery_s": 1984.9810758450742,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-005",
+        "box": "S001-MED-01",
+        "kind": "首批截止",
+        "delivery_s": 1984.9810758450742,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-005",
+        "box": "S001-MED-02",
+        "kind": "医疗期望送达",
+        "delivery_s": 1984.9810758450742,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-005",
+        "box": "S001-WAT-01",
+        "kind": "首批截止",
+        "delivery_s": 1984.9810758450742,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-007",
+        "box": "S006-MED-01",
+        "kind": "医疗期望送达",
+        "delivery_s": 2008.7327760914413,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-007",
+        "box": "S006-MED-01",
+        "kind": "首批截止",
+        "delivery_s": 2008.7327760914413,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-007",
+        "box": "S006-WAT-01",
+        "kind": "首批截止",
+        "delivery_s": 2008.7327760914413,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-008",
+        "box": "S013-MED-01",
+        "kind": "医疗期望送达",
+        "delivery_s": 3279.7704824061097,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-008",
+        "box": "S013-MED-01",
+        "kind": "首批截止",
+        "delivery_s": 3279.7704824061097,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-008",
+        "box": "S013-WAT-01",
+        "kind": "首批截止",
+        "delivery_s": 3279.7704824061097,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-010",
+        "box": "S010-MED-01",
+        "kind": "医疗期望送达",
+        "delivery_s": 1104.4634512744037,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-010",
+        "box": "S010-MED-01",
+        "kind": "首批截止",
+        "delivery_s": 1104.4634512744037,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-010",
+        "box": "S010-WAT-01",
+        "kind": "首批截止",
+        "delivery_s": 1104.4634512744037,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-012",
+        "box": "S009-MED-01",
+        "kind": "医疗期望送达",
+        "delivery_s": 6259.417515075997,
+        "deadline_s": 10800.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-012",
+        "box": "S009-MED-01",
+        "kind": "首批截止",
+        "delivery_s": 6259.417515075997,
+        "deadline_s": 10800.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-012",
+        "box": "S009-WAT-01",
+        "kind": "首批截止",
+        "delivery_s": 6259.417515075997,
+        "deadline_s": 10800.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-014",
+        "box": "S005-MED-01",
+        "kind": "医疗期望送达",
+        "delivery_s": 7770.4867374522655,
+        "deadline_s": 10800.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-014",
+        "box": "S005-MED-01",
+        "kind": "首批截止",
+        "delivery_s": 7770.4867374522655,
+        "deadline_s": 10800.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-014",
+        "box": "S005-WAT-01",
+        "kind": "首批截止",
+        "delivery_s": 7770.4867374522655,
+        "deadline_s": 10800.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-015",
+        "box": "S007-MED-01",
+        "kind": "医疗期望送达",
+        "delivery_s": 1133.8613397248662,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-015",
+        "box": "S007-MED-01",
+        "kind": "首批截止",
+        "delivery_s": 1133.8613397248662,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-015",
+        "box": "S007-WAT-01",
+        "kind": "首批截止",
+        "delivery_s": 1133.8613397248662,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-018",
+        "box": "S002-MED-01",
+        "kind": "医疗期望送达",
+        "delivery_s": 1945.8063295718503,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-018",
+        "box": "S002-MED-01",
+        "kind": "首批截止",
+        "delivery_s": 1945.8063295718503,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-018",
+        "box": "S002-WAT-01",
+        "kind": "首批截止",
+        "delivery_s": 1945.8063295718503,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-019",
+        "box": "S015-MED-01",
+        "kind": "医疗期望送达",
+        "delivery_s": 1918.545616316972,
+        "deadline_s": 7200.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-019",
+        "box": "S015-MED-01",
+        "kind": "首批截止",
+        "delivery_s": 1918.545616316972,
+        "deadline_s": 7200.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-019",
+        "box": "S015-WAT-01",
+        "kind": "首批截止",
+        "delivery_s": 1918.545616316972,
+        "deadline_s": 10800.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-022",
+        "box": "S014-MED-01",
+        "kind": "医疗期望送达",
+        "delivery_s": 2925.8914113894866,
+        "deadline_s": 7200.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-022",
+        "box": "S014-MED-01",
+        "kind": "首批截止",
+        "delivery_s": 2925.8914113894866,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-022",
+        "box": "S014-WAT-01",
+        "kind": "首批截止",
+        "delivery_s": 2925.8914113894866,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-024",
+        "box": "S012-MED-01",
+        "kind": "医疗期望送达",
+        "delivery_s": 3600.0,
+        "deadline_s": 7200.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-024",
+        "box": "S012-MED-01",
+        "kind": "首批截止",
+        "delivery_s": 3600.0,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-024",
+        "box": "S012-WAT-01",
+        "kind": "首批截止",
+        "delivery_s": 3600.0,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-026",
+        "box": "S008-MED-01",
+        "kind": "医疗期望送达",
+        "delivery_s": 5586.238728004946,
+        "deadline_s": 7200.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-026",
+        "box": "S008-MED-01",
+        "kind": "首批截止",
+        "delivery_s": 5586.238728004946,
+        "deadline_s": 7200.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-026",
+        "box": "S008-WAT-01",
+        "kind": "首批截止",
+        "delivery_s": 5586.238728004946,
+        "deadline_s": 7200.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-027",
+        "box": "S004-MED-01",
+        "kind": "医疗期望送达",
+        "delivery_s": 5514.675171798843,
+        "deadline_s": 7200.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-027",
+        "box": "S004-MED-01",
+        "kind": "首批截止",
+        "delivery_s": 5514.675171798843,
+        "deadline_s": 7200.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-027",
+        "box": "S004-WAT-01",
+        "kind": "首批截止",
+        "delivery_s": 5514.675171798843,
+        "deadline_s": 7200.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-030",
+        "box": "S003-MED-01",
+        "kind": "医疗期望送达",
+        "delivery_s": 6851.928585761858,
+        "deadline_s": 7200.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-030",
+        "box": "S003-MED-01",
+        "kind": "首批截止",
+        "delivery_s": 6851.928585761858,
+        "deadline_s": 7200.0,
+        "passed": true
+      },
+      {
+        "sortie": "Q2-030",
+        "box": "S003-WAT-01",
+        "kind": "首批截止",
+        "delivery_s": 6851.928585761858,
+        "deadline_s": 7200.0,
+        "passed": true
+      }
+    ]
+  },
+  "relay_validation": {
+    "mission_count": 0,
+    "resource_conflict_count": 0,
+    "feasible": true,
+    "conflicts": []
+  },
+  "joint_makespan_s": 11132.388551671855,
+  "transport_energy_kwh": 81.82379438434599,
+  "relay_energy_kwh": 0,
+  "joint_energy_kwh": 81.82379438434599,
+  "note": "Candidate screening is sampled. Final communication certification uses conservative swept-cell interval bounds, not sample interpolation.",
+  "feasible": false
 }

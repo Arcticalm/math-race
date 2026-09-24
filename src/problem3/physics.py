@@ -4,6 +4,7 @@ import math
 from dataclasses import dataclass
 from pathlib import Path
 
+import numpy as np
 import rasterio
 from openpyxl import load_workbook
 
@@ -134,7 +135,7 @@ def estimate_relay_mission(service_s: float, outbound_distance_m: float, outboun
         raise ValueError("Relay mission durations and distances must be nonnegative")
 
     def leg(distance_m: float, terrain_max_m: float, start_m: float, end_m: float) -> tuple[float, float]:
-        cruise_altitude_m = terrain_max_m + 50
+        cruise_altitude_m = max(terrain_max_m + 50, start_m, end_m)
         climb_m = max(0.0, cruise_altitude_m - start_m)
         descent_m = max(0.0, cruise_altitude_m - end_m)
         climb_s = climb_m / params.climb_speed_mps
@@ -185,23 +186,22 @@ def _segment_elevations(dem: rasterio.io.DatasetReader, first: Node, second: Nod
                         step_m: float = 30.0, values=None) -> tuple[float, ...] | None:
     distance = great_circle_distance_m(first, second)
     intervals = max(1, math.ceil(distance / step_m))
-    elevations = []
-    for index in range(1, intervals):
-        fraction = index / intervals
-        longitude = first.longitude + fraction * (second.longitude - first.longitude)
-        latitude = first.latitude + fraction * (second.latitude - first.latitude)
-        row, col = rasterio.transform.rowcol(dem.transform, longitude, latitude)
-        if not (0 <= row < dem.height and 0 <= col < dem.width):
-            return None
-        value = float(values[row, col] if values is not None
-                      else dem.read(1, window=((row, row + 1), (col, col + 1)))[0, 0])
-        is_metadata_nodata = dem.nodata is not None and math.isclose(value, dem.nodata)
-        is_documented_nodata = math.isclose(value, -32767.0)
-        if not math.isfinite(value) or is_metadata_nodata or is_documented_nodata:
-            return None
-        elevations.append((index / intervals, value))
-    return tuple(value - (first_altitude_m + fraction * (second_altitude_m - first_altitude_m))
-                 for fraction, value in elevations)
+    fractions = np.arange(1, intervals, dtype=float) / intervals
+    longitude = first.longitude + fractions * (second.longitude - first.longitude)
+    latitude = first.latitude + fractions * (second.latitude - first.latitude)
+    rows, cols = rasterio.transform.rowcol(dem.transform, longitude, latitude)
+    rows, cols = np.asarray(rows), np.asarray(cols)
+    if np.any((rows < 0) | (rows >= dem.height) | (cols < 0) | (cols >= dem.width)):
+        return None
+    raster = values if values is not None else dem.read(1)
+    heights = raster[rows, cols]
+    invalid = ~np.isfinite(heights) | np.isclose(heights, -32767.0)
+    if dem.nodata is not None:
+        invalid |= np.isclose(heights, dem.nodata)
+    if np.any(invalid):
+        return None
+    return heights - (first_altitude_m + fractions * (second_altitude_m - first_altitude_m))
+
 
 
 class LinkEvaluator:
@@ -218,6 +218,9 @@ class LinkEvaluator:
                  threshold_db: float) -> LinkResult:
         horizontal_m = great_circle_distance_m(first, second)
         distance_m = math.hypot(horizontal_m, first_altitude_m - second_altitude_m)
+        if distance_m <= 0 and (first.code == "G01" or second.code == "G01"):
+            return LinkResult(0.0, None, False, None, threshold_db, True,
+                              "co-located gateway: zero-distance continuous extension")
         if distance_m <= 0:
             return LinkResult(0.0, None, None, None, threshold_db, False, "coincident 3D endpoints")
         terrain_clearances = _segment_elevations(
@@ -232,3 +235,100 @@ class LinkEvaluator:
         path_loss_db = fspl_db + (self.params.obstruction_loss_db if obstructed else 0.0)
         return LinkResult(distance_m, fspl_db, obstructed, path_loss_db, threshold_db,
                           path_loss_db <= threshold_db)
+
+
+def certify_moving_link(evaluator: LinkEvaluator, first: Node, first_altitude: float,
+                        last: Node, last_altitude: float, fixed: Node, fixed_altitude: float,
+                        threshold_db: float) -> bool:
+    """Conservative interval bound for linear motion and the 30 m LOS rule.
+
+    Enumerate all possible LOS sample counts. Bound each moving sample by
+    every raster cell in its swept coordinate rectangle and minimum LOS height.
+    False means unproved, not necessarily an outage. Subdivide and retry.
+    """
+    if fixed.code != "G01":
+        origin = np.array([first.longitude - fixed.longitude, first.latitude - fixed.latitude,
+                           first_altitude - fixed_altitude])
+        delta = np.array([last.longitude - first.longitude, last.latitude - first.latitude,
+                          last_altitude - first_altitude])
+        norm = float(delta @ delta)
+        fraction = min(1.0, max(0.0, -float(origin @ delta) / norm)) if norm else 0.0
+        if np.linalg.norm(origin + fraction * delta) < 1e-10:
+            return False
+    radius = 6371008.8
+    movement = radius * math.hypot(math.radians(last.latitude - first.latitude),
+                                 math.radians(last.longitude - first.longitude))
+    middle = Node("mid", (first.longitude + last.longitude) / 2,
+                  (first.latitude + last.latitude) / 2, 0)
+    horizontal = great_circle_distance_m(middle, fixed)
+    max_distance = math.hypot(horizontal + movement / 2,
+                             max(abs(first_altitude - fixed_altitude),
+                                 abs(last_altitude - fixed_altitude)))
+    if max_distance <= 0:
+        return False
+    min_count = max(1, math.ceil(max(0, horizontal - movement / 2) / 30))
+    max_count = max(1, math.ceil((horizontal + movement / 2) / 30))
+    if max_count - min_count > 4:
+        return False
+    terrain_clear = True
+    inverse = ~evaluator.dem.transform
+    for count in range(min_count, max_count + 1):
+        fractions = np.arange(1, count, dtype=float) / count
+        if not len(fractions):
+            continue
+        x0 = first.longitude + fractions * (fixed.longitude - first.longitude)
+        y0 = first.latitude + fractions * (fixed.latitude - first.latitude)
+        x1 = last.longitude + fractions * (fixed.longitude - last.longitude)
+        y1 = last.latitude + fractions * (fixed.latitude - last.latitude)
+        col0, row0 = inverse * (x0, y0)
+        col1, row1 = inverse * (x1, y1)
+        low_row = np.floor(np.minimum(row0, row1) - 1e-9).astype(int)
+        high_row = np.floor(np.maximum(row0, row1) + 1e-9).astype(int)
+        low_col = np.floor(np.minimum(col0, col1) - 1e-9).astype(int)
+        high_col = np.floor(np.maximum(col0, col1) + 1e-9).astype(int)
+        if np.any((low_row < 0) | (high_row >= evaluator.dem.height)
+                  | (low_col < 0) | (high_col >= evaluator.dem.width)):
+            return False
+        max_rows = int(np.max(high_row - low_row))
+        max_cols = int(np.max(high_col - low_col))
+        if max_rows > 8 or max_cols > 8:
+            return False
+        heights = np.full(len(fractions), -np.inf)
+        for dr in range(max_rows + 1):
+            for dc in range(max_cols + 1):
+                rows = np.minimum(low_row + dr, high_row)
+                cols = np.minimum(low_col + dc, high_col)
+                values = evaluator.dem_values[rows, cols]
+                invalid = ~np.isfinite(values) | np.isclose(values, -32767)
+                if evaluator.dem.nodata is not None:
+                    invalid |= np.isclose(values, evaluator.dem.nodata)
+                if np.any(invalid):
+                    return False
+                heights = np.maximum(heights, values)
+        minimum_los = min(first_altitude, last_altitude) * (1 - fractions) + fixed_altitude * fractions
+        if np.any(heights >= minimum_los - 1e-8):
+            terrain_clear = False
+    upper_loss = (32.45 + 20 * math.log10(evaluator.params.frequency_mhz)
+                  + 20 * math.log10(max_distance / 1000)
+                  + (0 if terrain_clear else evaluator.params.obstruction_loss_db))
+    return upper_loss <= threshold_db - 1e-9
+
+
+def sampled_flight_leg(evaluator: LinkEvaluator, first: Node, last: Node) -> tuple[float, float]:
+    """Same 30 m endpoint-inclusive samples as Q2, using the loaded raster."""
+    distance = great_circle_distance_m(first, last)
+    fractions = np.linspace(0, 1, max(1, math.ceil(distance / 30)) + 1)
+    rows, cols = rasterio.transform.rowcol(
+        evaluator.dem.transform,
+        first.longitude + fractions * (last.longitude - first.longitude),
+        first.latitude + fractions * (last.latitude - first.latitude))
+    rows, cols = np.asarray(rows), np.asarray(cols)
+    if np.any((rows < 0) | (rows >= evaluator.dem.height) | (cols < 0) | (cols >= evaluator.dem.width)):
+        raise ValueError("Relay flight outside DEM")
+    values = evaluator.dem_values[rows, cols]
+    invalid = ~np.isfinite(values) | np.isclose(values, -32767)
+    if evaluator.dem.nodata is not None:
+        invalid |= np.isclose(values, evaluator.dem.nodata)
+    if np.any(invalid):
+        raise ValueError("Relay flight crosses DEM NoData")
+    return float(np.max(values)), distance
