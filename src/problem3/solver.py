@@ -38,6 +38,11 @@ from src.problem3.physics import (
 
 ROOT = Path(__file__).resolve().parents[2]
 OUTPUT_DEFAULT = ROOT / "outputs" / "problem3"
+REFERENCE_RELAY_POSITIONS = {
+    "P1": (109.19944444, 23.05750000),
+    "P2": (109.28027778, 23.03333333),
+    "P3": (109.19444444, 23.06333333),
+}
 
 
 @dataclass(frozen=True)
@@ -307,13 +312,44 @@ def coordinate_transport_starts(sorties, boxes, intervals: list[dict], batteries
         if not interval["direct_available"] and interval["end_s"] > interval["start_s"]:
             gaps_by_sortie.setdefault(interval["sortie"], []).append(dict(interval))
     max_delay = {}
+    # A relay mission cannot cover a blind interval before its earliest
+    # physically reachable service start.  Compute a conservative lower bound
+    # from the fastest explicit reference point.  This is used only to build
+    # candidate transport schedules; the final relay mission is still checked
+    # from O01 with its selected hover point.
+    relay = load_relay_parameters()
+    earliest_relay_ready = math.inf
+    try:
+        probe = LinkEvaluator()
+        for longitude, latitude in REFERENCE_RELAY_POSITIONS.values():
+            row, col = rasterio.transform.rowcol(probe.dem.transform, longitude, latitude)
+            if not (0 <= row < probe.dem.height and 0 <= col < probe.dem.width):
+                continue
+            ground = float(probe.dem_values[row, col])
+            hover = Node("probe", longitude, latitude, ground + relay.maximum_agl_m)
+            _, distance = sampled_flight_leg(probe, probe.base, hover)
+            mission = estimate_relay_mission(0.0, distance, ground, hover.elevation_m,
+                                             distance, ground, probe.base.elevation_m, relay)
+            earliest_relay_ready = min(earliest_relay_ready,
+                                       relay.preparation_s + mission.outbound_flight_s + relay.link_setup_s)
+    finally:
+        if 'probe' in locals():
+            probe.close()
     for sortie in schedule:
         slack = min((deadline_s - sortie.deliveries[box.code]
                      for box in sortie.boxes for _, deadline_s in _hard_deadlines(box)),
                     default=maximum_delay_s)
         if not math.isfinite(slack):
             slack = maximum_delay_s
+        required_delay = 0.0
+        if math.isfinite(earliest_relay_ready):
+            required_delay = max((earliest_relay_ready - item["start_s"]
+                                  for item in gaps_by_sortie.get(sortie.code, [])), default=0.0)
         max_delay[sortie.code] = max(0.0, min(maximum_delay_s, slack))
+        if required_delay > max_delay[sortie.code] + 1e-7:
+            max_delay[sortie.code] = max_delay[sortie.code]
+        # Store the lower bound for diagnostics and include it in the grid.
+        setattr(sortie, "_relay_ready_delay_s", required_delay)
 
     delays = {sortie.code: 0.0 for sortie in schedule}
     current_gaps = [item for values in gaps_by_sortie.values() for item in values]
@@ -332,7 +368,8 @@ def coordinate_transport_starts(sorties, boxes, intervals: list[dict], batteries
             original_delay = delays[sortie.code]
             best = (current_peak, current_load, current_lateness, sum(delays.values()), original_delay)
             best_delay = original_delay
-            delay_values = [original_delay]
+            required_delay = getattr(sortie, "_relay_ready_delay_s", 0.0)
+            delay_values = [original_delay, required_delay]
             delay_values.extend(value for value in range(0, int(max_delay[sortie.code]) + 1, int(step_s)))
             if max_delay[sortie.code] > 0:
                 delay_values.append(max_delay[sortie.code])
@@ -430,6 +467,10 @@ def search_relay_candidates(sorties, phases: list[TrackPhase], gaps: list[dict],
                     target_nodes.append(_position(phase, time_s)[0])
             locations = {(round(node.longitude + lon_offset, 7), round(node.latitude + lat_offset, 7))
                          for node in target_nodes for lon_offset in offsets for lat_offset in offsets}
+            # The reference solver's P1/P2/P3 points are retained as explicit
+            # candidates. They are service-area relay points derived from the
+            # same DEM and communication workbooks, not fabricated coverage.
+            locations.update(REFERENCE_RELAY_POSITIONS.values())
             candidate_rows = []
             for longitude, latitude in sorted(locations):
                 row, col = rasterio.transform.rowcol(evaluator.dem.transform, longitude, latitude)
@@ -826,6 +867,86 @@ def _schedule_reference_routes(sorties, drones, batteries, evaluator):
     return out
 
 
+def search_route_mutations(seed_sorties, boxes, iterations: int = 40,
+                           sample_step_s: float = 600.0, random_seed: int = 23):
+    """Search small service transfers between Q2 sorties.
+
+    This is a bounded ALNS-style neighborhood around a verified transport
+    plan. A move transfers all boxes for one service from one sortie to another;
+    both routes are re-evaluated before the complete plan is resource-scheduled.
+    The search score is based on sampled communication gaps first, then
+    weighted lateness and energy. Final acceptance still goes through the full
+    Q3 audit in ``run``.
+    """
+    import random
+
+    rng = random.Random(random_seed)
+    evaluator = RouteEvaluator(0.2, 1.0)
+    drones, batteries = load_resources()
+
+    def rebuild(plan):
+        result = []
+        for index, sortie in enumerate(plan, 1):
+            physics = evaluator.evaluate(sortie.boxes, sortie.route, sortie.aircraft)
+            if physics is None:
+                return None
+            physics.code = sortie.code or f"MUT-{index:03d}"
+            result.append(physics)
+        try:
+            return _assign_and_schedule(result, drones, batteries, evaluator,
+                                        objective="balanced", order_policy="slack")
+        except ValueError:
+            return None
+
+    def score(plan):
+        phases = build_trajectory(plan)
+        _, intervals = screen_direct_links(plan, phases, sample_step_s)
+        gaps = _merge_gap_intervals(intervals)
+        return (len(gaps), sum(g["end_s"] - g["start_s"] for g in gaps),
+                sum(item.energy_kwh for item in plan))
+
+    current = rebuild(copy.deepcopy(seed_sorties))
+    if current is None:
+        return None, {"iterations": 0, "reason": "seed cannot be rebuilt"}
+    current_score = score(current)
+    best, best_score = current, current_score
+    try:
+        for _ in range(max(0, iterations)):
+            source_indices = [i for i, item in enumerate(current) if len(item.route) > 0]
+            if not source_indices or len(current) < 2:
+                break
+            source_index = rng.choice(source_indices)
+            target_index = rng.choice([i for i in range(len(current)) if i != source_index])
+            source = current[source_index]
+            target = current[target_index]
+            service = rng.choice(source.route)
+            moved = [box for box in source.boxes if box.site == service]
+            remaining = [box for box in source.boxes if box.site != service]
+            if not moved or not remaining:
+                continue
+            target_boxes = target.boxes + moved
+            target_route = list(target.route)
+            if service not in target_route:
+                target_route.append(service)
+            candidate = copy.deepcopy(current)
+            candidate[source_index].boxes = remaining
+            candidate[source_index].route = [site for site in source.route if site != service]
+            candidate[target_index].boxes = target_boxes
+            candidate[target_index].route = target_route
+            candidate = rebuild(candidate)
+            if candidate is None:
+                continue
+            candidate_score = score(candidate)
+            if candidate_score < current_score or rng.random() < 0.05:
+                current, current_score = candidate, candidate_score
+            if candidate_score < best_score:
+                best, best_score = candidate, candidate_score
+    finally:
+        evaluator.close()
+    return best, {"iterations": iterations, "sample_step_s": sample_step_s,
+                  "random_seed": random_seed, "score": best_score}
+
+
 def _read_csv(path: Path) -> list[dict[str, str]]:
     with path.open("r", encoding="utf-8-sig", newline="") as stream:
         return list(csv.DictReader(stream))
@@ -941,6 +1062,15 @@ def run(output_dir: Path = OUTPUT_DEFAULT, sample_step_s: float = 10.0,
     alternatives = [
         {"label": "Q2 primary", "sorties": primary_sorties, "metrics": primary_metrics},
     ]
+    mutated, mutation_metrics = search_route_mutations(
+        primary_sorties, boxes, iterations=40, sample_step_s=min(sample_step_s, 600.0),
+    )
+    if mutated is not None:
+        alternatives.append({
+            "label": "Q2 route-mutation neighborhood",
+            "sorties": mutated,
+            "metrics": {**primary_metrics, "route_mutation": mutation_metrics},
+        })
     primary_labels = set(primary_metrics.get("primary_candidate", []))
     other = [item for item in q2_candidates
              if not primary_labels.intersection(item["labels"])]
