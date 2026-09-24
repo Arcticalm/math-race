@@ -790,7 +790,17 @@ def _schedule_reference_routes(sorties, drones, batteries, evaluator):
     drone_ready = {item.code: 0.0 for item in drones}
     battery_ready = {item.code: 0.0 for item in batteries}
     out = []
-    for sortie in sorted(sorties, key=lambda item: (item.aircraft, item.flight_s)):
+    def priority(item):
+        model = evaluator.aircrafts[item.aircraft]
+        deadlines = [
+            deadline for box in item.boxes
+            for _, deadline in _hard_deadlines(box)
+        ]
+        processing = model.prep_s + model.load_each_s * len(item.boxes) + item.flight_s
+        return (min((deadline - processing for deadline in deadlines), default=math.inf),
+                min(deadlines, default=math.inf), item.flight_s)
+
+    for sortie in sorted(sorties, key=priority):
         candidates = [item for item in drones if item.aircraft == sortie.aircraft]
         battery_candidates = [item for item in batteries if item.aircraft == sortie.aircraft]
         if not candidates or not battery_candidates:
