@@ -22,6 +22,7 @@ from src.problem21.solver import (
     _validate, load_resources, load_task_boxes, write_outputs,
 )
 from src.problem23.groups import exact_site_partitions, signature
+from src.problem23.terrain_audit import audit_clearance, write_clearance_outputs
 
 OUTPUT_DEFAULT = ROOT / "outputs" / "problem23"
 
@@ -83,6 +84,9 @@ def solve(reserve: float = 0.2, energy_scale: float = 1.0,
             item["metrics"]["sortie_count"],
         ))
         metrics = dict(chosen["metrics"])
+        metrics["terrain_clearance"] = audit_clearance(chosen["sorties"], evaluator)
+        if not metrics["terrain_clearance"]["feasible"]:
+            raise ValueError("Selected schedule fails the independent 50 m cruise-clearance audit")
         metrics.update({
             "objective_profile": "makespan, weighted lateness, energy, sorties",
             "primary_candidate": [metrics["strategy"]],
@@ -132,9 +136,10 @@ def write_time_comparison(output_dir: Path, candidates: list[dict], selected: st
 def write_bundle(output_dir: Path) -> None:
     paths = [
         "src/problem1/__init__.py", "src/problem1/solver.py",
+        "src/problem1/requirements.txt",
         "src/problem21/__init__.py", "src/problem21/solver.py",
         "src/problem21/requirements.txt",
-        "src/problem23/groups.py",
+        "src/problem23/groups.py", "src/problem23/terrain_audit.py",
         "src/problem23/__init__.py",
         "src/problem23/solver.py", "src/problem23/README.md",
         "src/problem23/requirements.txt", "docs/结果提交模板.xlsx",
@@ -158,25 +163,14 @@ def main() -> None:
     sorties, metrics, boxes, candidates = solve(
         args.reserve, args.energy_scale, args.cp_sat_time_limit,
     )
-    try:
-        write_outputs(sorties, metrics, boxes, args.output, args.reserve, args.energy_scale)
-    except FileNotFoundError as error:
-        # The moved problem21 writer still names its old code bundle paths.
-        if "src/problem2/" not in str(error):
-            raise
-        (args.output / "validation.json").write_text(
-            json.dumps(metrics, ensure_ascii=False, indent=2), encoding="utf-8",
-        )
-        (args.output / "model_assumptions.json").write_text(
-            json.dumps({"reserve_fraction": args.reserve,
-                        "horizontal_energy_scale": args.energy_scale},
-                       ensure_ascii=False, indent=2), encoding="utf-8",
-        )
+    write_outputs(sorties, metrics, boxes, args.output, args.reserve, args.energy_scale)
+    write_clearance_outputs(args.output, metrics["terrain_clearance"])
     assumptions_path = args.output / "model_assumptions.json"
     assumptions = json.loads(assumptions_path.read_text(encoding="utf-8"))
     assumptions["solver"] = metrics["candidate_scope"]
     assumptions["optimality_status"] = metrics["optimality_status"]
     assumptions["cp_sat_available"] = metrics["cp_sat_available"]
+    assumptions["clearance_audit"] = metrics["terrain_clearance"]["method"]
     assumptions_path.write_text(json.dumps(assumptions, ensure_ascii=False, indent=2), encoding="utf-8")
     write_time_comparison(args.output, candidates, metrics["strategy"])
     write_bundle(args.output)
