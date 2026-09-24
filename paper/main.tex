@@ -1,0 +1,693 @@
+% !TeX program = xelatex
+% ======================================================================
+% 2026 中国研究生数学建模竞赛论文
+% 基于 format.cls 官方规范排版
+% ======================================================================
+
+\PassOptionsToPackage{quiet}{xeCJK}
+\documentclass[withoutpreface,bwprint]{format}
+
+% 算法宏包与中文配置
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\floatname{algorithm}{算法}
+\renewcommand{\algorithmicrequire}{\textbf{输入:}}
+\renewcommand{\algorithmicensure}{\textbf{输出:}}
+
+% 论文标题与关键词
+\newcommand{\PaperTitle}{山区洪涝灾害下无人机应急物资运输与通信协同优化建模研究}
+\newcommand{\PaperKeywords}{应急物资运输\quad 无人机组批\quad 非线性能耗\quad 最大安全载荷\quad 集合划分模型\quad 状态压缩动态规划\quad 敏感性分析}
+
+% 图片统一从 figures 文件夹读取
+\graphicspath{{figures/}{./}}
+\DeclareGraphicsExtensions{.png,.jpg,.jpeg,.pdf}
+
+% 表格列自动换行与居中
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+% 安全图片加载宏：优先查找 figures/，防止因缺图中断编译
+\newcommand{\SafeGraphic}[2][width=0.8\textwidth]{%
+    \IfFileExists{figures/#2}{%
+        \includegraphics[#1]{figures/#2}%
+    }{%
+        \IfFileExists{#2}{%
+            \includegraphics[#1]{#2}%
+        }{%
+            \begin{center}
+            \fbox{\parbox[c][4cm][c]{0.85\textwidth}{%
+                \centering \song\color{gray}
+                \textbf{【图占位符：\detokenize{#2}】}\\[0.5em]
+                \small （提示：请在 figures 目录下放置图片文件 \texttt{\detokenize{#2}}）%
+            }}
+            \end{center}
+        }%
+    }%
+}
+
+% 取消 format.cls 自带的自动章节编号前缀，保留原稿中的大纲标题编号（如“一、”、“1.1”、“5.1.1”）
+\makeatletter
+\def\@seccntformat#1{}
+\makeatother
+\renewcommand{\thesection}{}
+\renewcommand{\thesubsection}{}
+\renewcommand{\thesubsubsection}{}
+
+\begin{document}
+\song\zihao{-4}
+
+% 论文题目：黑体三号、居中
+{\centering\zihao{3}\bfseries\heiti \PaperTitle\par}
+\setcounter{page}{1}
+\thispagestyle{empty}
+
+% 摘要与关键词
+\begin{abstract}
+2026 年 7 月，台风“美莎克”带来的持续强降雨使广西横州市镇龙乡出现断路、断电、断网，约 8000 人一度被困。地面车辆无法进入，物资投送只能依靠无人机。本文以该场景为背景，建立了“航路高程与能耗模型—单架次可行能力—货箱组批优化—多目标权衡与敏感性分析”的求解链条，并给出问题一的完整结果。
+
+问题一不考虑实体无人机与共享电池的跨架次调度，只研究 $O01 \to S_i \to O01$ 的单点往返。本文做了四方面工作。
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{航路与能耗模型}。由 30 m 分辨率 DEM 沿大圆航线等间距采样，取沿线最高地面高程加 50 m 作为计划巡航海拔；能耗按水平巡航能耗与爬升附加能耗两部分计算，其中水平部分依题面 $3/2$ 次方航程衰减律标定（题面未给出水平能耗的显式公式，故按等效单位距离电耗标定并作 $\pm 20\%$ 敏感性检验），爬升部分按重力势能折算。
+
+    \item \textbf{最大安全载荷}。将额定载重、航程校核与返航安全余量（基准 $\rho=20\%$）写成一个隐式非线性约束，用 60 次二分迭代求解 $15$ 个服务区 $\times$ $3$ 种机型的最大安全载荷矩阵。结果为：A 型在全部 15 个服务区都达到结构上限 $25\,\text{kg}$；B 型仅在最远的 S008 因电量不足降到 $28.63\,\text{kg}$；C 型在 5 个距离超过 $7.2\,\text{km}$ 的服务区受电量约束，载荷降至 $58.44\sim68.55\,\text{kg}$。可见本场景中限制投送能力的主要是电池能量和结构载重，航程校核始终没有起作用。
+
+    \item \textbf{货箱组批}。以服务区为独立单元建立集合划分模型，约束为质量、体积和返航电量三条。由于单个服务区最多 15 箱，用位掩码状态压缩动态规划即可精确求解，无需启发式算法。
+
+    \item \textbf{多目标权衡与敏感性}。比较“架次优先”“能耗优先”“时间优先”三种字典序策略。基准下前两者给出 18 架次、$59.232\,\text{kWh}$、$32777.3\,\text{s}$ 的方案，“能耗优先”给出 19 架次、$59.134\,\text{kWh}$、$34445.3\,\text{s}$ 的方案，两者互不支配：多飞一架次省下 $0.098\,\text{kWh}$，却多花 $1668\,\text{s}$ 地面作业时间。综合时效性，本文推荐 18 架次方案，80 个货箱全部交付，各架次返航 SOC 在 $22.79\%\sim73.10\%$ 之间，均不低于 $20\%$。敏感性方面，返航余量在 $10\%\sim20\%$ 区间内组批方案不变；升到 $25\%$ 时 S004 的一架次被迫拆成两架次，总架次增至 19；升到 $30\%$ 时增至 20。
+\end{enumerate}
+
+本文同时给出了问题二至问题四的建模框架，作为后续章节的接口。
+\end{abstract}
+\keywords{\PaperKeywords}
+\thispagestyle{empty}
+
+% 正文
+\section{一、问题重述}
+
+\subsection{1.1 现实背景}
+2026 年 7 月，受台风“美莎克”外围环流影响，广西横州市镇龙乡出现持续强降雨，引发山洪与滑坡。据公开报道，该乡一度出现断路、断电、断网，全乡约 8000 人被困，大型无人机承担了电力抢修材料运输，临时通信设备用于逐步恢复联络。这一场景的典型特征是：地面交通与地面通信同时失效，物资投送和通信保障都必须在道路中断、能量受限的条件下组织。灾后初期的救援需求往往同时具备突发、时限紧、基础设施损毁严重等特点，属于典型的人道主义物流问题\cite{caunhye2012, holguin2012}；而无人机受地面道路条件约束小，可以在道路中断时承担投送任务\cite{murray2015, otto2018}。
+
+与常规物流相比，这类救援任务给建模带来三个具体困难。
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{地形与能耗耦合}。山区高程起伏大，航线必须避开沿线山体并保持净空；载荷又会抬高多旋翼的悬停与巡航功率，电池能量非常有限，载荷与航程之间存在非线性关系。
+    \item \textbf{货箱离散}。物资以不可拆分的货箱为单位，必须在载质量、货舱体积和返航电量三重边界内完成分配，既不能拆分也不能跨服务区合并。
+    \item \textbf{多目标冲突}。现场既希望少出架次（减少空域协调与起降调度压力），又希望总电耗低（前线充电能力有限），还希望作业时间短。三者往往不能同时最优。
+\end{enumerate}
+
+\subsection{1.2 标准测试场景与数据}
+赛题以镇龙乡及周边山区为背景，给出了空间、装备和物资三类数据。
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{节点数据}：1 个临时调度中心 $O01$ 和 15 个受灾服务区 $S001\sim S015$ 的经纬度与地面海拔，以及覆盖全区的 30 m 分辨率 DEM。
+    \item \textbf{装备数据}：A、B、C 三种运输无人机，在空载/满载标准航程、电池可用能量、最大载货质量、货舱容积、巡航与爬升/下降速度、返航电量下限、地面作业时间参数等方面互不相同。
+    \item \textbf{物资数据}：医疗物资、饮用水、应急食品、生活卫生用品四类共 80 个货箱，逐箱给出所属服务区、单箱质量和单箱体积。
+\end{itemize}
+
+\subsection{1.3 各问题的逻辑关系}
+四个问题依次递进，共享同一套物理规则和数据口径。
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{问题一}：不考虑实体无人机排班与电池周转，研究 $O01 \to S_i \to O01$ 的单点往返能力与货箱组批，是后三问的物理基础。
+    \item \textbf{问题二}：解除单点往返限制，允许一个架次串联访问多个服务区，并加入实体机数量、共享电池周转和两阶段充电约束，求解多目标运输调度。
+    \item \textbf{问题三}：在问题二基础上加入通信链路预算与 DEM 视线遮挡判定，当直连被山体阻断时调度中继无人机，实现运输与通信的联合排程。
+    \item \textbf{问题四}：以问题三的方案为输入，把 15 个服务区划分为 $K=2$ 和 $K=3$ 个任务组，按峰值并发核算各执行单元所需的机体、电池与中继资源。
+\end{itemize}
+
+
+
+\section{二、模型基本假设}
+
+赛题附录 2 已经规定了航段划分、等效航程公式、飞行时间构成、能耗构成与返航安全余量，这些直接实现，不再列入假设。以下 7 条是题面未明确、需要本文声明的内容。
+
+\begin{enumerate}[label=\textbf{假设 \arabic*：}, leftmargin=*]
+    \item \textbf{水平巡航能耗的标定方式。} 题面给出了载荷—等效航程的 $3/2$ 次方关系和电池可用能量 $E_g^{use}$，但没有给出水平巡航能耗的显式公式。本文按“可用能量除以对应等效航程”的方式标定单位距离电耗，即 $\varepsilon_g(q)=E_g^{use}/L_g(q)$；等价地，空载单位距离电耗为 $\varepsilon_g^0=E_g^{use}/L_g^0$，载重 $q$ 时按 $L_g^0/L_g(q)$ 的比例放大。这一标定与旋翼诱导功率随全重呈 $P_{ind}\propto M^{3/2}$ 变化的动量理论结论\cite{leishman2006}方向一致，也与 Dorling 等\cite{dorling2017}、Zhang 等\cite{zhang2021}、Stolaroff 等\cite{stolaroff2018}关于载荷显著抬高单位距离电耗的结论相符。需要说明的是，它是一个工程等效标定，不是唯一的空气动力学模型，因此本文另设 $\pm20\%$ 的水平能耗放缩做敏感性检验。
+
+    \item \textbf{航程校核。} 题面规定 $L_g(q)$ 是等效航程，但未说明它如何约束一个往返架次。本文除总能耗约束外，额外要求去程单程水平距离不超过去程载荷对应的等效航程 $L_g(q)$，返程不超过空载标准航程 $L_g^0$。数值结果表明这一校核在本场景中从未成为紧约束（最紧的 S008 A 型仍余 $11.9\,\text{km}$），保留它只是为了避免在更极端参数下出现物理上不可达的方案。
+
+    \item \textbf{爬升附加能耗的口径。} 题面给出了参数“爬升能耗效率”$=0.72$，但未给出爬升能耗的公式。本文把它解释为无量纲的推进效率，爬升附加能耗按重力势能折算：$E^{up}=mgh^+/(3.6\times10^6\eta)$，其中 $m$ 为当前总质量，$3.6\times10^6$ 是焦耳到 kWh 的换算常数。按此折算，爬升能耗在总能耗中占比约 $4\%$，即使该参数口径有出入，对结果影响也有限。下降阶段按题面规定取效率 0，不计附加能耗。
+
+    \item \textbf{水平距离口径。} 题面称节点间采用“水平直线”，但节点坐标是经纬度。本文将其理解为球面大圆距离，地球半径取 $R=6\,371\,008.8\,\text{m}$\cite{sinnott1984}。本场景中服务区距 $O01$ 仅 2.8--8.1 km，大圆距离与椭球测地线\cite{vincenty1975}、平面近似之间的差异都在米级以下，不影响结论；之所以仍采用大圆公式，是为了与后续问题的三维通信链路计算保持同一几何口径。
+
+    \item \textbf{累计作业时间的口径。} 题面只要求“累计作业时间”，未定义其构成。本文参考多旋翼作业时间的一般构成\cite{liu2017}，把每个架次的作业时间定义为：固定出动准备时间 $+$ 单箱装载时间 $\times$ 箱数 $+$ 往返飞行时间 $+$ 到场交接基础时间 $+$ 单箱交接时间 $\times$ 箱数，参数全部取自附件。这一口径下地面保障时间与架次数强相关，为便于读者判断，本文在 5.5.2 节同时报告纯飞行时间。
+
+    \item \textbf{多目标的处理方式。} 题面要求综合三个指标但未给权重。本文不引入主观权重，改用字典序比较三种代表性策略（架次优先、能耗优先、时间优先），据此说明指标间的取舍。报告的是这三个代表解之间的非支配关系，不是完整 Pareto 前沿的证明。
+
+    \item \textbf{高程与作业高度的取值。} 计划巡航海拔取航段所经 DEM 像元的最高地面高程加 $50\,\text{m}$；$O01$ 作业高度取节点地面海拔，服务区作业高度取地面海拔加 $30\,\text{m}$。DEM 按 EPSG:4326 处理。节点表自带海拔与 DEM 在该点的取值可能存在少量不一致，本文一律以节点表为准，未作调和。
+\end{enumerate}
+
+
+
+\section{三、符号与参数说明}
+
+表 \ref{tab:notations} 汇总全文使用的主要符号。
+
+\begin{table}[H]
+\centering
+\small
+\caption{全文核心数学符号与参数定义}
+\label{tab:notations}
+\begin{tabularx}{\textwidth}{p{3.2cm} p{2.2cm} X}
+\toprule
+\textbf{符号} & \textbf{量纲/单位} & \textbf{物理定义与说明} \\
+\midrule
+\multicolumn{3}{l}{\textbf{集合与索引}} \\
+$\mathcal{S} = \{S_1, \dots, S_{15}\}$ & -- & 受灾服务区集合，共 15 个目标点 \\
+$\mathcal{G} = \{A, B, C\}$ & -- & 异构运输无人机机型集合 \\
+$\mathcal{B}$ & -- & 全部待运送应急货箱集合，$|\mathcal{B}| = 80$ \\
+$\mathcal{B}_i$ & -- & 目的地为受灾服务区 $S_i$ 的货箱子集，$\bigcup \mathcal{B}_i = \mathcal{B}$ \\
+$\mathcal{R}_i$ & -- & 服务区 $S_i$ 的合法可行候选架次集合 \\
+$i, j \in \mathcal{S} \cup \{O01\}$ & -- & 地理节点索引（$O01$ 为临时调度中心） \\
+$g \in \mathcal{G}$ & -- & 运输无人机机型索引 \\
+$b \in \mathcal{B}$ & -- & 货箱编号索引 \\
+$r \in \mathcal{R}_i$ & -- & 候选架次索引 \\
+\midrule
+\multicolumn{3}{l}{\textbf{地理空间与航路参数}} \\
+$d_{ij}$ & $\text{m}$ & 节点 $i$ 与节点 $j$ 之间的地表球面大圆水平距离 \\
+$H_i^{ground}$ & $\text{m}$ & 节点 $i$ 的地面高程（海拔） \\
+$H_{ij}^{max}$ & $\text{m}$ & 航线 $i \to j$ 正下方地表沿 DEM 剖面的最高地面海拔 \\
+$H_{ij}^{cruise}$ & $\text{m}$ & 航线 $i \to j$ 的巡航计划绝对海拔，$H_{ij}^{cruise} = H_{ij}^{max} + 50$ \\
+$h_{ij}^+, h_{ij}^-$ & $\text{m}$ & 航段 $i \to j$ 的垂直爬升高度与垂直下降高度 \\
+\midrule
+\multicolumn{3}{l}{\textbf{无人机装备物理属性参数}} \\
+$m_g^{empty}$ & $\text{kg}$ & 机型 $g$ 的含电池空载总质量 \\
+$Q_g$ & $\text{kg}$ & 机型 $g$ 的最大允许载货质量（结构载重上限） \\
+$V_g$ & $\text{m}^3$ & 机型 $g$ 货舱的最大有效装载容积 \\
+$v_g^c, v_g^\uparrow, v_g^\downarrow$ & $\text{m/s}$ & 机型 $g$ 的水平巡航速度、垂直爬升速度与垂直下降速度 \\
+$L_g^0, L_g^F$ & $\text{m}$ & 机型 $g$ 在标称电池电量下的空载标准航程与满载标准航程 \\
+$E_g^{use}$ & $\text{kWh}$ & 机型 $g$ 配套单组动力电池的额定可用能量容量 \\
+$\rho_g$ & -- & 机型 $g$ 的返航安全预留电量比例（基准值取 $0.20$） \\
+$\eta_g$ & -- & 机型 $g$ 垂直爬升推进能耗折算效率（标定为 $0.72$） \\
+$\tau_g^{prep}, \tau_g^{load}$ & $\text{s}$ & 单架次出动固定准备时间、单箱物资装载耗时 \\
+$\tau_g^{base}, \tau_g^{drop}$ & $\text{s}$ & 目的地现场交接基础准备耗时、单箱货物交接作业耗时 \\
+\midrule
+\multicolumn{3}{l}{\textbf{决策变量与状态评估函数}} \\
+$Q_{safe, ig}$ & $\text{kg}$ & 机型 $g$ 针对服务区 $S_i$ 执行单点往返的最大安全载荷 \\
+$q_r, v_r$ & $\text{kg}, \text{m}^3$ & 候选架次 $r$ 的实际承载货物总质量与总体积 \\
+$E_{ir}, T_{ir}$ & $\text{kWh}, \text{s}$ & 候选架次 $r$ 执行单点往返的总能量消耗与累计作业时间 \\
+$\text{SOC}_r^{ret}$ & $\%$ & 候选架次 $r$ 返抵 $O01$ 时电池剩余荷电状态百分比 \\
+$x_{ir} \in \{0, 1\}$ & -- & 0-1 决策变量：若选定架次 $r$ 为服务区 $S_i$ 供货则为 1，否则为 0 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+
+
+\section{四、地理空间环境与数据预处理}
+
+\subsection{4.1 节点拓扑与高程栅格核验}
+根据附件《调度中心与服务区.xlsx》，$O01$（凤丹村）位于东经 $109.2308517^\circ$、北纬 $23.0085095^\circ$，地面海拔 $127.7\,\text{m}$。15 个服务区地面海拔在 $154.0\,\text{m}$（S001）至 $444.5\,\text{m}$（S015）之间。到 $O01$ 的水平大圆距离最短为 S011 的 $2.82\,\text{km}$，最远为 S008 的 $8.11\,\text{km}$；15 个服务区合计需保障人口 3422 人，其中 S001 一个点就占 2100 人。
+
+DEM 文件《镇龙乡及周边30米DEM.tif》读取结果为：投影类型 geographic，地理坐标系代码 4326（即 WGS84），像元尺度 $0.0002778^\circ$，在本地纬度上约合 $30\,\text{m}$（纬向 $30.9\,\text{m}$、经向 $28.5\,\text{m}$）；数据为 32 位浮点。栅格覆盖范围约在东经 $109.03^\circ\sim109.45^\circ$、北纬 $22.86^\circ\sim23.22^\circ$ 之间，$O01$ 与全部服务区均落在覆盖范围内。需要说明的是，该栅格没有标注 NoData 值，程序中对越界采样作了显式报错处理，但 NoData 校验在本数据上实际不会触发。
+
+\subsection{4.2 航路三维剖面与高程采样}
+在山区低空飞行中，沿线地形是决定爬升高度进而决定能耗的主要因素\cite{roberge2013}。按附录 2 的规则，航段为两点间的水平直线，巡航海拔取该航段所经 DEM 像元的最高地面高程加 $50\,\text{m}$。
+
+设航段端点经纬度为 $P_1$、$P_2$，水平距离为 $d_{12}$。本文以不超过 $30\,\text{m}$ 的步长在两点间均匀布设采样点：
+
+\begin{equation}
+N_{step} = \max\left(1, \left\lceil \frac{d_{12}}{30} \right\rceil\right), \quad P(k) = P_1 + \frac{k}{N_{step}} (P_2 - P_1), \quad k \in \{0, 1, \dots, N_{step}\}
+\end{equation}
+
+每个采样点的经纬度先转换为栅格行列号，再用双线性内插取值，得到沿线最高地表高程：
+
+\begin{equation}
+H_{max} = \max_{k \in \{0, \dots, N_{step}\}} z(k)
+\end{equation}
+
+由此得到巡航海拔与两端爬升、下降高度：
+
+\begin{equation}
+H^{cruise} = H_{max} + 50\,\text{m}, \quad h^+ = \max(0, H^{cruise} - H_{start}), \quad h^- = \max(0, H^{cruise} - H_{end})
+\end{equation}
+
+去程起点为 $O01$，作业海拔 $127.7\,\text{m}$；终点为服务区，作业高度取地面海拔加 $30\,\text{m}$。返程时两端角色互换。
+
+沿线地形对结果的影响并不总是随距离增加。以 S014 为例，该点自身地面高程为 $321\,\text{m}$，但航路沿线最高地面高程达 $541.95\,\text{m}$，高出起点地面 $220.95\,\text{m}$，对应巡航海拔 $591.95\,\text{m}$，是 15 条航路中最高的一条，其爬升高度甚至超过直线距离更远的 S008（巡航海拔 $372.91\,\text{m}$）。这说明在山区场景中，单看水平距离会明显低估能耗，必须结合地形剖面。
+
+\subsection{4.3 货箱属性与完整性审计}
+对《物资需求与配送时限.xlsx》的 80 个货箱逐条核对，箱号唯一、服务区归属完整，未发现缺失或重复。汇总如下。
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{总量}：80 箱，总质量 $758.0\,\text{kg}$，总体积 $2.011\,\text{m}^3$。
+    \item \textbf{物资类别}：医疗物资 16 箱（每箱 $3\,\text{kg}$、$0.012\,\text{m}^3$）；饮用水 36 箱（每箱 $14\,\text{kg}$、$0.027\,\text{m}^3$）；应急食品 19 箱（每箱 $8\,\text{kg}$、$0.028\,\text{m}^3$）；生活卫生用品 9 箱（每箱 $6\,\text{kg}$、$0.035\,\text{m}^3$）。同类货箱的规格完全一致。
+    \item \textbf{空间分布}：需求分布很不均匀。S001 最多，15 箱、$154.0\,\text{kg}$、$0.394\,\text{m}^3$；S002 与 S003 各 8 箱、$81.0\,\text{kg}$；S004、S005、S006 各 6 箱、$59.0\,\text{kg}$；S007、S008 各 5 箱、$45.0\,\text{kg}$；S009 至 S015 各 3 箱、$25.0\,\text{kg}$、$0.067\,\text{m}^3$。
+\end{itemize}
+
+
+
+\section{五、问题一：单点往返运输能力与货箱组批优化模型}
+
+\subsection{5.1 航段飞行剖面与能耗模型}
+
+\subsubsection{5.1.1 飞行时间}
+一个航段的飞行由垂直爬升、水平巡航、垂直下降三段组成。机型 $g$ 在航段 $i \to j$ 上的飞行时间按附录 2 的公式计算：
+
+\begin{equation}
+t_{gij} = \frac{h_{ij}^+}{v_g^\uparrow} + \frac{d_{ij}}{v_g^c} + \frac{h_{ij}^-}{v_g^\downarrow}
+\end{equation}
+
+单点往返架次 $O01 \to S_i \to O01$ 的飞行时间为去程与返程之和：
+
+\begin{equation}
+t_g^{flight} = t_{g, O01 \to S_i} + t_{g, S_i \to O01}
+\end{equation}
+
+\subsubsection{\texorpdfstring{5.1.2 载荷—等效航程的 $3/2$ 次方关系}{5.1.2 载荷—等效航程的 3/2 次方关系}}
+附录 2 给出的等效航程公式为：
+
+\begin{equation}
+L_g(q) = L_g^0 - (L_g^0 - L_g^F) \left(\frac{q}{Q_g}\right)^{3/2}, \quad \forall q \in [0, Q_g]
+\label{eq:range_32}
+\end{equation}
+
+式中 $L_g^0$、$L_g^F$ 分别为空载与满载标准航程，$Q_g$ 为额定载重。该式表明载重增加时等效航程的衰减快于线性：以 C 型为例，载重达到额定值的 $56\%$（$45\,\text{kg}$）时，等效航程已从 $26\,\text{km}$ 降到 $20.1\,\text{km}$。这一非线性是后文“拆分反而省电”现象的来源之一。其物理背景是动量理论中旋翼诱导功率随全重呈 $P_{ind}\propto M^{3/2}$ 变化\cite{leishman2006}。
+
+\subsubsection{5.1.3 水平巡航能耗的标定}
+由于题面未给出水平巡航能耗的显式公式，本文按假设 1 用“可用能量 / 等效航程”标定载荷 $q$ 时的单位距离电耗：
+
+\begin{equation}
+\varepsilon_g(q) = \frac{E_g^{use}}{L_g(q)} \quad (\text{kWh/m})
+\end{equation}
+
+于是航段水平距离为 $d_{ij}$ 时的水平巡航能耗为：
+
+\begin{equation}
+E_{gij}^{hor}(q) = \varepsilon_g(q) \cdot d_{ij} = \frac{E_g^{use} \cdot d_{ij}}{L_g(q)}
+\end{equation}
+
+\subsubsection{5.1.4 爬升附加能耗与返航约束}
+无人机由作业高度爬升到巡航高度需要额外做功。去程全重为 $m_g^{empty} + q$，返程货物已交付，全重恢复为 $m_g^{empty}$。按假设 3：
+
+\begin{equation}
+E_{gij}^{up}(q) = \frac{(m_g^{empty} + q) \cdot g \cdot h_{ij}^+}{3.6 \times 10^6 \cdot \eta_g} \quad (\text{kWh})
+\end{equation}
+
+其中 $g = 9.80665\,\text{m/s}^2$，$\eta_g = 0.72$。下降阶段按题面规定不计附加能耗。
+
+于是机型 $g$ 执行一次单点往返（去程载重 $q$）的总电耗为：
+
+\begin{align}
+E_{ig}^T(q) &= E_{g, O01 \to S_i}(q) + E_{g, S_i \to O01}(0) \notag \\
+&= \left[ \frac{E_g^{use} d_{O01, S_i}}{L_g(q)} + \frac{(m_g^{empty} + q) g h_{O01 \to S_i}^+}{3.6 \times 10^6 \cdot \eta_g} \right] + \left[ \frac{E_g^{use} d_{O01, S_i}}{L_g^0} + \frac{m_g^{empty} g h_{S_i \to O01}^+}{3.6 \times 10^6 \cdot \eta_g} \right]
+\end{align}
+
+架次总能耗须满足返航安全余量，即返抵 $O01$ 时剩余电量不低于 $\rho_g$：
+
+\begin{equation}
+E_{ig}^T(q) \le (1 - \rho_g) E_g^{use} \iff \text{SOC}_{return} = 1 - \frac{E_{ig}^T(q)}{E_g^{use}} \ge \rho_g = 20\%
+\end{equation}
+
+在本场景的基准方案中，水平巡航能耗合计 $56.685\,\text{kWh}$，占总能耗的 $95.7\%$；爬升附加能耗合计 $2.547\,\text{kWh}$，占 $4.3\%$。
+
+\subsection{5.2 最大安全载荷}
+
+\subsubsection{5.2.1 定义}
+机型 $g$ 面向服务区 $S_i$ 的最大安全载荷，定义为同时满足结构载重、整架次返航能量和航程校核三项条件的最大连续载荷：
+
+\begin{equation}
+Q_{safe, ig} = \max \left\{ q \;\middle|\; 0 \le q \le Q_g, \; E_{ig}^T(q) \le (1 - \rho_g) E_g^{use}, \; d_{O01, S_i} \le L_g(q), \; d_{O01, S_i} \le L_g^0 \right\}
+\end{equation}
+
+\subsubsection{5.2.2 二分求解}
+等效航程 $L_g(q)$ 关于 $q$ 单调递减，因此水平巡航能耗关于 $q$ 单调递增；爬升能耗也随 $q$ 线性递增。故总能耗关于 $q$ 单调递增，$Q_{safe,ig}$ 是唯一的临界截断点。求解时先检查两个端点：若空载即超能量上限，该机型对该点不可行；若满载仍满足约束，则直接取结构上限 $Q_g$；否则在 $[0, Q_g]$ 上二分。算法 \ref{alg:bisection} 取 60 次迭代，收敛误差上限为 $Q_g \cdot 2^{-60} < 10^{-16}\,\text{kg}$，已到双精度浮点的分辨率极限。
+
+\begin{algorithm}[H]
+\caption{基于能耗二分搜索的最大安全载荷求解}
+\label{alg:bisection}
+\begin{algorithmic}[1]
+\Require 机型参数 $g$、调度中心 $O01$、服务区 $S_i$、航路地表最高高程 $H_{max}$、安全余量 $\rho_g$
+\Ensure 最大安全有效载荷 $Q_{safe, ig}$ 及对应的飞行状态
+\State 计算大圆水平距离 $d = d(O01, S_i)$ 与巡航海拔 $H^{cruise} = H_{max} + 50\,\text{m}$
+\State 计算空载往返能耗 $E_{low} = E_{ig}^T(0)$
+\If{$E_{low} > (1 - \rho_g) E_g^{use}$ \textbf{or} $d > L_g^0$}
+    \State \Return $Q_{safe, ig} = 0.0$ \Comment{能量不足或航程超限}
+\EndIf
+\State $q_{low} \gets 0.0$, $q_{high} \gets Q_g$
+\For{$step = 1 \to 60$}
+    \State $q_{mid} \gets (q_{low} + q_{high}) / 2.0$
+    \State 计算 $L_g(q_{mid})$ 与整架次总能耗 $E_{ig}^T(q_{mid})$
+    \If{$E_{ig}^T(q_{mid}) \le (1 - \rho_g) E_g^{use}$ \textbf{and} $d \le L_g(q_{mid})$}
+        \State $q_{low} \gets q_{mid}$ \Comment{可行，向上探测}
+    \Else
+        \State $q_{high} \gets q_{mid}$ \Comment{超标，向下收缩}
+    \EndIf
+\EndFor
+\State \Return $Q_{safe, ig} = q_{low}$
+\end{algorithmic}
+\end{algorithm}
+
+\subsubsection{\texorpdfstring{5.2.3 $15\times 3$ 最大安全载荷计算结果}{5.2.3 15x3 最大安全载荷计算结果}}
+基准工况（$\rho=20\%$）下的计算结果如表 \ref{tab:safe_payloads} 与图 \ref{fig:safe_payloads_heatmap} 所示。
+
+\begin{table}[H]
+\centering
+\small
+\caption{各服务区航路属性与三机型最大安全载荷（$\rho=20\%$）}
+\label{tab:safe_payloads}
+\begin{tabularx}{\textwidth}{l c c c c c >{\centering\arraybackslash}X}
+\toprule
+\textbf{服务区} & \textbf{大圆距离} & \textbf{巡航海拔} & \textbf{A型安全载荷} & \textbf{B型安全载荷} & \textbf{C型安全载荷} & \textbf{主要制约瓶颈} \\
+\textbf{编号} & ($\text{m}$) & ($\text{m}$) & ($\text{kg}$) & ($\text{kg}$) & ($\text{kg}$) & (机型 C) \\
+\midrule
+S001 & 3063.41 & 273.06 & 25.00 & 30.00 & 80.00 & 结构上限 \\
+S002 & 7435.28 & 308.95 & 25.00 & 30.00 & \textbf{68.55} & 电池能量 \\
+S003 & 7261.08 & 561.80 & 25.00 & 30.00 & \textbf{68.24} & 电池能量 \\
+S004 & 7745.66 & 398.24 & 25.00 & 30.00 & \textbf{63.26} & 电池能量 \\
+S005 & 5302.02 & 326.41 & 25.00 & 30.00 & 80.00 & 结构上限 \\
+S006 & 3181.03 & 366.10 & 25.00 & 30.00 & 80.00 & 结构上限 \\
+S007 & 4533.83 & 501.83 & 25.00 & 30.00 & 80.00 & 结构上限 \\
+S008 & 8109.47 & 372.91 & 25.00 & \textbf{28.63} & \textbf{58.44} & 电池能量(B\&C) \\
+S009 & 5722.68 & 293.23 & 25.00 & 30.00 & 80.00 & 结构上限 \\
+S010 & 4778.44 & 435.64 & 25.00 & 30.00 & 80.00 & 结构上限 \\
+S011 & 2817.15 & 293.35 & 25.00 & 30.00 & 80.00 & 结构上限 \\
+S012 & 7398.45 & 413.30 & 25.00 & 30.00 & \textbf{68.01} & 电池能量 \\
+S013 & 4848.71 & 399.18 & 25.00 & 30.00 & 80.00 & 结构上限 \\
+S014 & 5410.92 & 591.95 & 25.00 & 30.00 & 80.00 & 结构上限 \\
+S015 & 6019.11 & 571.80 & 25.00 & 30.00 & 80.00 & 结构上限 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\SafeGraphic[width=0.85\textwidth]{safe_payloads_heatmap.png}
+\caption{各服务区异构机型最大安全载荷空间分布热力图}
+\label{fig:safe_payloads_heatmap}
+\end{figure}
+
+结合表 \ref{tab:safe_payloads} 与图 \ref{fig:safe_payloads_heatmap}，三种机型的瓶颈差异很明显。
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{A 型}：15 个服务区的安全载荷全部等于结构上限 $25.00\,\text{kg}$。原因是 A 型的标定单位距离电耗最低（$0.18\,\text{Wh/m}$）：即使载满 $25\,\text{kg}$ 飞最远的 S008，往返电耗也只有 $3.399\,\text{kWh}$，低于 $4.5\times0.8=3.60\,\text{kWh}$ 的上限。也就是说 A 型的载荷上限完全由结构载重决定，能量和航程都不是瓶颈。需要指出，S008 处的能量裕度只剩 $0.2\,\text{kWh}$，已不宽裕。
+
+    \item \textbf{B 型}：标定单位距离电耗 $0.143\,\text{Wh/m}$，在 14 个服务区都能达到 $30.00\,\text{kg}$。只有 S008 例外：载满 $30\,\text{kg}$ 时往返电耗 $3.299\,\text{kWh}$，超过 $4\times0.8=3.20\,\text{kWh}$ 的上限，二分求得的临界载荷为 $28.63\,\text{kg}$，降幅 $4.6\%$。
+
+    \item \textbf{C 型}：额定装载 $80.00\,\text{kg}$、容积 $0.250\,\text{m}^3$，但空机含电池质量就有 $69.9\,\text{kg}$，标定单位距离电耗 $0.308\,\text{Wh/m}$，约为 B 型的 2.2 倍。在 S001、S005、S006、S007、S009、S010、S011、S013、S014、S015 这 10 个服务区，满载 $80\,\text{kg}$ 的往返电耗仍低于 $6.40\,\text{kWh}$ 的上限；而在距离超过 $7.2\,\text{km}$ 的 S002、S003、S004、S008、S012 五点，满载往返电耗在 $7.37\sim8.07\,\text{kWh}$ 之间，远超上限，安全载荷被压到 $68.55$、$68.24$、$63.26$、$58.44$、$68.01\,\text{kg}$，其中 S008 降幅达 $27.0\%$。C 型的瓶颈是电池能量，且随距离恶化得比 B 型更快。
+
+    \item \textbf{共同特征}：三种机型在所有服务区都没有触发假设 2 的航程校核。这说明在本场景的距离尺度（单程不超过 $8.11\,\text{km}$）下，决定投送能力的是电池能量和结构载重两项。
+\end{enumerate}
+
+\subsection{5.3 货箱组批：集合划分模型与状态压缩求解}
+
+\subsubsection{5.3.1 集合划分模型}
+题面规定“每个货箱不可拆分且只能安排一次”“不得跨服务区组批”。这两条使得 15 个服务区在单点往返体制下彼此解耦，整体问题分解为 15 个独立的集合划分问题\cite{balas1976, wolsey2014}。
+
+对服务区 $S_i$，记其货箱子集为 $\mathcal{B}_i$（$|\mathcal{B}_i| \le 15$），$\mathcal{R}_i$ 为所有合规候选架次的集合。候选架次 $r$ 由机型 $g(r)$ 和一个非空货箱子集 $\mathcal{B}_r \subseteq \mathcal{B}_i$ 唯一确定，且须满足三条约束：
+
+\begin{align}
+\text{质量：} \quad & q_r = \sum_{b \in \mathcal{B}_r} w_b \le \min\left(Q_{g(r)}, Q_{safe, i, g(r)}\right) \\
+\text{体积：} \quad & v_r = \sum_{b \in \mathcal{B}_r} v_b \le V_{g(r)} \\
+\text{返航电量：} \quad & E_{ir}(q_r) \le (1 - \rho_{g(r)}) E_{g(r)}^{use}
+\end{align}
+
+令 $x_{ir} \in \{0,1\}$ 表示是否采用候选架次 $r$，则服务区 $S_i$ 的组批模型为：
+
+\begin{align}
+\min \quad & \bm{J}_i = \left( \sum_{r \in \mathcal{R}_i} x_{ir}, \; \sum_{r \in \mathcal{R}_i} E_{ir} x_{ir}, \; \sum_{r \in \mathcal{R}_i} T_{ir} x_{ir} \right) \label{eq:obj_partition} \\
+\text{s.t.} \quad & \sum_{r \in \mathcal{R}_i : b \in \mathcal{B}_r} x_{ir} = 1, \quad \forall b \in \mathcal{B}_i \label{eq:exact_cover} \\
+& x_{ir} \in \{0, 1\}, \quad \forall r \in \mathcal{R}_i
+\end{align}
+
+式 (\ref{eq:obj_partition}) 是三个指标组成的目标向量，式 (\ref{eq:exact_cover}) 保证每个货箱被恰好运送一次。
+
+\subsubsection{5.3.2 候选架次生成与状态压缩动态规划}
+各服务区的货箱数最多为 15（S001），子集规模上限 $2^{15}=32\,768$；其余服务区为 3--8 箱，子集规模 8--256。规模很小，可以用精确算法，不需要启发式方法。候选架次的生成过程是：枚举货箱子集，先用质量与体积这两个廉价条件剪枝，再对通过剪枝的子集计算实际能耗与返航 SOC 作精确判定。
+
+在候选集上求解集合划分时，本文采用基于位掩码的状态压缩动态规划。用状态压缩求解离散子集覆盖类问题的做法可追溯到 Held 与 Karp\cite{held1962}。具体做法如下。
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{状态表示}：用整数 $\text{mask} \in [0, 2^{|\mathcal{B}_i|}-1]$ 的二进制位表示交付状态，第 $k$ 位为 1 表示第 $k$ 个货箱已送达。
+    \item \textbf{消除排列对称}：同一个架次组合会因枚举顺序不同被重复搜索。为此，每次转移只考虑包含“当前未送达货箱中编号最小者”的候选架次（$\text{first\_bit} = \text{ctz}(\sim \text{mask})$），从而把解空间压缩为每个划分只出现一次。
+    \item \textbf{字典序比较}：状态转移时直接按指定的优先级元组比较三维目标向量，最终 $\text{best}[2^{|\mathcal{B}_i|}-1]$ 即为该服务区在该优先级下的精确最优解。
+\end{enumerate}
+
+\subsection{5.4 多目标权衡}
+
+\subsubsection{5.4.1 三种代表性策略}
+题面要求综合考虑往返架次数、总运输能耗和累计作业时间三个指标。这三个指标量纲不同、含义不同，也互相牵制，一般不存在单一最优解。本文不设主观权重，而是用字典序比较三种代表性策略\cite{ehrgott2005, marler2004}：
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{策略 I 架次优先}，优先级 $(0,1,2)$：先最少化架次，再在架次相同的方案中比能耗，最后比时间。
+    \item \textbf{策略 II 能耗优先}，优先级 $(1,0,2)$：先最少化总能耗。
+    \item \textbf{策略 III 时间优先}，优先级 $(2,0,1)$：先最短化累计作业时间。
+\end{itemize}
+
+\subsubsection{5.4.2 结果与取舍}
+基准工况（$\rho=20\%$、$\kappa=1.0$）下，15 个服务区独立求解后合并，结果见表 \ref{tab:tradeoff}。
+
+\begin{table}[H]
+\centering
+\caption{基准工况下三种策略的综合指标对比}
+\label{tab:tradeoff}
+\begin{tabularx}{\textwidth}{l c c c c >{\centering\arraybackslash}X}
+\toprule
+\textbf{优化策略} & \textbf{优化优先级} & \textbf{总往返架次} & \textbf{总运输能耗} & \textbf{累计作业时间} & \textbf{代表方案集中} \\
+\textbf{名称} & (架次, 能耗, 时间) & (架次) & ($\text{kWh}$) & ($\text{s}$) & \textbf{非支配性} \\
+\midrule
+架次优先 & $(0, 1, 2)$ & 18 & 59.232 & 32777.3 & 是 \\
+能耗优先 & $(1, 0, 2)$ & 19 & 59.134 & 34445.3 & 是 \\
+时间优先 & $(2, 0, 1)$ & 18 & 59.232 & 32777.3 & 是 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+从表 \ref{tab:tradeoff} 可以看到两点。
+
+其一，\textbf{“时间优先”与“架次优先”给出了完全相同的解}。这是因为地面保障时间占了很大比重：基准方案的 $32777.3\,\text{s}$ 中，纯飞行时间为 $19289.3\,\text{s}$，地面作业时间为 $13488.0\,\text{s}$，占 $41.2\%$；其中每个架次固定发生的地面时间（出动准备加基础交接）合计 $8370\,\text{s}$，与架次数成正比。既然固定时间随架次数线性增长，而各服务区的货箱组合又高度离散，最少架次方案通常也就是最短时间方案。这一现象说明，“累计作业时间”在本文口径下与架次数高度相关。
+
+其二，\textbf{“架次优先”与“能耗优先”互不支配}。两个方案的差别只出现在 S008 一个点：
+
+\begin{itemize}
+    \item 架次优先：S008 用 1 架次 C 型运 $45\,\text{kg}$，往返电耗 $5.857\,\text{kWh}$，作业时间 $2203.8\,\text{s}$；
+    \item 能耗优先：S008 拆成 2 架次 B 型，分别运 $25\,\text{kg}$ 与 $20\,\text{kg}$，往返电耗 $2.986+2.773=5.759\,\text{kWh}$，作业时间 $1965.9+1905.9=3871.8\,\text{s}$。
+\end{itemize}
+
+也就是说，多出一个架次，总电耗反而下降 $0.098\,\text{kWh}$（$0.17\%$），代价是作业时间增加 $1668.0\,\text{s}$（约 $27.8\,\text{min}$，$5.1\%$）。拆开算并不违反直觉：C 型空机 $69.9\,\text{kg}$，单位距离电耗是 B 型的 2.2 倍；载 $45\,\text{kg}$ 后等效航程又从 $26\,\text{km}$ 降到 $20.1\,\text{km}$，单位距离电耗进一步升高。用两个较轻的 B 型架次替代一个较重的 C 型架次，虽然多飞了一整个往返，但两次往返的电耗之和仍低于原来一次。真正被牺牲的是地面作业时间——多出一架次就要多付出一次准备与交接。
+
+考虑到 $0.098\,\text{kWh}$ 的电量节省对应约半小时的现场作业延长，在应急场景下并不划算，本文以“架次优先”的 18 架次方案作为推荐方案。
+
+\subsection{5.5 推荐方案明细}
+
+\subsubsection{5.5.1 18 架次分配方案}
+基准工况、架次优先策略下，状态压缩动态规划给出的 18 个架次见表 \ref{tab:batches_detail}。80 个货箱全部分配，无遗漏、无重复。
+
+\begin{table}[H]
+\centering
+\scriptsize
+\caption{推荐方案（18 架次）各架次组批参数与安全指标}
+\label{tab:batches_detail}
+\begin{tabularx}{\textwidth}{l c c c c c c c >{\centering\arraybackslash}X}
+\toprule
+\textbf{架次} & \textbf{服务区} & \textbf{执行} & \textbf{总质量} & \textbf{总体积} & \textbf{往返飞行} & \textbf{累计作业} & \textbf{架次能耗} & \textbf{返航SOC} \\
+\textbf{编号} & \textbf{编号} & \textbf{机型} & ($\text{kg}$) & ($\text{m}^3$) & \textbf{时间}($\text{s}$) & \textbf{时间}($\text{s}$) & ($\text{kWh}$) & ($\%$) \\
+\midrule
+Q1-001 & S001 & C & 76.0 & 0.159 & 619.4 & 1561.4 & 2.926 & 63.42 \\
+Q1-002 & S001 & C & 78.0 & 0.235 & 619.4 & 1627.4 & 3.005 & 62.44 \\
+Q1-003 & S002 & B & 25.0 & 0.067 & 1189.9 & 1819.9 & 2.722 & 31.95 \\
+Q1-004 & S002 & C & 56.0 & 0.144 & 1235.0 & 2045.0 & 5.739 & 28.26 \\
+Q1-005 & S003 & B & 25.0 & 0.067 & 1450.2 & 2080.2 & 2.779 & 30.52 \\
+Q1-006 & S003 & C & 56.0 & 0.144 & 1559.8 & 2369.8 & 5.763 & 27.96 \\
+Q1-007 & S004 & C & 59.0 & 0.156 & 1429.2 & 2305.2 & 6.177 & 22.79 \\
+Q1-008 & S005 & C & 59.0 & 0.156 & 1004.0 & 1880.0 & 4.239 & 47.02 \\
+Q1-009 & S006 & C & 59.0 & 0.156 & 684.9 & 1560.9 & 2.594 & 67.58 \\
+Q1-010 & S007 & C & 45.0 & 0.129 & 1079.2 & 1889.2 & 3.403 & 57.46 \\
+Q1-011 & S008 & C & 45.0 & 0.129 & 1393.8 & 2203.8 & 5.857 & 26.78 \\
+Q1-012 & S009 & B & 25.0 & 0.067 & 930.8 & 1560.8 & 2.102 & 47.44 \\
+Q1-013 & S010 & B & 25.0 & 0.067 & 924.6 & 1554.6 & 1.821 & 54.47 \\
+Q1-014 & S011 & B & 25.0 & 0.067 & 556.7 & 1186.7 & 1.076 & 73.10 \\
+Q1-015 & S012 & B & 25.0 & 0.067 & 1293.8 & 1923.8 & 2.755 & 31.12 \\
+Q1-016 & S013 & B & 25.0 & 0.067 & 880.4 & 1510.4 & 1.825 & 54.39 \\
+Q1-017 & S014 & B & 25.0 & 0.067 & 1238.6 & 1868.6 & 2.137 & 46.57 \\
+Q1-018 & S015 & B & 25.0 & 0.067 & 1199.6 & 1829.6 & 2.311 & 42.23 \\
+\midrule
+\textbf{全网汇总} & \textbf{15个区} & \textbf{9C+9B} & \textbf{758.0} & \textbf{2.011} & \textbf{19289.3} & \textbf{32777.3} & \textbf{59.232} & \textbf{均值45.3\%} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\SafeGraphic[width=0.75\textwidth]{site_flight_counts.png}
+\caption{各受灾服务区出动往返架次数空间分布图}
+\label{fig:site_flight_counts}
+\end{figure}
+
+\subsubsection{5.5.2 服务区汇总与电量核验}
+各服务区的执行情况见表 \ref{tab:service_summary}。机型选配呈现出明显的规律。
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{两架次服务区}：S001 物资总量 $154\,\text{kg}$，超过 C 型单架次能力，用 2 架次 C 型完成；S002 与 S003 各 $81\,\text{kg}$，采用“1 架次 B 型（$25\,\text{kg}$）$+$ 1 架次 C 型（$56\,\text{kg}$）”的组合。之所以这样配，是因为这两个点距离都超过 $7.2\,\text{km}$，C 型单架次装不下 $81\,\text{kg}$（安全载荷只有 $68.5\,\text{kg}$ 左右），把一部分货转给 B 型反而更省。
+    \item \textbf{单架次服务区}：S004 至 S008 需求量在 $45\sim59\,\text{kg}$ 之间，各由 1 架次 C 型完成；S009 至 S015 需求量均为 $25\,\text{kg}$、体积 $0.067\,\text{m}^3$，各由 1 架次 B 型完成。
+    \item \textbf{电量核验}：全部 18 个架次的返航 SOC 均不低于 $20\%$ 下限。最紧的是 Q1-007（S004，C 型，$59\,\text{kg}$，距离 $7.75\,\text{km}$），返航 SOC 为 $22.79\%$，相对下限只有 $2.79$ 个百分点裕度；其次是 Q1-011（S008，C 型，$45\,\text{kg}$，距离 $8.11\,\text{km}$），SOC 为 $26.78\%$。方案在逼近安全边界的同时没有越界。
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\small
+\caption{各受灾服务区任务完成情况汇总}
+\label{tab:service_summary}
+\begin{tabularx}{\textwidth}{l c c c c c >{\centering\arraybackslash}X}
+\toprule
+\textbf{服务区编号} & \textbf{货箱总数} & \textbf{总质量}($\text{kg}$) & \textbf{往返架次} & \textbf{总能耗}($\text{kWh}$) & \textbf{累计作业时间}($\text{s}$) & \textbf{未交付箱数} \\
+\midrule
+S001 & 15 & 154.0 & 2 & 5.931 & 3188.9 & 0 \\
+S002 & 8 & 81.0 & 2 & 8.461 & 3864.9 & 0 \\
+S003 & 8 & 81.0 & 2 & 8.542 & 4450.1 & 0 \\
+S004 & 6 & 59.0 & 1 & 6.177 & 2305.2 & 0 \\
+S005 & 6 & 59.0 & 1 & 4.239 & 1880.0 & 0 \\
+S006 & 6 & 59.0 & 1 & 2.594 & 1560.9 & 0 \\
+S007 & 5 & 45.0 & 1 & 3.403 & 1889.2 & 0 \\
+S008 & 5 & 45.0 & 1 & 5.857 & 2203.8 & 0 \\
+S009 & 3 & 25.0 & 1 & 2.102 & 1560.8 & 0 \\
+S010 & 3 & 25.0 & 1 & 1.821 & 1554.6 & 0 \\
+S011 & 3 & 25.0 & 1 & 1.076 & 1186.7 & 0 \\
+S012 & 3 & 25.0 & 1 & 2.755 & 1923.8 & 0 \\
+S013 & 3 & 25.0 & 1 & 1.825 & 1510.4 & 0 \\
+S014 & 3 & 25.0 & 1 & 2.137 & 1868.6 & 0 \\
+S015 & 3 & 25.0 & 1 & 2.311 & 1829.6 & 0 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{5.6 敏感性分析}
+
+\subsubsection{\texorpdfstring{5.6.1 返航安全余量 $\rho$ 的影响}{5.6.1 返航安全余量 rho 的影响}}
+返航电量下限直接决定可用能量，是本题最需要检验的参数。敏感性分析是检验模型稳健性、识别临界阈值的常规手段\cite{saltelli2008}。本文采用单因素扰动（One-At-a-Time，OAT），在 $\{10\%,15\%,20\%,25\%,30\%\}$ 上扫描 $\rho$，保持水平能耗标定系数 $\kappa=1.0$，结果见表 \ref{tab:sensitivity_reserve} 与图 \ref{fig:reserve_sensitivity}。
+
+\begin{table}[H]
+\centering
+\small
+\caption{返航安全余量 $\rho$ 对全局组批结果的影响}
+\label{tab:sensitivity_reserve}
+\begin{tabularx}{\textwidth}{c c c c c >{\raggedright\arraybackslash}X}
+\toprule
+\textbf{安全余量} $\rho$ & \textbf{总架次} & \textbf{总运输能耗}($\text{kWh}$) & \textbf{作业时间}($\text{s}$) & \textbf{可行状态} & \textbf{组批结构变化} \\
+\midrule
+$10\%$ & 18 & 59.232 & 32777.3 & 完全可行 & 与基准一致 \\
+$15\%$ & 18 & 59.232 & 32777.3 & 完全可行 & 与基准一致 \\
+$20\%$ (基准) & 18 & 59.232 & 32777.3 & 完全可行 & 基准解 \\
+$25\%$ & 19 & 61.181 & 34571.1 & 完全可行 & S004 由 1 架次拆为 2 架次 \\
+$30\%$ & 20 & 67.349 & 36595.6 & 完全可行 & S008 增为 2 架次；S002、S003 机型组合改为 C+C \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\SafeGraphic[width=0.8\textwidth]{reserve_sensitivity.png}
+\caption{返航安全余量 $\rho$ 对总架次、总能耗与作业时间的影响曲线}
+\label{fig:reserve_sensitivity}
+\end{figure}
+
+由表 \ref{tab:sensitivity_reserve} 可得到三点结论。
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{$\rho \in [10\%,20\%]$：方案不变。} 这一区间内安全载荷确有放宽，例如最紧张的 S008 处 C 型安全载荷从 $58.44\,\text{kg}$（$\rho=20\%$）提高到 $71.11\,\text{kg}$（$\rho=10\%$），但货箱规格固定，放宽后的载荷并没有让任何一个服务区减少架次，最优组批结构始终是 18 架次。方案对这一区间的余量取值不敏感。
+
+    \item \textbf{$\rho=25\%$：S004 首次裂变。} 此时 C 型在 S004 的安全载荷降到 $55.12\,\text{kg}$，而该点货箱总重 $59.00\,\text{kg}$，超出 $3.88\,\text{kg}$，无法再用一个架次完成，必须拆成 B 型 $17\,\text{kg}$ 加 C 型 $42\,\text{kg}$ 两架次。全网架次由 18 增至 19，总能耗升至 $61.181\,\text{kWh}$，作业时间增加 $1793.8\,\text{s}$。这是本例的临界点：再紧一点，方案结构就发生变化。
+
+    \item \textbf{$\rho=30\%$：约束全面收紧。} S008 处 C 型安全载荷被压到 $36.00\,\text{kg}$，S004 维持 2 架次；同时 S002 与 S003 的最优组合从“B$+$C”变为两架次 C 型，S008 由 1 架次 C 型拆为 C 型 $31\,\text{kg}$ 加 B 型 $14\,\text{kg}$。总架次升至 20，总能耗 $67.349\,\text{kWh}$。
+\end{enumerate}
+
+综合来看，$\rho$ 取值在 $20\%$ 以下时结果稳定，一旦超过 $20\%$ 就接连触发裂变。附件给定的 $20\%$ 下限恰好落在这个稳定区间的上沿。
+
+\subsubsection{\texorpdfstring{5.6.2 水平能耗标定系数 $\kappa$ 的影响}{5.6.2 水平能耗标定系数 kappa 的影响}}
+水平巡航能耗是本文标定的结果（假设 1），其绝对取值带有模型不确定性。为检验结论对这条假设的依赖程度，本文用系数 $\kappa \in \{0.8,1.0,1.2\}$ 对单位距离电耗整体放缩，重算全流程，结果见图 \ref{fig:energy_model_sensitivity}。
+
+需要说明两点。第一，$\kappa$ 只放缩水平能耗率，不改变等效航程 $L_g(q)$，因此这是单因素扰动，不是严格的物理情景（若把 $\kappa$ 解释为航程的倒数变化，还应同步修改航程公式）。第二，由于爬升能耗不随 $\kappa$ 变化，总能耗并非随 $\kappa$ 严格线性变化。
+
+\begin{itemize}[leftmargin=*]
+    \item $\kappa = 0.8$：单位距离电耗下降 $20\%$，全部服务区仍可用原结构完成配送，总架次保持 18，总能耗降至 $47.895\,\text{kWh}$，作业时间不变（$32777.3\,\text{s}$）。这表明在更乐观的能耗假设下方案还有余量。
+    \item $\kappa = 1.2$：单位距离电耗上升 $20\%$，可用能量被明显压缩，远距离服务区被迫增加分批，总架次升至 20，总能耗 $88.768\,\text{kWh}$，作业时间延长至 $36928.8\,\text{s}$。
+\end{itemize}
+
+两端对比说明：架次数在能耗假设偏乐观时不受影响，但在偏悲观时会增加约 $11\%$（18$\to$20）。这部分不确定性来自水平能耗标定，无法由题面数据消除，建议在现场执行时按保守取值预留余量。
+
+\begin{figure}[H]
+\centering
+\SafeGraphic[width=0.8\textwidth]{energy_model_sensitivity.png}
+\caption{水平能耗标定系数放缩对系统整体运行指标的敏感性响应}
+\label{fig:energy_model_sensitivity}
+\end{figure}
+
+
+
+\section{六、问题二：异构无人机多点多架次运输调度模型（框架预留）}
+{\kaishu （注：本节为全文架构预留。问题二在问题一的能耗与组批模型基础上解除单点往返限制，建立带时间窗与充电周转的多旅行商车辆路径与资源排程联合优化模型，详见后续章节。）}
+
+\subsection{6.1 多点多架次协同路径构型与网络流表述}
+\subsection{6.2 动力电池两阶段非线性等效充电模型与周转约束}
+\subsection{6.3 医疗物资紧急时限与多目标调度演化求解}
+
+
+
+\section{七、问题三：通信约束下的运输与中继联合调度模型（框架预留）}
+{\kaishu （注：本节为全文架构预留。问题三在问题二运输调度方案基础上引入自由空间传播损耗、衰落裕量与 DEM 视距遮挡判定，协同规划中继无人机的悬停位置与服务时段。）}
+
+\subsection{7.1 双向无线传播损耗与 DEM 视线遮挡（LOS）判定准则}
+\subsection{7.2 空中中继无人机悬停选址与能耗时序耦合机理}
+\subsection{7.3 连续通信保障下的时空协同排程算法}
+
+
+
+\section{八、问题四：救援任务分区与资源配置优化模型（框架预留）}
+{\kaishu （注：本节为全文架构预留。问题四以问题三固定的运输—通信联合调度方案为输入，研究 $K=2$ 与 $K=3$ 空间分区及独立执行单元的资源核算与库存缺口。）}
+
+\subsection{8.1 原子任务超图连通性与不可拆分组划分}
+\subsection{8.2 任务组独立执行下的峰值并发资源核算算法}
+\subsection{\texorpdfstring{8.3 $K=2$ 与 $K=3$ 方案的资源冗余、均衡性与库存缺口评估}{8.3 K=2 与 K=3 方案的资源冗余、均衡性与库存缺口评估}}
+
+
+
+\section{九、模型评价与推广}
+
+\subsection{9.1 主要特点}
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{地形与能耗模型贴合题目场景。} 巡航海拔由 DEM 沿线最高点决定而非取固定高度，爬升高度因此随航路变化；载荷通过 $3/2$ 次方关系进入能耗与航程，避免了线性续航假设在重载下低估电耗的问题。
+    \item \textbf{组批问题求解到精确最优。} 利用各服务区货箱相互独立的天然解耦，用状态压缩动态规划在毫秒级得到全局最优解，不存在启发式算法的随机性和早熟风险，也便于复核。
+    \item \textbf{对关键假设做了量化检验。} 水平能耗标定是本文最主要的假设，其影响通过 $\kappa$ 敏感性单独度量；结果在 $\kappa=0.8$ 时不变化，在 $\kappa=1.2$ 时架次增加 2，边界清楚。
+\end{enumerate}
+
+\subsection{9.2 局限与适用条件}
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{水平能耗为工程标定，不是唯一真实模型。} 题面未给水平能耗公式，本文按可用能量与等效航程之比标定。$15\times3$ 的最大安全载荷与组批能耗的绝对数值都条件于这条假设，其相对大小关系（机型排序、服务区排序）则较为稳健。
+    \item \textbf{“累计作业时间”是自定义口径。} 本文把它定义为准备、装载、飞行与交接时间之和，该口径下时间与架次数高度相关，导致“时间优先”与“架次优先”给出同一方案。若题目本意是墙钟完工时间，则还需引入各服务区任务能否并行、机队规模等约束，那属于问题二的范围，本文未擅自并入。
+    \item \textbf{Pareto 结论限于代表解。} 表 \ref{tab:tradeoff} 中的非支配关系只在三种字典序策略给出的代表解之间成立，不等于完整 Pareto 前沿。
+    \item \textbf{几何与高程采用统一近似。} 水平距离用球面大圆距离，节点作业高度取节点表海拔、未与 DEM 取值调和。在本场景的距离尺度下这些近似的影响可以忽略。
+    \item \textbf{航程校核未起作用。} 假设 2 引入的单程航程校核在全部情形下均未触发，说明本场景的可行域实际由能量约束和结构载重决定。
+\end{enumerate}
+
+\subsection{9.3 对救援组织的启示}
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{返航安全余量不宜设得过高。} 计算表明，$\rho$ 在 $20\%$ 以内方案结构稳定，一旦提高到 $25\%$ 就触发 S004 的架次裂变，提高到 $30\%$ 时总架次增加 $11\%$、总电耗增加 $13.7\%$。若现场因天气或电池低温衰减需要提高余量，应预期到架次与作业时间的明显上升，并提前准备机队与电池。
+    \item \textbf{重型机与轻型机应按距离分工。} C 型单位距离电耗高，远距离作业时能量断崖明显（S008 处安全载荷比额定值低 $27\%$）；B 型空载标准航程最长、单位距离电耗最低，适合承担 $7\,\text{km}$ 以上的远距离投送。本方案中 S002、S003 采用的“B 型小载 $+$ C 型大载”组合，以及 S008 在能耗优先策略下改用两架次 B 型，都是这一分工的体现。这种多机型混合编配的思路在无人机配送问题中已有较多讨论\cite{moshref2020}。
+    \item \textbf{能耗与时效的取舍量级很小。} 本例中省电与省时的对立只值 $0.098\,\text{kWh}$ 对 $1668\,\text{s}$，决策几乎不需要犹豫。但这一结论依赖于 $20\%$ 的余量基准；余量收紧后，架次增加带来的能耗与时间会同时上升，届时取舍空间会明显变小。
+\end{enumerate}
+
+
+
+\begin{thebibliography}{99}
+\bibitem{caunhye2012} Caunhye A M, Nie X, Pokharel S. Optimization models in emergency logistics: A literature review[J]. Socio-Economic Planning Sciences, 2012, 46(1): 4-13.
+\bibitem{holguin2012} Holguín-Veras J, Jaller M, Van Wassenhove L N, et al. On the unique features of post-disaster humanitarian logistics[J]. Journal of Operations Management, 2012, 30(7-8): 494-506.
+\bibitem{murray2015} Murray C C, Chu A G. The flying sidekick traveling salesman problem: Optimization of drone-assisted parcel delivery[J]. Transportation Research Part C: Emerging Technologies, 2015, 54: 86-109.
+\bibitem{otto2018} Otto A, Agatz N, Campbell J, et al. Optimization approaches for civil applications of unmanned aerial vehicles (UAVs) or aerial drones: A survey[J]. Networks, 2018, 72(4): 411-458.
+\bibitem{leishman2006} Leishman J G. Principles of Helicopter Aerodynamics[M]. 2nd ed. Cambridge: Cambridge University Press, 2006: 53-112.
+\bibitem{dorling2017} Dorling K, Heinrichs J, Messier G G, et al. Vehicle routing problems for drone delivery[J]. IEEE Transactions on Systems, Man, and Cybernetics: Systems, 2017, 47(1): 70-85.
+\bibitem{zhang2021} Zhang J, Campbell J F, Sweeney D C, et al. Energy consumption models for delivery drones: A comparison and assessment[J]. Transportation Research Part D: Transport and Environment, 2021, 90: 102668.
+\bibitem{stolaroff2018} Stolaroff J K, Samaras C, O'Neill E R, et al. Energy use and life cycle greenhouse gas emissions of drones for commercial package delivery[J]. Nature Communications, 2018, 9(1): 409.
+\bibitem{liu2017} Liu Y, Sheng H, He F, et al. An energy consumption model for multi-rotor small unmanned aircraft systems[C]//2017 IEEE 20th International Conference on Intelligent Transportation Systems (ITSC). IEEE, 2017: 1-6.
+\bibitem{sinnott1984} Sinnott R W. Virtues of the Haversine[J]. Sky and Telescope, 1984, 68(2): 159.
+\bibitem{vincenty1975} Vincenty T. Direct and inverse solutions of geodesics on the ellipsoid with application of nested equations[J]. Survey Review, 1975, 23(176): 88-93.
+\bibitem{roberge2013} Roberge V, Tarbouchi M, Labonté G. Comparison of parallel genetic algorithm and particle swarm optimization for real-time UAV path planning in complex 3D environments[J]. IEEE Transactions on Industrial Informatics, 2013, 9(1): 132-141.
+\bibitem{balas1976} Balas E, Padberg M W. Set partitioning: a survey[J]. SIAM Review, 1976, 18(4): 714-760.
+\bibitem{wolsey2014} Wolsey L A, Nemhauser G L. Integer and Combinatorial Optimization[M]. John Wiley \& Sons, 2014.
+\bibitem{held1962} Held M, Karp R M. A dynamic programming approach to sequencing problems[J]. Journal of the Society for Industrial and Applied Mathematics, 1962, 10(1): 196-210.
+\bibitem{ehrgott2005} Ehrgott M. Multicriteria Optimization[M]. 2nd ed. Berlin: Springer Science \& Business Media, 2005: 115-148.
+\bibitem{marler2004} Marler R T, Arora J S. Survey of multi-objective optimization methods for engineering[J]. Structural and Multidisciplinary Optimization, 2004, 26(6): 369-395.
+\bibitem{saltelli2008} Saltelli A, Ratto M, Andres T, et al. Global Sensitivity Analysis: The Primer[M]. John Wiley \& Sons, 2008.
+\bibitem{moshref2020} Moshref-Javadi M, Hemmati A, Winkenbach M. A path-based algorithm for the drone delivery problem with flexible delivery locations[J]. Transportation Research Part E: Logistics and Transportation Review, 2020, 142: 102047.
+\end{thebibliography}
+
+\end{document}
