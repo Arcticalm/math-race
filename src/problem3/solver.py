@@ -18,7 +18,10 @@ from openpyxl import load_workbook
 from src.problem1.solver import Node, load_aircraft, sample_leg
 from src.problem2.solver import (
     RouteEvaluator,
+    load_task_boxes,
     _hard_deadlines,
+    _schedule_deliveries,
+    _assign_and_schedule,
     _validate,
     _charge_duration as transport_charge_duration,
     load_resources,
@@ -662,6 +665,162 @@ def _node_elevation_audit(evaluator: LinkEvaluator) -> list[dict]:
     return audit
 
 
+def load_reference_q2_schedule(schedule_path: Path, delivery_path: Path):
+    """Load an external Q2 schedule while rebuilding physics from this repo's data.
+
+    Only trip grouping, route, aircraft, resource IDs and start times are taken
+    from the reference CSVs. Energies, legs, delivery times and SOC are rebuilt
+    with ``RouteEvaluator`` so the Q3 audit does not trust undocumented numbers.
+    """
+    rows = _read_csv(schedule_path)
+    deliveries = _read_csv(delivery_path)
+    if not rows or not deliveries:
+        raise ValueError("参考 Q2 文件为空，至少需要 q2_schedule.csv 和 q2_delivery.csv")
+    boxes = load_task_boxes()
+    by_code = {box.code: box for box in boxes}
+    delivery_by_trip = {}
+    for row in deliveries:
+        trip = row.get("trip", "")
+        code = row.get("box", "")
+        if code in by_code and code not in delivery_by_trip.setdefault(trip, []):
+            delivery_by_trip[trip].append(code)
+    evaluator = RouteEvaluator(0.2, 1.0)
+    try:
+        drones, batteries = load_resources()
+        battery_by_code = {item.code: item for item in batteries}
+        aircrafts = {item.code: item for item in drones}
+        sorties = []
+        for row in rows:
+            code = row.get("trip", "")
+            aircraft = row.get("type", "")
+            route_text = row.get("services", "")
+            route = [item for item in route_text.replace("→", ",").split(",") if item]
+            selected_boxes = [by_code[item] for item in delivery_by_trip.get(code, [])]
+            if not selected_boxes or not route or aircraft not in evaluator.aircrafts:
+                raise ValueError(f"参考 Q2 架次字段无效: {code}")
+            physics = evaluator.evaluate(selected_boxes, route, aircraft)
+            if physics is None:
+                raise ValueError(f"参考 Q2 架次无法通过本仓库物理模型: {code}")
+            start = float(row.get("start_s", 0.0))
+            physics.code = code
+            physics.drone = row.get("uav", "")
+            physics.battery = row.get("battery", "")
+            physics.prep_start_s = start
+            model = evaluator.aircrafts[aircraft]
+            physics.prep_end_s = start + model.prep_s
+            physics.loading_end_s = start + model.prep_s + model.load_each_s * len(selected_boxes)
+            physics.takeoff_s = physics.loading_end_s
+            physics.return_s = physics.takeoff_s + physics.flight_s + sum(
+                model.handoff_base_s + model.handoff_each_s * sum(box.site == site for box in selected_boxes)
+                for site in route
+            )
+            physics.deliveries = {}
+            _schedule_deliveries(physics, model)
+            # The reference package may use a different handling-time convention.
+            # Keep its start/resource decisions, but use this repository's
+            # reconstructed return time for all downstream communication audits.
+            if physics.drone not in {item.code for item in drones} or physics.battery not in battery_by_code:
+                raise ValueError(f"参考 Q2 资源编号未知: {code}")
+            sorties.append(physics)
+        assigned = [box.code for sortie in sorties for box in sortie.boxes]
+        if set(assigned) != set(by_code) or len(assigned) != len(set(assigned)):
+            missing = sorted(set(by_code) - set(assigned))
+            duplicates = sorted({code for code in assigned if assigned.count(code) > 1})
+            raise ValueError(f"参考 Q2 箱货覆盖无效: missing={missing}, duplicates={duplicates}")
+        # Reassign starts/resources under this repository's exact preparation,
+        # charging and conflict rules while preserving the reference grouping
+        # and service routes.
+        scheduled = _assign_and_schedule(sorties, drones, batteries, evaluator,
+                                          objective="balanced", order_policy="slack")
+        return scheduled, boxes
+    finally:
+        evaluator.close()
+
+
+def load_reference_q3_solution(solution_path: Path):
+    """Load the reference package's Q3 route/grouping candidate.
+
+    The pickle contains only route groups and box IDs. All timings, energies,
+    SOC values and resource assignments are rebuilt with this repository's
+    physics and scheduler.
+    """
+    import pickle
+
+    payload = pickle.loads(solution_path.read_bytes())
+    solution = payload.get("sol") if isinstance(payload, dict) else None
+    if not solution:
+        raise ValueError("参考 Q3 文件缺少 sol 路线候选")
+    boxes = load_task_boxes()
+    by_code = {box.code: box for box in boxes}
+    evaluator = RouteEvaluator(0.2, 1.0)
+    try:
+        drones, batteries = load_resources()
+        sorties = []
+        for index, group in enumerate(solution, 1):
+            aircraft = group.get("g")
+            stops = group.get("stops", [])
+            route = [item[0] for item in stops]
+            box_ids = [code for _, ids in stops for code in ids]
+            if aircraft not in evaluator.aircrafts or not route or not box_ids:
+                raise ValueError(f"参考 Q3 路线字段无效: {index}")
+            if len(box_ids) != len(set(box_ids)) or any(code not in by_code for code in box_ids):
+                raise ValueError(f"参考 Q3 箱号无效: {index}")
+            physics = evaluator.evaluate([by_code[code] for code in box_ids], route, aircraft)
+            if physics is None:
+                raise ValueError(f"参考 Q3 路线无法通过本仓库物理模型: {index}")
+            physics.code = f"REF-Q3-{index:03d}"
+            sorties.append(physics)
+        assigned = [box.code for sortie in sorties for box in sortie.boxes]
+        if set(assigned) != set(by_code) or len(assigned) != len(set(assigned)):
+            raise ValueError("参考 Q3 路线未完整覆盖 80 箱货")
+        try:
+            scheduled = _assign_and_schedule(sorties, drones, batteries, evaluator,
+                                              objective="balanced", order_policy="slack")
+        except ValueError:
+            # The reference optimizer may use a different deadline convention.
+            # Keep its route grouping and aircraft types, then make a resource-
+            # feasible chronological schedule for an honest downstream audit.
+            scheduled = _schedule_reference_routes(sorties, drones, batteries, evaluator)
+        return scheduled, boxes
+    finally:
+        evaluator.close()
+
+
+def _schedule_reference_routes(sorties, drones, batteries, evaluator):
+    drone_ready = {item.code: 0.0 for item in drones}
+    battery_ready = {item.code: 0.0 for item in batteries}
+    out = []
+    for sortie in sorted(sorties, key=lambda item: (item.aircraft, item.flight_s)):
+        candidates = [item for item in drones if item.aircraft == sortie.aircraft]
+        battery_candidates = [item for item in batteries if item.aircraft == sortie.aircraft]
+        if not candidates or not battery_candidates:
+            raise ValueError(f"参考 Q3 资源库存不足: {sortie.code}")
+        drone = min(candidates, key=lambda item: drone_ready[item.code])
+        battery = min(battery_candidates, key=lambda item: battery_ready[item.code])
+        model = evaluator.aircrafts[sortie.aircraft]
+        start = max(drone_ready[drone.code], battery_ready[battery.code])
+        sortie.drone, sortie.battery = drone.code, battery.code
+        sortie.prep_start_s = start
+        sortie.prep_end_s = start + model.prep_s
+        sortie.loading_end_s = start + model.prep_s + model.load_each_s * len(sortie.boxes)
+        sortie.takeoff_s = sortie.loading_end_s
+        sortie.return_s = sortie.takeoff_s + sortie.flight_s + sum(
+            model.handoff_base_s + model.handoff_each_s * sum(box.site == site for box in sortie.boxes)
+            for site in sortie.route
+        )
+        _schedule_deliveries(sortie, model)
+        drone_ready[drone.code] = sortie.return_s
+        battery_ready[battery.code] = sortie.return_s + transport_charge_duration(
+            battery.full_charge_s, sortie.battery_soc_return_percent / 100)
+        out.append(sortie)
+    return out
+
+
+def _read_csv(path: Path) -> list[dict[str, str]]:
+    with path.open("r", encoding="utf-8-sig", newline="") as stream:
+        return list(csv.DictReader(stream))
+
+
 def _charge_duration(full_charge_s: float, soc: float) -> float:
     if soc < 0.9:
         return full_charge_s * (0.65 * (0.9 - soc) / 0.9 + 0.35)
@@ -753,8 +912,20 @@ def select_relay_schedule(candidate_groups: list[dict], gap_count: int,
 
 
 def run(output_dir: Path = OUTPUT_DEFAULT, sample_step_s: float = 10.0,
-        relay_candidate_step_s: float = 10.0) -> dict:
-    primary_sorties, primary_metrics, boxes, q2_candidates = solve_problem2(return_candidates=True)
+        relay_candidate_step_s: float = 10.0, reference_q2: Path | None = None,
+        reference_q3: Path | None = None) -> dict:
+    if reference_q3 is not None:
+        primary_sorties, boxes = load_reference_q3_solution(reference_q3)
+        primary_metrics = {"source": "external Q3 route/grouping candidate", "sortie_count": len(primary_sorties)}
+        q2_candidates = []
+    elif reference_q2 is None:
+        primary_sorties, primary_metrics, boxes, q2_candidates = solve_problem2(return_candidates=True)
+    else:
+        schedule_path = reference_q2 / "q2_schedule.csv"
+        delivery_path = reference_q2 / "q2_delivery.csv"
+        primary_sorties, boxes = load_reference_q2_schedule(schedule_path, delivery_path)
+        primary_metrics = {"source": "external Q2 reference schedule", "sortie_count": len(primary_sorties)}
+        q2_candidates = []
     drones, batteries = load_resources()
     from src.problem3.joint import coordinate_joint_schedule
     alternatives = [
@@ -960,10 +1131,15 @@ def main() -> None:
     parser.add_argument("--output", type=Path, default=OUTPUT_DEFAULT)
     parser.add_argument("--sample-step", type=float, default=10.0)
     parser.add_argument("--relay-candidate-step", type=float, default=10.0)
+    parser.add_argument("--reference-q2", type=Path, default=None,
+                        help="directory containing external q2_schedule.csv and q2_delivery.csv")
+    parser.add_argument("--reference-q3", type=Path, default=None,
+                        help="external q3_best.pkl route/grouping candidate")
     args = parser.parse_args()
     if args.sample_step <= 0 or args.relay_candidate_step <= 0:
         parser.error("sampling steps must be positive")
-    print(json.dumps(run(args.output, args.sample_step, args.relay_candidate_step), ensure_ascii=False, indent=2))
+    print(json.dumps(run(args.output, args.sample_step, args.relay_candidate_step,
+                         args.reference_q2, args.reference_q3), ensure_ascii=False, indent=2))
 
 
 if __name__ == "__main__":

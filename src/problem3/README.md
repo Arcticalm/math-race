@@ -7,6 +7,22 @@ uv run --with-requirements src/problem3/requirements.txt python -m src.problem3.
 uv run --with-requirements src/problem3/requirements.txt python -m unittest tests.test_problem3 -v
 ```
 
+若要排除本仓库第二问组批对第三问的影响，可传入外部参考包的 `q2_schedule.csv`、`q2_delivery.csv` 所在目录：
+
+```bash
+uv run --with-requirements src/problem3/requirements.txt python -m src.problem3.solver \
+  --reference-q2 /path/to/reference/results --sample-step 300 --relay-candidate-step 300
+```
+
+也可传入参考包的 `q3_best.pkl`，仅复用其路线/组批候选：
+
+```bash
+uv run --with-requirements src/problem3/requirements.txt python -m src.problem3.solver \
+  --reference-q3 /path/to/q3_best.pkl --sample-step 300 --relay-candidate-step 300
+```
+
+参考文件只提供路线、箱号和资源候选；本程序会用仓库内的 Excel、DEM、能耗和链路参数重建时间、能耗、SOC 与通信审计，不直接采信参考数值。参考包的 Q3 `comm=0` 是采样窗口口径，不能替代本程序的连续区间认证。
+
 程序从第二问的已验证组批、访问顺序和运输资源分配出发，重建全部飞行及交接轨迹。第三问保留各运输候选内部的组批与路线，先搜索运输架次延迟，再对固定后的直连缺口生成中继悬停点候选并用 MILP 排程。Q2 主方案、少架次候选和能耗导向候选逐一比较；运输时刻协调是带硬时限余量的坐标启发式，中继覆盖与资源分配由 MILP 求解。这是受限候选集上的顺序式启发式优化，不是运输时刻与中继任务共同决策的联合 MILP，也不证明连续选址和路线问题的全局最优。
 
 ## 求解与核验
