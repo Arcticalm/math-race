@@ -634,7 +634,7 @@ def _schedule_signature(sorties: list[Sortie]) -> tuple:
     ))
 
 
-def solve(reserve: float = 0.2, energy_scale: float = 1.0) -> tuple[list[Sortie], dict, list[TaskBox]]:
+def solve(reserve: float = 0.2, energy_scale: float = 1.0, return_candidates: bool = False):
     boxes = load_task_boxes()
     drones, batteries = load_resources()
     evaluator = RouteEvaluator(reserve, energy_scale)
@@ -674,6 +674,12 @@ def solve(reserve: float = 0.2, energy_scale: float = 1.0) -> tuple[list[Sortie]
         metrics["tradeoff_candidates"] = {
             " | ".join(item["labels"]): item["metrics"] for item in unique_candidates.values()
         }
+        if return_candidates:
+            candidates = [
+                {"labels": list(item["labels"]), "sorties": item["sorties"], "metrics": item["metrics"]}
+                for item in unique_candidates.values()
+            ]
+            return primary["sorties"], metrics, boxes, candidates
         return primary["sorties"], metrics, boxes
     finally:
         evaluator.close()

@@ -1,17 +1,41 @@
-# Problem 3 implementation
+# 第三问：运输与中继联合调度
 
-Run the current communication screening from the repository root:
+在仓库根目录运行：
 
 ```bash
 uv run --with-requirements src/problem3/requirements.txt python -m src.problem3.solver
-```
-
-The first implementation stage reuses the audited Problem 2 transport schedule, reconstructs each sortie's climb/cruise/descent/handoff timeline, calculates bidirectional radio thresholds from the supplied workbook, screens direct transport-to-G01 links against the DSM, generates sampled relay hover/energy candidates, and attempts a greedy relay-airframe/component assignment. It writes diagnostic `link_samples.csv`, `direct_link_intervals.csv`, `relay_candidates.csv`, `relay_schedule.csv`, `node_dsm_elevation_audit.csv`, and `screening.json` to `outputs/problem3/`.
-
-This stage does not yet produce final Q3 template sheets or a feasible joint schedule. Current relay dispatch is greedy and can leave direct-link gaps uncovered; fixed-step link sampling does not certify continuous communication. Results explicitly report uncovered intervals and must not be treated as a feasible Problem 3 solution until transport start times can be adjusted, all relay/energy resources are jointly scheduled, and final event-driven/adaptive link replay passes.
-
-Tests:
-
-```bash
 uv run --with-requirements src/problem3/requirements.txt python -m unittest tests.test_problem3 -v
 ```
+
+程序从第二问的已验证组批、访问顺序和运输资源分配出发，重建全部飞行及交接轨迹。第三问保留各运输候选内部的组批与路线，先搜索运输架次延迟，再对固定后的直连缺口生成中继悬停点候选并用 MILP 排程。Q2 主方案、少架次候选和能耗导向候选逐一比较；运输时刻协调是带硬时限余量的坐标启发式，中继覆盖与资源分配由 MILP 求解。这是受限候选集上的顺序式启发式优化，不是运输时刻与中继任务共同决策的联合 MILP，也不证明连续选址和路线问题的全局最优。
+
+## 求解与核验
+
+1. 工作簿读取双向链路预算；按 EPSG:4326 经纬度、大圆距离、DSM 栅格高程及 30 m 视线采样规则筛选直连缺口。
+2. 每个缺口周边生成候选悬停点，分别保留能耗、去程时间、返程时间有利的代表点，避免只按能耗删掉可排程方案。
+3. 对每个 Q2 运输候选，用四轮坐标搜索调整架次开始时刻（确定性 seed=11，60 s 网格，单架最多延迟 3600 s，并保留硬时限余量端点）。按是否找到可行中继覆盖、直连缺口数及总时长、加权迟到和运输能耗比较候选。随后固定该候选的运输时刻，用二元区间 MILP 选择中继服务任务，并对两架中继机、六组能源组件、运输机与运输电池施加占用容量约束。MILP 的资源容量约束只在区间图的极大重叠团上建立，以减少重复约束。
+4. 服务期间即使暂时没有运输接入，也持续建链并计入悬停与通信功耗；不允许漏算待命能耗。到点后完成建链即进入服务窗口，窗口结束后立即返航。返航后的 300 s 周转不计入联合完成时间。
+5. 独立重新核验全部货箱、硬时限、运输物理模型及资源；重新计算中继飞行、能耗、SOC 和资源占用。
+6. 连续通信以递归区间界验证：枚举一个时间区间内所有可能的 30 m 视线采样点数，检查每个采样点扫过的 DSM 像元包围框，并用最大传播距离及最小视线高度作保守预算。不依赖采样点之间状态不变的假设。不能证明的区间继续细分至 1 s，仍不能证明时标为“未证实”，不会计为可行。
+
+`screening.json` 中 `feasible` 同时要求运输、硬时限、中继覆盖、资源审计和通信连续性认证通过。若资源受限中继 MILP 对某个候选判为不可行，该结论只针对该运输方案、时移边界、悬停点网格和保留的候选代表，不代表原题整体不可行。`continuity_certified` 仅针对上述给定 DSM/30 m LOS 模型，不等同于真实环境无线通信的保证。未证实区间写入 `relay_uncovered_gaps.csv`；最终通信方式与切换时刻见 `communication_audit.csv`。
+
+## 当前运行结果
+
+以 `--sample-step 300 --relay-candidate-step 300` 运行时，三类 Q2 运输候选的受限中继 MILP 均不可行。最终选出的诊断候选有 25 个运输架次、80 箱货，运输物理与 46 项硬时限核验通过；但 19 个直连缺口没有排入中继，独立连续通信认证发现 512 个未覆盖区间、通信中断约 14987.9 s。因此输出仅是诊断结果，`feasible=false` 且 `continuity_certified=false`，不可作为已完成的第三问方案输入第四问。
+
+该运行只比较三个由 Q2 输出筛选出的运输候选，并在每个候选内运行固定 seed 的局部时移搜索。中继候选悬停点也按 300 s 时间步筛选。上述搜索边界尚未覆盖所有合法路线、组批、时移组合或连续悬停点；后续优化应扩展候选生成或建立真正的联合调度模型，不能将本次受限 MILP 的不可行性外推为原题无解。
+
+## 模型口径
+
+- 运输水平能耗沿用第二问明确披露的标准航程标定基准，不增加附件未给定的运输通信功耗。
+- 中继航段高度取 `max(沿程 DSM 最高点 + 50 m, 起点高度, 终点高度)`，避免悬停点高于地形巡航面时出现高度跳变或漏计爬升。
+- 中继并发接入容量未给定，假设同一中继能同时保障多架运输机；每个通信区间只指定一个保障方。
+- 中继接入端点三维重合时禁止；运输机与基地网关三维重合时按距离趋于零的可通信极限延拓，避免把起降穿过网关高度的瞬时位置误判为无线中断。
+- 目标采用公开尺度：加权迟到秒数/3600 + 运输总延迟秒数/360000 + 中继能耗权重×kWh + 0.01×中继架次数 + 0.1×联合完成秒数/3600。固定运输组批下运输能耗和架次数是常数；所有指标仍在结果中报告。默认能耗权重为 0.1，能耗对照方案为 1。
+
+## 输出与复现
+
+输出位于 `outputs/problem3/`，包括提交工作簿、通信/运输/中继资源审计表、轨迹与悬停点图、指标 JSON 和程序包。程序包包含三问依赖代码及依赖文件；源 Excel 与 DEM 保留在仓库 `data/`，运行程序包时须保持相同目录结构并提供源数据。
+
+程序不会修改原始数据。候选选址范围、时间网格、求解时限和 MILP gap 均属于求解边界，应与最终指标一起引用。
