@@ -289,6 +289,12 @@ def search_relay_candidates(sorties, phases: list[TrackPhase], gaps: list[dict],
                     phase = next(item for item in sortie_phases
                                  if item.start_s - 1e-7 <= time_s <= item.end_s + 1e-7)
                     target_nodes.append(_position(phase, time_s)[0])
+                unique_demand = {}
+                for time_s, node, altitude in demand_by_gap[gap["gap_id"]]:
+                    key = (round(time_s, 7), round(node.longitude, 10),
+                           round(node.latitude, 10), round(altitude, 5))
+                    unique_demand.setdefault(key, (time_s, node, altitude))
+                demand_by_gap[gap["gap_id"]] = list(unique_demand.values())
             locations = {(round(node.longitude + lon_offset, 7), round(node.latitude + lat_offset, 7))
                          for node in target_nodes for lon_offset in offsets for lat_offset in offsets}
             # The reference solver's P1/P2/P3 points are retained as explicit
@@ -536,6 +542,52 @@ def _charge_duration(full_charge_s: float, soc: float) -> float:
     return full_charge_s * 0.35 * (1 - soc) / 0.1
 
 
+def _prune_dominated_candidates(candidates: list[dict]) -> list[dict]:
+    """Drop same-hover missions with worse resources and energy."""
+    relay = load_relay_parameters()
+    groups = {}
+    for candidate in candidates:
+        geometry = (candidate.get("longitude"), candidate.get("latitude"),
+                    candidate.get("hover_altitude_m"))
+        if any(value is None for value in geometry):
+            geometry = ("unknown", id(candidate))
+        key = (tuple(sorted(candidate["covered_gap_ids"])),
+               candidate["service_start_s"], candidate["service_end_s"],
+               *geometry)
+        groups.setdefault(key, []).append(candidate)
+
+    retained = []
+    tolerance = 1e-7
+    for options in groups.values():
+        for candidate in options:
+            candidate_charge_end = candidate["return_o01_s"] + _charge_duration(
+                relay.full_charge_s, candidate["return_soc_percent"] / 100)
+            dominated = False
+            for other in options:
+                if other is candidate:
+                    continue
+                other_charge_end = other["return_o01_s"] + _charge_duration(
+                    relay.full_charge_s, other["return_soc_percent"] / 100)
+                no_worse = (
+                    other["preparation_start_s"] >= candidate["preparation_start_s"] - tolerance
+                    and other["return_o01_s"] <= candidate["return_o01_s"] + tolerance
+                    and other_charge_end <= candidate_charge_end + tolerance
+                    and other["energy_kwh"] <= candidate["energy_kwh"] + tolerance
+                )
+                strictly_better = (
+                    other["preparation_start_s"] > candidate["preparation_start_s"] + tolerance
+                    or other["return_o01_s"] < candidate["return_o01_s"] - tolerance
+                    or other_charge_end < candidate_charge_end - tolerance
+                    or other["energy_kwh"] < candidate["energy_kwh"] - tolerance
+                )
+                if no_worse and strictly_better:
+                    dominated = True
+                    break
+            if not dominated:
+                retained.append(candidate)
+    return retained
+
+
 def _maximal_overlap_cliques(starts, ends, capacity: int) -> list[tuple[int, ...]]:
     """Return maximal overloaded cliques for half-open resource intervals."""
     masks = set()
@@ -568,6 +620,8 @@ def select_relay_schedule(candidate_groups: list[dict], gap_count: int,
     for candidate in candidates:
         if isinstance(candidate["covered_gap_ids"], str):
             candidate["covered_gap_ids"] = json.loads(candidate["covered_gap_ids"])
+    candidate_count_before_pruning = len(candidates)
+    candidates = _prune_dominated_candidates(candidates)
     impossible = [gap for gap in range(1, gap_count + 1)
                   if not any(gap in c["covered_gap_ids"] for c in candidates)]
     count = len(candidates)
@@ -594,7 +648,16 @@ def select_relay_schedule(candidate_groups: list[dict], gap_count: int,
         for row, (indices, _, _) in enumerate(constraints):
             matrix[row, list(indices)] = 1
         energies = np.array([c["energy_kwh"] for c in candidates])
-        costs = energies + 1e-6 if objective == "energy" else np.ones(count) + energies / (float(energies.sum()) + 1)
+        if objective == "energy":
+            costs = energies + 1e-6
+        elif objective == "robust":
+            relay = load_relay_parameters()
+            altitude_penalty = np.array([
+                (relay.maximum_agl_m - c["agl_m"]) * 0.001 for c in candidates
+            ])
+            costs = energies + altitude_penalty
+        else:
+            costs = np.ones(count) + energies / (float(energies.sum()) + 1)
         result = milp(costs, integrality=np.ones(count), bounds=Bounds(0, 1),
                       constraints=LinearConstraint(matrix.tocsr(),
                           [c[1] for c in constraints], [c[2] for c in constraints]),
@@ -620,6 +683,8 @@ def select_relay_schedule(candidate_groups: list[dict], gap_count: int,
     return {"feasible_cover": not uncovered, "selected_count": len(selected),
             "selected": selected, "uncovered_gap_ids": uncovered,
             "impossible_gap_ids": impossible, "best_partial_covered_count": len(covered),
+            "candidate_count_before_pruning": candidate_count_before_pruning,
+            "candidate_count_after_pruning": len(candidates),
             "drone_ready_times": drone_ready, "energy_component_ready_times": battery_ready,
             "objective": objective,
             "solver_status": result.message if result is not None else "empty or impossible candidate set",

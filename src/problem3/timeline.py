@@ -221,7 +221,8 @@ def solve_delays(sorties, groups, gap_count, time_limit_s=60.0, maximum_delay_s=
 
 
 def coordinate_timeline(initial, sample_step_s, candidate_step_s, max_iterations=12, time_limit_s=60,
-                        objective="sorties", max_relay_sorties=None, maximum_delay_s=10800):
+                        objective="sorties", max_relay_sorties=None, maximum_delay_s=10800,
+                        relay_objective="energy"):
     from src.problem3.solver import (
         build_trajectory, screen_direct_links, _merge_gap_intervals, _assign_gap_ids,
         search_relay_candidates, select_relay_schedule,
@@ -238,7 +239,8 @@ def coordinate_timeline(initial, sample_step_s, candidate_step_s, max_iterations
                                          checkpoints=samples, allow_early_departure=True)
         print(f"Q3: {len(gaps)} demands, {sum(g['candidate_count'] for g in groups)} candidates", flush=True)
         schedule = select_relay_schedule(groups, len(gaps),
-            objective="sorties" if objective == "sorties" else "energy", max_relay_sorties=max_relay_sorties)
+            objective="sorties" if objective == "sorties" else relay_objective,
+            max_relay_sorties=max_relay_sorties)
         history.append({"iteration": iteration + 1, "gap_count": len(gaps),
                         "fixed_schedule_feasible": schedule["feasible_cover"]})
         result = dict(sorties=sorties, phases=phases, samples=samples, intervals=intervals,
