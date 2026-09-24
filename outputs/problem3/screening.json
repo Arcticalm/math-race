@@ -1,0 +1,81 @@
+{
+  "status": "relay candidate/partial schedule diagnostic; not a feasible Q3 solution",
+  "transport_feasible": true,
+  "box_count": 80,
+  "sortie_count": 31,
+  "direct_link_threshold_db": 122.0,
+  "sample_step_s": 60.0,
+  "transport_start_coordination": {
+    "method": "three-pass coordinate search over delayed sortie starts",
+    "maximum_delay_s": 1800.0,
+    "step_s": 60.0,
+    "delays_s": {
+      "Q2-015": 60,
+      "Q2-018": 840,
+      "Q2-019": 360,
+      "Q2-021": 300,
+      "Q2-024": 552.4191275360863,
+      "Q2-026": 1380,
+      "Q2-027": 60,
+      "Q2-029": 300,
+      "Q2-030": 1800,
+      "Q2-031": 360
+    },
+    "peak_simultaneous_direct_gaps": 4,
+    "integrated_squared_gap_load_s": 28292.45645344499,
+    "resource_schedule_feasible": true
+  },
+  "sample_count": 1021,
+  "direct_gap_sample_count": 403,
+  "direct_gap_interval_count": 24,
+  "relay_candidate_step_s": 120.0,
+  "relay_candidates_saved_per_group": "best representative for each distinct gap-coverage subset",
+  "relay_candidate_summary": [
+    {
+      "group": 1,
+      "covered_sorties": "Q2-008,Q2-009,Q2-010,Q2-011,Q2-012,Q2-013,Q2-014,Q2-015,Q2-016,Q2-017,Q2-018,Q2-019,Q2-020,Q2-021,Q2-022,Q2-023,Q2-024,Q2-026,Q2-027,Q2-028,Q2-029,Q2-030,Q2-031",
+      "gap_count": 23,
+      "gap_start_s": 803.9626477115796,
+      "gap_end_s": 8988.86208053246,
+      "candidate_count": 365
+    },
+    {
+      "group": 2,
+      "covered_sorties": "Q2-025",
+      "gap_count": 1,
+      "gap_start_s": 9007.804133062136,
+      "gap_end_s": 9724.131503304585,
+      "candidate_count": 1
+    }
+  ],
+  "gap_groups_with_relay_candidate": 2,
+  "relay_candidate_feasibility": "candidates are screened for sampled simultaneous relay-access coverage of subsets within overlapping direct-gap components; final continuous communication is not certified",
+  "relay_schedule_feasibility": "greedy maximum uncovered-gap coverage, then energy; only candidates from sampled search are considered",
+  "relay_schedule": {
+    "feasible_cover": false,
+    "selected_count": 2,
+    "uncovered_gap_ids": [
+      11,
+      19,
+      20,
+      23,
+      24
+    ],
+    "drone_ready_times": {
+      "R01": 8769.345741816924,
+      "R02": 8585.995669443952
+    },
+    "energy_component_ready_times": {
+      "RE-01": 9971.923448762585,
+      "RE-02": 9741.918555973298,
+      "RE-03": 0.0,
+      "RE-04": 0.0,
+      "RE-05": 0.0,
+      "RE-06": 0.0
+    },
+    "method": "greedy maximum uncovered-gap coverage, then energy; only candidates from sampled search are considered"
+  },
+  "DSM_node_elevation_audit_count": 16,
+  "continuity_certified": false,
+  "note": "Fixed-step direct-link screening is diagnostic only; failed intervals require relay coverage and final adaptive audit."
+}
