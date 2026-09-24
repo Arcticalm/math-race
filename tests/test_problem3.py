@@ -114,6 +114,23 @@ class CommunicationPhysicsTests(unittest.TestCase):
         self.assertFalse(missing["feasible_cover"])
         self.assertEqual(missing["uncovered_gap_ids"], [2])
 
+    def test_sortie_objective_precedes_energy_and_enforces_count_limit(self):
+        def candidate(ids, energy):
+            return dict(covered_gap_ids=ids, preparation_start_s=0,
+                        service_start_s=300, service_end_s=500, return_o01_s=600,
+                        return_soc_percent=80, energy_kwh=energy)
+        merged = candidate([1, 2], 2)
+        split = [candidate([1], 0.1), candidate([2], 0.1)]
+        groups = [{"group": 1, "candidates": [merged, *split]}]
+        energy = select_relay_schedule(groups, 2, objective="energy")
+        count = select_relay_schedule(groups, 2, objective="sorties")
+        self.assertEqual(energy["selected_count"], 2)
+        self.assertEqual(count["selected_count"], 1)
+        self.assertEqual(count["selected"][0]["covered_gap_ids"], [1, 2])
+        capped = select_relay_schedule([{"group": 1, "candidates": split}], 2,
+                                      objective="sorties", max_relay_sorties=1)
+        self.assertFalse(capped["feasible_cover"])
+
     def test_maximal_interval_cliques_preserve_capacity_constraints(self):
         cliques = _maximal_overlap_cliques([0, 1, 2, 8], [5, 6, 7, 9], 2)
         self.assertEqual({frozenset(clique) for clique in cliques}, {frozenset({0, 1, 2})})

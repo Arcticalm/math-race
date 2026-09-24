@@ -9,14 +9,21 @@
 
 ```bash
 uv run --with-requirements src/problem3/requirements.txt python -m src.problem3.solver \
-  --q2-output outputs/problem23/clearance50 --output outputs/problem3 \
-  --sample-step 10 --relay-candidate-step 10 --max-iterations 12 --time-limit 60
+  --q2-output outputs/problem23/clearance50 --output outputs/problem3/refactored/optimized \
+  --sample-step 10 --relay-candidate-step 10 --max-iterations 12 --time-limit 180 \
+  --objective sorties --max-relay-sorties 8
 
 uv run --with-requirements src/problem3/requirements.txt python -m unittest \
   tests.test_problem3 tests.test_problem3_timeline -v
 ```
 
-`--time-limit` 是每轮后移协调的 CP-SAT 求解秒数；固定时间轴上的中继选择
+`--objective sorties`（默认）先最小化中继架次，再优化运输总延迟和完成时间；
+`--objective delay` 可复现原先的延迟优先口径。`--max-relay-sorties` 设置中继
+架次硬上限，未给出时不设该上限；不能达到时输出不可行或限时未找到解的诊断。
+架次优先模式下，固定时间轴 MILP 也先最小化架次，再以能耗打破平局。两个
+求解阶段均用严格的尺度上界保证架次优先，不会为了小幅降低次要指标而增加架次。
+
+`--time-limit` 是每轮后移协调的 CP-SAT 求解秒数（默认 180 秒）；固定时间轴上的中继选择
 使用 SciPy MILP，时限为 120 秒。`--sample-step` 和 `--relay-candidate-step`
 均以秒为单位。默认检查点间隔不超过 10 秒，同时包含全部阶段边界。
 原始数据不作修改，输出目录可自行指定。
@@ -53,8 +60,9 @@ uv run --with-requirements src/problem3/requirements.txt python -m unittest \
 - 延迟协调采用毫秒整数和向外取整的资源区间；每轮单架最多后移 14400 秒，
   且必须保留全部硬交付时限。CP-SAT 以返航储备 SOC 对充电时长作保守上界，
   最终任务按实际能耗、SOC 和分段充电曲线重新计算。
-- 后移协调阶段用共享重叠时刻构造合并窗口；重新生成候选时允许连续相交的
-  需求链。该协调模型采用更受限的充分条件，不证明所有可合并窗口的最优性。
+- 后移协调阶段允许连续相交的需求链，不再要求所有需求共享同一时刻。
+  重叠前驱按原需求编号定向，合并后没有无需求的等待间隙；这仍是有限候选
+  下的受限协调模型，不证明全部时间重排和连续选址的全局最优性。
 - 悬停点是有限网格，按覆盖集合保留能耗、出发和返航有利的代表点。
   求解失败只说明当前候选和时移边界内没有得到可行解，不代表原题无解。
 - `feasible=true` 要求通信检查点、运输、硬时限、中继物理和资源审计全部通过。
@@ -80,7 +88,7 @@ uv run --with-requirements src/problem3/requirements.txt python -m unittest \
 排程及导出；`physics.py` 负责物理计算；`audit.py` 负责独立审计。
 程序包仍需要源 Excel、DEM 和所选问题二输出，保持仓库相对路径即可复现。
 
-## 本次验证
+## 已提交的基线验证（4974707）
 
 使用默认 10 秒检查步长及 60 秒 CP-SAT 时限，结果保存在
 `outputs/problem3/refactored/`（生成文件已忽略）：两轮计算后 `feasible=true`，
@@ -98,3 +106,20 @@ uv run --with-requirements src/problem3/requirements.txt python -m unittest \
 
 `screening.json` 记录实际 Python、NumPy、SciPy、Rasterio、OR-Tools 和
 openpyxl 版本。有限求解时限可能影响得到的候选及延迟量。
+
+## 架次优先优化验证
+
+按本文顶部命令运行，经过两轮计算得到 `outputs/problem3/refactored/optimized/`：
+
+| 指标 | 已提交基线 | 本次优化 |
+| --- | ---: | ---: |
+| 运输架次 | 25 | 25 |
+| 中继架次 | 10 | 8 |
+| 总架次 | 35 | 33 |
+| 联合完成时间（秒） | 13182.538 | 12302.319 |
+| 中继能耗（kWh） | 5.112107 | 4.734409 |
+
+4012 个轨迹检查点、1698 次双跳链路检查、46 项硬时限全部通过，运输和中继
+资源审计无冲突。新增架次优先、架次上限和连续重叠链测试，20 项第三问测试
+全部通过。CP-SAT 返回 `FEASIBLE`，所以 8 架次是本次找到并独立验证的可行
+结果，不是已证明的全局最少架次。基线结果保留在父目录，没有覆盖。

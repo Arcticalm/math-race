@@ -66,7 +66,8 @@ def load_problem23_schedule(directory: Path):
         evaluator.close()
 
 
-def solve_delays(sorties, groups, gap_count, time_limit_s=60.0, maximum_delay_s=14400):
+def solve_delays(sorties, groups, gap_count, time_limit_s=60.0, maximum_delay_s=14400,
+                 objective="sorties", max_relay_sorties=None):
     """Jointly delay transports and form overlapping service windows at fixed points.
 
     Millisecond interval bounds are rounded outwards. Transport delays are
@@ -130,21 +131,45 @@ def solve_delays(sorties, groups, gap_count, time_limit_s=60.0, maximum_delay_s=
             chosen.append(use)
             service_start = model.new_int_var(ceil(preflight), horizon, "service_start_" + name)
             service_end = model.new_int_var(ceil(preflight), horizon, "service_end_" + name)
-            overlap = model.new_int_var(0, horizon, "common_overlap_" + name)
             model.add(service_end >= service_start)
             model.add(service_end - service_start <= floor(maximum_service))
+            assignments = {}
             for gap_id in ids[anchor_index:]:
                 assigned = use if gap_id == anchor else model.new_bool_var(f"assign_{name}_{gap_id}")
                 if gap_id != anchor:
                     model.add(assigned <= use)
+                assignments[gap_id] = assigned
                 gap = gaps[gap_id]
                 begin = floor(gap["start_s"]) + delays[gap["sortie"]]
                 end = ceil(gap["end_s"]) + delays[gap["sortie"]]
                 model.add(service_start <= begin).only_enforce_if(assigned)
                 model.add(service_end >= end).only_enforce_if(assigned)
-                model.add(overlap >= ceil(gap["start_s"]) + delays[gap["sortie"]]).only_enforce_if(assigned)
-                model.add(overlap + 1 <= floor(gap["end_s"]) + delays[gap["sortie"]]).only_enforce_if(assigned)
                 coverage[gap_id].append(assigned)
+            # A connected chain of overlapping demands can bridge disjoint
+            # gaps of one sortie. Requiring a common instant for the entire
+            # window would incorrectly exclude such valid merged missions.
+            for gap_id, assigned in assignments.items():
+                if gap_id == anchor:
+                    continue
+                gap = gaps[gap_id]
+                predecessors = []
+                for previous_id, previous_assigned in assignments.items():
+                    if previous_id >= gap_id:
+                        continue
+                    previous = gaps[previous_id]
+                    if (previous["sortie"] == gap["sortie"]
+                            and previous["end_s"] <= gap["start_s"]):
+                        continue
+                    edge = model.new_bool_var(f"overlap_{name}_{previous_id}_{gap_id}")
+                    model.add(edge <= assigned)
+                    model.add(edge <= previous_assigned)
+                    previous_start = ceil(previous["start_s"]) + delays[previous["sortie"]]
+                    previous_end = floor(previous["end_s"]) + delays[previous["sortie"]]
+                    current_start = ceil(gap["start_s"]) + delays[gap["sortie"]]
+                    model.add(current_start >= previous_start).only_enforce_if(edge)
+                    model.add(current_start + 1 <= previous_end).only_enforce_if(edge)
+                    predecessors.append(edge)
+                model.add(sum(predecessors) >= assigned)
             start = service_start - ceil(preflight)
             # Charge at reserve SOC bounds the piecewise charge curve from above.
             # Exact SOC and recharge completion are recomputed after time replay.
@@ -167,15 +192,27 @@ def solve_delays(sorties, groups, gap_count, time_limit_s=60.0, maximum_delay_s=
     makespan = model.new_int_var(0, horizon, "makespan")
     for sortie in sorties:
         model.add(makespan >= ceil(sortie.return_s) + delays[sortie.code])
-    model.minimize(sum(delays.values()) + makespan + sum(chosen))
+    if max_relay_sorties is not None:
+        model.add(sum(chosen) <= max_relay_sorties)
+    secondary = sum(delays.values()) + makespan
+    count_weight = len(sorties) * ceil(maximum_delay_s) + horizon + 1
+    if objective == "sorties":
+        model.minimize(count_weight * sum(chosen) + secondary)
+    elif objective == "delay":
+        model.minimize(secondary + sum(chosen))
+    else:
+        raise ValueError("objective must be sorties or delay")
     solver = cp_model.CpSolver()
     solver.parameters.max_time_in_seconds = time_limit_s
     solver.parameters.num_search_workers = 1
     solver.parameters.random_seed = 11
     status = solver.solve(model)
-    info = {"status": solver.status_name(status), "candidate_count": len(options)}
+    info = {"status": solver.status_name(status), "candidate_count": len(options),
+            "objective": objective, "max_relay_sorties": max_relay_sorties}
     if status not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
         return None, info
+    info["relay_sortie_count"] = sum(solver.value(use) for use in chosen)
+    info["objective_bound"] = solver.best_objective_bound
     shifted = copy.deepcopy(sorties)
     info["delays_s"] = {code: solver.value(delay) / scale for code, delay in delays.items()}
     for sortie in shifted:
@@ -183,7 +220,8 @@ def solve_delays(sorties, groups, gap_count, time_limit_s=60.0, maximum_delay_s=
     return shifted, info
 
 
-def coordinate_timeline(initial, sample_step_s, candidate_step_s, max_iterations=12, time_limit_s=60):
+def coordinate_timeline(initial, sample_step_s, candidate_step_s, max_iterations=12, time_limit_s=60,
+                        objective="sorties", max_relay_sorties=None):
     from src.problem3.solver import (
         build_trajectory, screen_direct_links, _merge_gap_intervals, _assign_gap_ids,
         search_relay_candidates, select_relay_schedule,
@@ -199,7 +237,8 @@ def coordinate_timeline(initial, sample_step_s, candidate_step_s, max_iterations
         groups = search_relay_candidates(sorties, phases, gaps, candidate_step_s,
                                          checkpoints=samples, allow_early_departure=True)
         print(f"Q3: {len(gaps)} demands, {sum(g['candidate_count'] for g in groups)} candidates", flush=True)
-        schedule = select_relay_schedule(groups, len(gaps))
+        schedule = select_relay_schedule(groups, len(gaps),
+            objective="sorties" if objective == "sorties" else "energy", max_relay_sorties=max_relay_sorties)
         history.append({"iteration": iteration + 1, "gap_count": len(gaps),
                         "fixed_schedule_feasible": schedule["feasible_cover"]})
         result = dict(sorties=sorties, phases=phases, samples=samples, intervals=intervals,
@@ -210,7 +249,8 @@ def coordinate_timeline(initial, sample_step_s, candidate_step_s, max_iterations
         if iteration + 1 == max_iterations:
             history[-1]["stop_reason"] = "iteration limit"
             break
-        shifted, info = solve_delays(sorties, groups, len(gaps), time_limit_s)
+        shifted, info = solve_delays(sorties, groups, len(gaps), time_limit_s,
+                                    objective=objective, max_relay_sorties=max_relay_sorties)
         history[-1]["delay_solver"] = info
         if shifted is None:
             history[-1]["stop_reason"] = info["status"]

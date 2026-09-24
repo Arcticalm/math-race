@@ -102,6 +102,28 @@ class TimelineTests(unittest.TestCase):
         self.assertFalse(audit["feasible"])
         self.assertTrue(any(c.get("resource") == "RE-01" for c in audit["conflicts"]))
 
+    def test_sortie_priority_merges_overlapping_chain_without_common_instant(self):
+        # Gap 2 bridges the disjoint gaps 1 and 3 of the same transport.
+        # No time belongs to all three, but their union is connected.
+        sorties = [SimpleNamespace(code=f"T{i}", drone=f"U{i}", battery=f"B{i}",
+            prep_start_s=0, prep_end_s=100, loading_end_s=120, takeoff_s=120,
+            return_s=1500, battery_soc_return_percent=80, boxes=[], deliveries={}) for i in range(2)]
+        gaps = [dict(gap_id=i+1, sortie=code, start_s=start, end_s=end)
+                for i, (code, start, end) in enumerate([
+                    ("T0", 300, 500), ("T1", 450, 750), ("T0", 700, 900)])]
+        candidates = [dict(covered_gap_ids=[g["gap_id"]], covered_sorties=g["sortie"],
+            preparation_start_s=g["start_s"]-300, service_start_s=g["start_s"],
+            service_end_s=g["end_s"], return_o01_s=g["end_s"]+100,
+            return_soc_percent=80, energy_kwh=0.3 + 1.1*(g["end_s"]-g["start_s"])/3600,
+            longitude=0, latitude=0, hover_altitude_m=200) for g in gaps]
+        batteries = [SimpleNamespace(code=f"B{i}", full_charge_s=1800) for i in range(2)]
+        with patch("src.problem3.timeline.load_resources", return_value=([], batteries)):
+            shifted, info = solve_delays(sorties, [{"candidates": candidates, "gaps": gaps}],
+                                         3, time_limit_s=5, max_relay_sorties=1)
+        self.assertIsNotNone(shifted, info)
+        self.assertEqual(info["relay_sortie_count"], 1)
+        self.assertTrue(all(delay == 0 for delay in info["delays_s"].values()))
+
     def test_missing_spatial_candidate_is_not_fixed_by_arbitrary_delay(self):
         sorties, _, _ = load_problem23_schedule(ROOT / "outputs/problem23/clearance50")
         shifted, info = solve_delays(sorties, [], 1, time_limit_s=1)

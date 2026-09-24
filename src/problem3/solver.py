@@ -554,7 +554,8 @@ def _maximal_overlap_cliques(starts, ends, capacity: int) -> list[tuple[int, ...
 
 
 def select_relay_schedule(candidate_groups: list[dict], gap_count: int,
-                          search_limit: int = 50000, objective: str = "energy") -> dict:
+                          search_limit: int = 50000, objective: str = "energy",
+                          max_relay_sorties: int | None = None) -> dict:
     """Select interval missions with exact airframe and component capacities."""
     import numpy as np
     from scipy.optimize import Bounds, LinearConstraint, milp
@@ -583,6 +584,8 @@ def select_relay_schedule(candidate_groups: list[dict], gap_count: int,
                 continue
             constraints.append(([i for i, c in enumerate(candidates)
                                  if gap in c["covered_gap_ids"]], 1, np.inf))
+        if max_relay_sorties is not None:
+            constraints.append((list(range(count)), 0, max_relay_sorties))
         # Interval graphs need capacity constraints only on maximal cliques.
         for ends, capacity in ((drone_ends, 2), (battery_ends, relay.battery_count)):
             for active in _maximal_overlap_cliques(starts, ends, capacity):
@@ -591,11 +594,11 @@ def select_relay_schedule(candidate_groups: list[dict], gap_count: int,
         for row, (indices, _, _) in enumerate(constraints):
             matrix[row, list(indices)] = 1
         energies = np.array([c["energy_kwh"] for c in candidates])
-        costs = energies + 1e-6 if objective == "energy" else np.ones(count) + energies / (count * 3.2 + 1)
+        costs = energies + 1e-6 if objective == "energy" else np.ones(count) + energies / (float(energies.sum()) + 1)
         result = milp(costs, integrality=np.ones(count), bounds=Bounds(0, 1),
                       constraints=LinearConstraint(matrix.tocsr(),
                           [c[1] for c in constraints], [c[2] for c in constraints]),
-                      options={"time_limit": 120.0, "mip_rel_gap": 0.001})
+                      options={"time_limit": 120.0, "mip_rel_gap": 0.0})
         if result.x is not None:
             selected = [dict(c) for c, x in zip(candidates, result.x) if x > 0.5]
     selected.sort(key=lambda c: c["preparation_start_s"])
@@ -627,7 +630,8 @@ def select_relay_schedule(candidate_groups: list[dict], gap_count: int,
 def run(output_dir: Path = OUTPUT_DEFAULT, sample_step_s: float = 10.0,
         relay_candidate_step_s: float = 10.0,
         q2_output: Path = ROOT / "outputs/problem23/clearance50",
-        max_iterations: int = 12, time_limit_s: float = 60.0) -> dict:
+        max_iterations: int = 12, time_limit_s: float = 180.0,
+        objective: str = "sorties", max_relay_sorties: int | None = None) -> dict:
     from src.problem3.timeline import load_problem23_schedule, coordinate_timeline
     from importlib.metadata import version
     import platform
@@ -637,7 +641,7 @@ def run(output_dir: Path = OUTPUT_DEFAULT, sample_step_s: float = 10.0,
     primary_sorties, boxes, source_metrics = load_problem23_schedule(q2_output)
     drones, batteries = load_resources()
     result = coordinate_timeline(primary_sorties, sample_step_s, relay_candidate_step_s,
-                                 max_iterations, time_limit_s)
+                                 max_iterations, time_limit_s, objective, max_relay_sorties)
     sorties, phases, samples, intervals, gaps, relay_candidates, selected = (
         result[key] for key in ("sorties", "phases", "samples", "intervals", "gaps", "groups", "selected"))
     coordination = result["coordination"]
@@ -662,6 +666,7 @@ def run(output_dir: Path = OUTPUT_DEFAULT, sample_step_s: float = 10.0,
     metrics = {
         "status": "relay candidate/partial schedule diagnostic; not a feasible Q3 solution",
         "transport_feasible": transport_metrics["feasible"],
+        "objective": objective, "max_relay_sorties": max_relay_sorties,
         "box_count": len(boxes),
         "sortie_count": len(sorties),
         "direct_link_threshold_db": link_limits(load_link_parameters())["transport_gateway_db"],
@@ -771,13 +776,16 @@ def main() -> None:
     parser.add_argument("--relay-candidate-step", type=float, default=10.0)
     parser.add_argument("--q2-output", type=Path, default=ROOT / "outputs/problem23/clearance50")
     parser.add_argument("--max-iterations", type=int, default=12)
-    parser.add_argument("--time-limit", type=float, default=60.0)
+    parser.add_argument("--time-limit", type=float, default=180.0)
+    parser.add_argument("--objective", choices=("sorties", "delay"), default="sorties")
+    parser.add_argument("--max-relay-sorties", type=int)
     args = parser.parse_args()
     if (args.sample_step <= 0 or args.relay_candidate_step <= 0
-            or args.max_iterations < 1 or args.time_limit <= 0):
+            or args.max_iterations < 1 or args.time_limit <= 0
+            or (args.max_relay_sorties is not None and args.max_relay_sorties < 0)):
         parser.error("sampling steps must be positive")
     result = run(args.output, args.sample_step, args.relay_candidate_step, args.q2_output,
-                 args.max_iterations, args.time_limit)
+                 args.max_iterations, args.time_limit, args.objective, args.max_relay_sorties)
     print(json.dumps(result, ensure_ascii=False, indent=2))
     if not result["feasible"]:
         raise SystemExit(2)
