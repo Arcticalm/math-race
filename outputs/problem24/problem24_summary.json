@@ -1,0 +1,16 @@
+{
+  "feasible": true,
+  "sortie_count": 19,
+  "makespan_s": 8677.045617096052,
+  "total_energy_kwh": 61.30585826459298,
+  "weighted_all_expected_tardiness": 141346.21050074592,
+  "method": "cp_sat",
+  "strategy": "NSGA-II outer + CP-SAT elite inner",
+  "optimality_status": "best nondominated candidate found; global optimum unproven",
+  "population_size": 6,
+  "generations": 3,
+  "cp_sat_calls": 2,
+  "cp_sat_cache_hits": 4,
+  "nondominated_count": 9,
+  "seed": 20260924
+}

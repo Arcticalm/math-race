@@ -14,7 +14,6 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 from openpyxl import load_workbook
-from rasterio.transform import rowcol
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -171,22 +170,48 @@ def great_circle_distance_m(start: Node, end: Node) -> float:
 
 
 def sample_leg(dem: rasterio.io.DatasetReader, start: Node, end: Node) -> tuple[float, float]:
-    """Return maximum sampled DEM elevation and great-circle horizontal distance."""
-    distance = great_circle_distance_m(start, end)
-    intervals = max(1, math.ceil(distance / 30))
-    elevations = []
-    for index in range(intervals + 1):
-        fraction = index / intervals
-        longitude = start.longitude + fraction * (end.longitude - start.longitude)
-        latitude = start.latitude + fraction * (end.latitude - start.latitude)
-        row, col = rowcol(dem.transform, longitude, latitude)
-        if not (0 <= row < dem.height and 0 <= col < dem.width):
-            raise ValueError(f"Route {start.code}-{end.code} leaves DEM extent")
-        value = float(dem.read(1, window=((row, row + 1), (col, col + 1)))[0, 0])
-        if dem.nodata is not None and math.isclose(value, dem.nodata):
-            raise ValueError(f"Route {start.code}-{end.code} crosses DEM NoData")
-        elevations.append(value)
-    return max(elevations), distance
+    """Maximum over all DEM cells touched by the coordinate-linear segment.
+
+    Split at every grid crossing and inspect each intervening cell, including
+    both sides of edges and every corner contact. Retain the existing horizontal
+    great-circle distance convention. NoData anywhere on the route is rejected.
+    """
+    inverse = ~dem.transform
+    x0, y0 = inverse * (start.longitude, start.latitude)
+    x1, y1 = inverse * (end.longitude, end.latitude)
+    if any(not (0 <= x <= dem.width and 0 <= y <= dem.height)
+           for x, y in ((x0, y0), (x1, y1))):
+        raise ValueError(f"Route {start.code}-{end.code} leaves DEM extent")
+    crossings = {0.0, 1.0}
+    for first, last in ((x0, x1), (y0, y1)):
+        if first != last:
+            for boundary in range(math.floor(min(first, last)) + 1,
+                                  math.ceil(max(first, last))):
+                crossings.add((boundary - first) / (last - first))
+    ordered = sorted(crossings)
+    parameters = ordered + [(a + b) / 2 for a, b in zip(ordered, ordered[1:])]
+
+    def indices(value: float) -> tuple[int, ...]:
+        nearest = round(value)
+        if abs(value - nearest) <= 1e-9:
+            return nearest - 1, nearest
+        return (math.floor(value),)
+
+    cells = {
+        (row, col)
+        for t in parameters
+        for row in indices(y0 + t * (y1 - y0))
+        for col in indices(x0 + t * (x1 - x0))
+        if 0 <= row < dem.height and 0 <= col < dem.width
+    }
+    rows, cols = zip(*cells)
+    row_min, row_max = min(rows), max(rows)
+    col_min, col_max = min(cols), max(cols)
+    raster = dem.read(1, window=((row_min, row_max + 1), (col_min, col_max + 1)), masked=True)
+    elevations = raster[np.asarray(rows) - row_min, np.asarray(cols) - col_min]
+    if np.any(np.ma.getmaskarray(elevations)) or not np.all(np.isfinite(elevations.data)):
+        raise ValueError(f"Route {start.code}-{end.code} crosses DEM NoData")
+    return float(elevations.max()), great_circle_distance_m(start, end)
 
 
 def load_energy_per_meter(aircrafts: dict[str, Aircraft]) -> dict[str, float]:

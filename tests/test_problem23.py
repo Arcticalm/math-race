@@ -7,6 +7,8 @@ class TimePriorityTests(unittest.TestCase):
     def test_selects_fastest_audited_candidate(self):
         sorties, metrics, boxes, candidates = solve()
         self.assertTrue(metrics["feasible"], metrics["violations"])
+        self.assertTrue(metrics["terrain_clearance"]["feasible"])
+        self.assertGreaterEqual(metrics["terrain_clearance"]["minimum_clearance_m"], 50 - 1e-9)
         self.assertEqual(len(boxes), 80)
         self.assertEqual(metrics["assigned_box_count"], 80)
         self.assertEqual(metrics["makespan_s"], min(

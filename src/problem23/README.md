@@ -11,3 +11,22 @@ python3 -m src.problem23.solver
 组批候选包括逐服务区精确集合划分、原构造式划分以及对应的两区合并方案。此候选范围不覆盖第二问所有跨区货箱组合，所以即使某固定组批的 CP-SAT 状态为 `OPTIMAL`，也不能称完整第二问全局最优。CP-SAT 使用整秒保守取整；输出中的时刻和能耗以原浮点物理模型重新计算并审计。
 
 结果保存在 `outputs/problem23/`：`problem2_submission.xlsx`、逐架次/逐箱/电池 CSV、资源甘特图、路线图、送达时间图、`time_priority_tradeoff.png` 和 `time_priority_candidates.csv`。`validation.json` 记录审计结果及求解范围；`problem23_summary.json` 摘要主方案。
+
+## 50 米巡航净空修正
+
+地形高度取水平航线经过的全部 DEM 像元的最大值（包括边界和角点接触），
+巡航海拔取此值加 50 米。起降及服务区 30 米作业高度按题目定义执行。
+修改位于共享的 `src/problem1/solver.py::sample_leg`，会影响后续复用它的求解；
+旧结果文件不代表修正模型的结果。
+
+使用仓库 uv 虚拟环境重新求解：
+
+```bash
+.venv/bin/python -m src.problem23.solver --cp-sat-time-limit 60 --output outputs/problem23/clearance50
+.venv/bin/python -m unittest tests.test_terrain_clearance tests.test_problem23 -v
+```
+
+新增 `terrain_clearance_audit.csv` 和 `terrain_clearance.png`。
+`validation.json` 中的 `terrain_clearance` 使用独立的线段与像元矩形相交算法
+核查所有已选航段，不复用求解器的地形取样结果；若不满足要求则终止导出。
+50 米保证针对所提供 DEM 的水平巡航模型。完整问题的全局最优性仍未证明。
