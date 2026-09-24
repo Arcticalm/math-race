@@ -194,19 +194,96 @@ def audit_communication(phases, selected, step_s=30.0, minimum_step_s=1.0):
 
 
 def audit_relay_resources(selected):
-    drone_intervals = {}
-    for mission in selected:
-        drone_intervals.setdefault(mission.get("relay_drone", ""), []).append(
-            (mission["preparation_start_s"], mission["return_o01_s"] + 300))
-    conflicts = []
-    for drone, intervals in drone_intervals.items():
-        intervals.sort()
-        for first, second in zip(intervals, intervals[1:]):
-            if first[1] > second[0] + 1e-7:
-                conflicts.append({"resource": drone, "first": first, "second": second})
-    return {
-        "mission_count": len(selected),
-        "resource_conflict_count": len(conflicts),
-        "feasible": not conflicts,
-        "conflicts": conflicts,
-    }
+    from src.problem3.physics import load_relay_parameters, estimate_relay_mission, sampled_flight_leg
+    from src.problem3.solver import _charge_duration
+    params = load_relay_parameters()
+    occupancy, conflicts = {}, []
+    evaluator = LinkEvaluator()
+    try:
+        for mission in selected:
+            drone, component = mission.get("relay_drone"), mission.get("energy_component")
+            if drone not in {"R01", "R02"} or component not in {f"RE-{i:02d}" for i in range(1, 7)}:
+                conflicts.append({"reason": "unknown relay resource"})
+            start = mission["preparation_start_s"]
+            hover = Node("H", mission["longitude"], mission["latitude"], mission["ground_dsm_m"])
+            terrain, distance = sampled_flight_leg(evaluator, evaluator.base, hover)
+            back_terrain, back_distance = sampled_flight_leg(evaluator, hover, evaluator.base)
+            estimate = estimate_relay_mission(mission["service_end_s"] - mission["service_start_s"],
+                distance, terrain, mission["hover_altitude_m"], back_distance, back_terrain,
+                evaluator.base.elevation_m, params)
+            expected_start = mission["service_start_s"] - params.preparation_s - estimate.outbound_flight_s - params.link_setup_s
+            expected_return = mission["service_end_s"] + estimate.return_flight_s
+            if (start < -1e-7 or not estimate.feasible_energy
+                    or abs(start - expected_start) > 1e-6
+                    or abs(mission["return_o01_s"] - expected_return) > 1e-6
+                    or abs(mission["energy_kwh"] - estimate.energy_kwh) > 1e-6
+                    or abs(mission["return_soc_percent"] - estimate.return_soc_percent) > 1e-6):
+                conflicts.append({"reason": "relay physics/timeline mismatch", "mission": mission.get("relay_sortie")})
+            for resource, end in [(drone, expected_return + params.turnaround_s),
+                                  (component, expected_return + _charge_duration(params.full_charge_s,
+                                                                       estimate.return_soc_percent / 100))]:
+                occupancy.setdefault(resource, []).append((start, end))
+        for resource, intervals in occupancy.items():
+            intervals.sort()
+            for first, second in zip(intervals, intervals[1:]):
+                if first[1] > second[0] + 1e-7:
+                    conflicts.append({"resource": resource, "first": first, "second": second})
+    finally:
+        evaluator.close()
+    return {"mission_count": len(selected), "resource_conflict_count": len(conflicts),
+            "feasible": not conflicts, "conflicts": conflicts}
+
+
+def audit_checkpoints(samples, intervals, selected):
+    """Independently re-evaluate both hops at every covered trajectory checkpoint."""
+    from src.problem3.solver import _communication_rows
+    evaluator = LinkEvaluator()
+    limits = link_limits(evaluator.params)
+    base = evaluator.base
+    gateway = Node("G01", base.longitude, base.latitude, base.elevation_m + 20)
+    records, failures = [], []
+    try:
+        for point in samples:
+            node = Node("transport", point["longitude"], point["latitude"], 0)
+            altitude, time_s = point["altitude_m"], point["time_s"]
+            direct = evaluator.evaluate(node, altitude, gateway, gateway.elevation_m,
+                                        limits["transport_gateway_db"])
+            covered = direct.available
+            for mission in selected:
+                if (point["sortie"] not in mission["covered_sorties"].split(",")
+                        or not mission["service_start_s"] - 1e-7 <= time_s <= mission["service_end_s"] + 1e-7):
+                    continue
+                if not any(interval["sortie"] == point["sortie"]
+                           and interval.get("gap_id") in mission["covered_gap_ids"]
+                           and interval["start_s"] - 1e-7 <= time_s <= interval["end_s"] + 1e-7
+                           for interval in intervals):
+                    continue
+                hover = Node("relay", mission["longitude"], mission["latitude"], mission["ground_dsm_m"])
+                access = evaluator.evaluate(node, altitude, hover, mission["hover_altitude_m"],
+                                            limits["transport_relay_db"])
+                backhaul = evaluator.evaluate(hover, mission["hover_altitude_m"], gateway,
+                                               gateway.elevation_m, limits["relay_gateway_db"])
+                ok = access.available and backhaul.available
+                covered |= ok
+                records.append({"sortie": point["sortie"], "phase": point["phase"], "time_s": time_s,
+                    "relay_sortie": mission["relay_sortie"], "access_loss_db": access.path_loss_db,
+                    "access_limit_db": access.threshold_db, "access_available": access.available,
+                    "backhaul_loss_db": backhaul.path_loss_db, "backhaul_limit_db": backhaul.threshold_db,
+                    "backhaul_available": backhaul.available, "both_available": ok})
+            if not covered:
+                failures.append({"sortie": point["sortie"], "phase": point["phase"], "time_s": time_s})
+    finally:
+        evaluator.close()
+    rows = _communication_rows([], intervals, selected)
+    for row in rows:
+        if row["保障方式"] == "中继候选":
+            row["保障方式"] = "中继"
+        if any(p["sortie"] == row["运输架次编号"] and p["phase"] == row["通信阶段"]
+               and row["开始时刻（s）"] - 1e-7 <= p["time_s"] <= row["结束时刻（s）"] + 1e-7
+               for p in failures):
+            row["保障方式"] = "中断"
+    return rows, {"certified": not failures and all(r["both_available"] for r in records),
+                  "checkpoint_count": len(samples), "two_hop_check_count": len(records),
+                  "two_hop_failure_count": sum(not r["both_available"] for r in records),
+                  "uncovered_checkpoint_count": len(failures), "failures": failures,
+                  "method": "independent checkpoint replay; not continuous interval certification"}, records

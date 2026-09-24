@@ -20,7 +20,6 @@ from src.problem3.physics import (
 from src.problem3.solver import (
     build_trajectory,
     _sample_intervals,
-    coordinate_transport_starts,
     _assign_gap_ids,
     _merge_gap_intervals,
     select_relay_schedule,
@@ -215,9 +214,7 @@ class CommunicationPhysicsTests(unittest.TestCase):
 
         from unittest.mock import patch
         with TemporaryDirectory() as temporary_directory, patch(
-                "src.problem3.solver.search_relay_candidates", return_value=[]), patch(
-                "src.problem3.joint.coordinate_joint_schedule",
-                return_value=(None, [], {"feasible": False, "status": "infeasible fixture"})):
+                "src.problem3.solver.search_relay_candidates", return_value=[]):
             result = run(Path(temporary_directory), sample_step_s=300, relay_candidate_step_s=300)
             self.assertFalse(result["relay_schedule"]["feasible_cover"])
             self.assertIn("not a feasible Q3 solution", result["status"])
