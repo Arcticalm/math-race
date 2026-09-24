@@ -1,0 +1,12 @@
+{
+  "feasible": true,
+  "sortie_count": 25,
+  "makespan_s": 7983.810858112425,
+  "total_energy_kwh": 74.56630951850056,
+  "weighted_all_expected_tardiness": 90637.98816138331,
+  "strategy": "constructive_merged/cp_sat",
+  "method": "cp_sat",
+  "optimality_status": "best audited candidate; global Problem 2 optimum unproven",
+  "cp_sat_available": true,
+  "feasible_candidate_count": 12
+}

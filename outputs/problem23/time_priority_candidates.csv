@@ -1,0 +1,13 @@
+﻿strategy,method,sortie_count,makespan_s,weighted_all_expected_tardiness,total_energy_kwh,selected
+minimum_sorties | minimum_work_time | minimum_sorties_merged | minimum_work_time_merged/cp_sat,cp_sat,18,9577.810858112427,360277.16162622423,60.65621243255153,False
+minimum_sorties | minimum_work_time | minimum_sorties_merged | minimum_work_time_merged/heuristic_balanced,heuristic_balanced,18,10637.578633572322,445798.4045458401,60.656212432551534,False
+minimum_sorties | minimum_work_time | minimum_sorties_merged | minimum_work_time_merged/heuristic_energy,heuristic_energy,18,10637.578633572322,445798.4045458401,60.656212432551534,False
+minimum_energy | minimum_energy_merged/cp_sat,cp_sat,19,8677.045617096052,141346.21050074592,61.30585826459298,False
+minimum_energy | minimum_energy_merged/heuristic_balanced,heuristic_balanced,19,9875.461999202495,314906.2095993635,60.55816714751669,False
+minimum_energy | minimum_energy_merged/heuristic_energy,heuristic_energy,19,9875.461999202495,314906.2095993635,60.55816714751669,False
+constructive/cp_sat,cp_sat,31,8368.00812658254,280990.6750407764,83.54895236812112,False
+constructive/heuristic_balanced,heuristic_balanced,31,10112.388551671855,114024.43336490939,81.82379438434599,False
+constructive/heuristic_energy,heuristic_energy,31,15283.41089855333,310067.74172843597,78.96694314743418,False
+constructive_merged/cp_sat,cp_sat,25,7983.810858112425,90637.98816138331,74.56630951850056,True
+constructive_merged/heuristic_balanced,heuristic_balanced,25,12569.271164984364,312706.1673999756,73.9853708859809,False
+constructive_merged/heuristic_energy,heuristic_energy,25,12569.271164984364,312706.1673999756,73.9853708859809,False

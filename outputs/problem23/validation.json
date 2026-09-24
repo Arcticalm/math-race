@@ -1,0 +1,1039 @@
+{
+  "feasible": true,
+  "violations": [],
+  "hard_deadlines_feasible": true,
+  "resource_schedule_feasible": true,
+  "physics_and_timeline_feasible": true,
+  "box_count": 80,
+  "assigned_box_count": 80,
+  "sortie_count": 25,
+  "total_energy_kwh": 74.56630951850056,
+  "makespan_s": 7983.810858112425,
+  "hard_deadline_check_count": 46,
+  "hard_deadline_compliant_count": 46,
+  "hard_deadline_compliance_rate": 1.0,
+  "all_due_box_count": 80,
+  "all_expected_on_time_count": 72,
+  "all_expected_on_time_rate": 0.9,
+  "all_expected_tardiness_s": 7565.01992869324,
+  "weighted_all_expected_tardiness": 90637.98816138331,
+  "expected_time_by_item_type": {
+    "医疗物资": {
+      "count": 16,
+      "on_time_count": 16,
+      "on_time_rate": 1.0
+    },
+    "应急食品": {
+      "count": 19,
+      "on_time_count": 19,
+      "on_time_rate": 1.0
+    },
+    "生活卫生用品": {
+      "count": 9,
+      "on_time_count": 9,
+      "on_time_rate": 1.0
+    },
+    "饮用水": {
+      "count": 36,
+      "on_time_count": 28,
+      "on_time_rate": 0.7777777777777778
+    }
+  },
+  "hard_deadline_by_item_type": {
+    "医疗物资": {
+      "constraint_count": 31,
+      "compliant_count": 31,
+      "compliance_rate": 1.0
+    },
+    "应急食品": {
+      "constraint_count": 0,
+      "compliant_count": 0,
+      "compliance_rate": 1.0
+    },
+    "生活卫生用品": {
+      "constraint_count": 0,
+      "compliant_count": 0,
+      "compliance_rate": 1.0
+    },
+    "饮用水": {
+      "constraint_count": 15,
+      "compliant_count": 15,
+      "compliance_rate": 1.0
+    }
+  },
+  "soft_tardiness_s": 7565.01992869324,
+  "weighted_soft_tardiness_s": 90637.98816138331,
+  "soft_on_time_rate": 0.875,
+  "resource_checks": {
+    "airframe_count": 8,
+    "battery_count": 14,
+    "all_conflicts_clear": true
+  },
+  "strategy": "constructive_merged/cp_sat",
+  "method": "cp_sat",
+  "search": {
+    "status": "OPTIMAL",
+    "time_grid_s": 1,
+    "integer_makespan_s": 7984,
+    "best_bound_s": 7984.0,
+    "fixed_grouping_optimal": true
+  },
+  "objective_profile": "makespan, weighted lateness, energy, sorties",
+  "primary_candidate": [
+    "constructive_merged/cp_sat"
+  ],
+  "candidate_scope": "exact per-site partitions and constructive partitions, optional two-site merges; CP-SAT or heuristic scheduling for each fixed grouping",
+  "optimality_status": "best audited candidate; global Problem 2 optimum unproven",
+  "cp_sat_available": true,
+  "feasible_candidate_count": 12,
+  "tradeoff_candidates": {
+    "minimum_sorties | minimum_work_time | minimum_sorties_merged | minimum_work_time_merged/cp_sat": {
+      "feasible": true,
+      "violations": [],
+      "hard_deadlines_feasible": true,
+      "resource_schedule_feasible": true,
+      "physics_and_timeline_feasible": true,
+      "box_count": 80,
+      "assigned_box_count": 80,
+      "sortie_count": 18,
+      "total_energy_kwh": 60.65621243255153,
+      "makespan_s": 9577.810858112427,
+      "hard_deadline_check_count": 46,
+      "hard_deadline_compliant_count": 46,
+      "hard_deadline_compliance_rate": 1.0,
+      "all_due_box_count": 80,
+      "all_expected_on_time_count": 68,
+      "all_expected_on_time_rate": 0.85,
+      "all_expected_tardiness_s": 31842.228702138083,
+      "weighted_all_expected_tardiness": 360277.16162622423,
+      "expected_time_by_item_type": {
+        "医疗物资": {
+          "count": 16,
+          "on_time_count": 16,
+          "on_time_rate": 1.0
+        },
+        "应急食品": {
+          "count": 19,
+          "on_time_count": 16,
+          "on_time_rate": 0.8421052631578947
+        },
+        "生活卫生用品": {
+          "count": 9,
+          "on_time_count": 9,
+          "on_time_rate": 1.0
+        },
+        "饮用水": {
+          "count": 36,
+          "on_time_count": 27,
+          "on_time_rate": 0.75
+        }
+      },
+      "hard_deadline_by_item_type": {
+        "医疗物资": {
+          "constraint_count": 31,
+          "compliant_count": 31,
+          "compliance_rate": 1.0
+        },
+        "应急食品": {
+          "constraint_count": 0,
+          "compliant_count": 0,
+          "compliance_rate": 1.0
+        },
+        "生活卫生用品": {
+          "constraint_count": 0,
+          "compliant_count": 0,
+          "compliance_rate": 1.0
+        },
+        "饮用水": {
+          "constraint_count": 15,
+          "compliant_count": 15,
+          "compliance_rate": 1.0
+        }
+      },
+      "soft_tardiness_s": 31842.228702138083,
+      "weighted_soft_tardiness_s": 360277.16162622423,
+      "soft_on_time_rate": 0.8125,
+      "resource_checks": {
+        "airframe_count": 8,
+        "battery_count": 14,
+        "all_conflicts_clear": true
+      },
+      "strategy": "minimum_sorties | minimum_work_time | minimum_sorties_merged | minimum_work_time_merged/cp_sat",
+      "method": "cp_sat",
+      "search": {
+        "status": "OPTIMAL",
+        "time_grid_s": 1,
+        "integer_makespan_s": 9578,
+        "best_bound_s": 9578.0,
+        "fixed_grouping_optimal": true
+      }
+    },
+    "minimum_sorties | minimum_work_time | minimum_sorties_merged | minimum_work_time_merged/heuristic_balanced": {
+      "feasible": true,
+      "violations": [],
+      "hard_deadlines_feasible": true,
+      "resource_schedule_feasible": true,
+      "physics_and_timeline_feasible": true,
+      "box_count": 80,
+      "assigned_box_count": 80,
+      "sortie_count": 18,
+      "total_energy_kwh": 60.656212432551534,
+      "makespan_s": 10637.578633572322,
+      "hard_deadline_check_count": 46,
+      "hard_deadline_compliant_count": 46,
+      "hard_deadline_compliance_rate": 1.0,
+      "all_due_box_count": 80,
+      "all_expected_on_time_count": 70,
+      "all_expected_on_time_rate": 0.875,
+      "all_expected_tardiness_s": 38866.61690519486,
+      "weighted_all_expected_tardiness": 445798.4045458401,
+      "expected_time_by_item_type": {
+        "医疗物资": {
+          "count": 16,
+          "on_time_count": 16,
+          "on_time_rate": 1.0
+        },
+        "应急食品": {
+          "count": 19,
+          "on_time_count": 18,
+          "on_time_rate": 0.9473684210526315
+        },
+        "生活卫生用品": {
+          "count": 9,
+          "on_time_count": 9,
+          "on_time_rate": 1.0
+        },
+        "饮用水": {
+          "count": 36,
+          "on_time_count": 27,
+          "on_time_rate": 0.75
+        }
+      },
+      "hard_deadline_by_item_type": {
+        "医疗物资": {
+          "constraint_count": 31,
+          "compliant_count": 31,
+          "compliance_rate": 1.0
+        },
+        "应急食品": {
+          "constraint_count": 0,
+          "compliant_count": 0,
+          "compliance_rate": 1.0
+        },
+        "生活卫生用品": {
+          "constraint_count": 0,
+          "compliant_count": 0,
+          "compliance_rate": 1.0
+        },
+        "饮用水": {
+          "constraint_count": 15,
+          "compliant_count": 15,
+          "compliance_rate": 1.0
+        }
+      },
+      "soft_tardiness_s": 38866.61690519486,
+      "weighted_soft_tardiness_s": 445798.4045458401,
+      "soft_on_time_rate": 0.84375,
+      "resource_checks": {
+        "airframe_count": 8,
+        "battery_count": 14,
+        "all_conflicts_clear": true
+      },
+      "strategy": "minimum_sorties | minimum_work_time | minimum_sorties_merged | minimum_work_time_merged/heuristic_balanced",
+      "method": "heuristic_balanced",
+      "search": {
+        "dispatch_order": "slack",
+        "assignment_profile": "energy"
+      }
+    },
+    "minimum_sorties | minimum_work_time | minimum_sorties_merged | minimum_work_time_merged/heuristic_energy": {
+      "feasible": true,
+      "violations": [],
+      "hard_deadlines_feasible": true,
+      "resource_schedule_feasible": true,
+      "physics_and_timeline_feasible": true,
+      "box_count": 80,
+      "assigned_box_count": 80,
+      "sortie_count": 18,
+      "total_energy_kwh": 60.656212432551534,
+      "makespan_s": 10637.578633572322,
+      "hard_deadline_check_count": 46,
+      "hard_deadline_compliant_count": 46,
+      "hard_deadline_compliance_rate": 1.0,
+      "all_due_box_count": 80,
+      "all_expected_on_time_count": 70,
+      "all_expected_on_time_rate": 0.875,
+      "all_expected_tardiness_s": 38866.61690519486,
+      "weighted_all_expected_tardiness": 445798.4045458401,
+      "expected_time_by_item_type": {
+        "医疗物资": {
+          "count": 16,
+          "on_time_count": 16,
+          "on_time_rate": 1.0
+        },
+        "应急食品": {
+          "count": 19,
+          "on_time_count": 18,
+          "on_time_rate": 0.9473684210526315
+        },
+        "生活卫生用品": {
+          "count": 9,
+          "on_time_count": 9,
+          "on_time_rate": 1.0
+        },
+        "饮用水": {
+          "count": 36,
+          "on_time_count": 27,
+          "on_time_rate": 0.75
+        }
+      },
+      "hard_deadline_by_item_type": {
+        "医疗物资": {
+          "constraint_count": 31,
+          "compliant_count": 31,
+          "compliance_rate": 1.0
+        },
+        "应急食品": {
+          "constraint_count": 0,
+          "compliant_count": 0,
+          "compliance_rate": 1.0
+        },
+        "生活卫生用品": {
+          "constraint_count": 0,
+          "compliant_count": 0,
+          "compliance_rate": 1.0
+        },
+        "饮用水": {
+          "constraint_count": 15,
+          "compliant_count": 15,
+          "compliance_rate": 1.0
+        }
+      },
+      "soft_tardiness_s": 38866.61690519486,
+      "weighted_soft_tardiness_s": 445798.4045458401,
+      "soft_on_time_rate": 0.84375,
+      "resource_checks": {
+        "airframe_count": 8,
+        "battery_count": 14,
+        "all_conflicts_clear": true
+      },
+      "strategy": "minimum_sorties | minimum_work_time | minimum_sorties_merged | minimum_work_time_merged/heuristic_energy",
+      "method": "heuristic_energy",
+      "search": {
+        "dispatch_order": "slack",
+        "assignment_profile": "energy"
+      }
+    },
+    "minimum_energy | minimum_energy_merged/cp_sat": {
+      "feasible": true,
+      "violations": [],
+      "hard_deadlines_feasible": true,
+      "resource_schedule_feasible": true,
+      "physics_and_timeline_feasible": true,
+      "box_count": 80,
+      "assigned_box_count": 80,
+      "sortie_count": 19,
+      "total_energy_kwh": 61.30585826459298,
+      "makespan_s": 8677.045617096052,
+      "hard_deadline_check_count": 46,
+      "hard_deadline_compliant_count": 46,
+      "hard_deadline_compliance_rate": 1.0,
+      "all_due_box_count": 80,
+      "all_expected_on_time_count": 71,
+      "all_expected_on_time_rate": 0.8875,
+      "all_expected_tardiness_s": 12087.533589590264,
+      "weighted_all_expected_tardiness": 141346.21050074592,
+      "expected_time_by_item_type": {
+        "医疗物资": {
+          "count": 16,
+          "on_time_count": 16,
+          "on_time_rate": 1.0
+        },
+        "应急食品": {
+          "count": 19,
+          "on_time_count": 19,
+          "on_time_rate": 1.0
+        },
+        "生活卫生用品": {
+          "count": 9,
+          "on_time_count": 9,
+          "on_time_rate": 1.0
+        },
+        "饮用水": {
+          "count": 36,
+          "on_time_count": 27,
+          "on_time_rate": 0.75
+        }
+      },
+      "hard_deadline_by_item_type": {
+        "医疗物资": {
+          "constraint_count": 31,
+          "compliant_count": 31,
+          "compliance_rate": 1.0
+        },
+        "应急食品": {
+          "constraint_count": 0,
+          "compliant_count": 0,
+          "compliance_rate": 1.0
+        },
+        "生活卫生用品": {
+          "constraint_count": 0,
+          "compliant_count": 0,
+          "compliance_rate": 1.0
+        },
+        "饮用水": {
+          "constraint_count": 15,
+          "compliant_count": 15,
+          "compliance_rate": 1.0
+        }
+      },
+      "soft_tardiness_s": 12087.533589590264,
+      "weighted_soft_tardiness_s": 141346.21050074592,
+      "soft_on_time_rate": 0.859375,
+      "resource_checks": {
+        "airframe_count": 8,
+        "battery_count": 14,
+        "all_conflicts_clear": true
+      },
+      "strategy": "minimum_energy | minimum_energy_merged/cp_sat",
+      "method": "cp_sat",
+      "search": {
+        "status": "OPTIMAL",
+        "time_grid_s": 1,
+        "integer_makespan_s": 8678,
+        "best_bound_s": 8678.0,
+        "fixed_grouping_optimal": true
+      }
+    },
+    "minimum_energy | minimum_energy_merged/heuristic_balanced": {
+      "feasible": true,
+      "violations": [],
+      "hard_deadlines_feasible": true,
+      "resource_schedule_feasible": true,
+      "physics_and_timeline_feasible": true,
+      "box_count": 80,
+      "assigned_box_count": 80,
+      "sortie_count": 19,
+      "total_energy_kwh": 60.55816714751669,
+      "makespan_s": 9875.461999202495,
+      "hard_deadline_check_count": 46,
+      "hard_deadline_compliant_count": 46,
+      "hard_deadline_compliance_rate": 1.0,
+      "all_due_box_count": 80,
+      "all_expected_on_time_count": 70,
+      "all_expected_on_time_rate": 0.875,
+      "all_expected_tardiness_s": 27475.365497544844,
+      "weighted_all_expected_tardiness": 314906.2095993635,
+      "expected_time_by_item_type": {
+        "医疗物资": {
+          "count": 16,
+          "on_time_count": 16,
+          "on_time_rate": 1.0
+        },
+        "应急食品": {
+          "count": 19,
+          "on_time_count": 19,
+          "on_time_rate": 1.0
+        },
+        "生活卫生用品": {
+          "count": 9,
+          "on_time_count": 9,
+          "on_time_rate": 1.0
+        },
+        "饮用水": {
+          "count": 36,
+          "on_time_count": 26,
+          "on_time_rate": 0.7222222222222222
+        }
+      },
+      "hard_deadline_by_item_type": {
+        "医疗物资": {
+          "constraint_count": 31,
+          "compliant_count": 31,
+          "compliance_rate": 1.0
+        },
+        "应急食品": {
+          "constraint_count": 0,
+          "compliant_count": 0,
+          "compliance_rate": 1.0
+        },
+        "生活卫生用品": {
+          "constraint_count": 0,
+          "compliant_count": 0,
+          "compliance_rate": 1.0
+        },
+        "饮用水": {
+          "constraint_count": 15,
+          "compliant_count": 15,
+          "compliance_rate": 1.0
+        }
+      },
+      "soft_tardiness_s": 27475.365497544844,
+      "weighted_soft_tardiness_s": 314906.2095993635,
+      "soft_on_time_rate": 0.84375,
+      "resource_checks": {
+        "airframe_count": 8,
+        "battery_count": 14,
+        "all_conflicts_clear": true
+      },
+      "strategy": "minimum_energy | minimum_energy_merged/heuristic_balanced",
+      "method": "heuristic_balanced",
+      "search": {
+        "dispatch_order": "slack",
+        "assignment_profile": "energy"
+      }
+    },
+    "minimum_energy | minimum_energy_merged/heuristic_energy": {
+      "feasible": true,
+      "violations": [],
+      "hard_deadlines_feasible": true,
+      "resource_schedule_feasible": true,
+      "physics_and_timeline_feasible": true,
+      "box_count": 80,
+      "assigned_box_count": 80,
+      "sortie_count": 19,
+      "total_energy_kwh": 60.55816714751669,
+      "makespan_s": 9875.461999202495,
+      "hard_deadline_check_count": 46,
+      "hard_deadline_compliant_count": 46,
+      "hard_deadline_compliance_rate": 1.0,
+      "all_due_box_count": 80,
+      "all_expected_on_time_count": 70,
+      "all_expected_on_time_rate": 0.875,
+      "all_expected_tardiness_s": 27475.365497544844,
+      "weighted_all_expected_tardiness": 314906.2095993635,
+      "expected_time_by_item_type": {
+        "医疗物资": {
+          "count": 16,
+          "on_time_count": 16,
+          "on_time_rate": 1.0
+        },
+        "应急食品": {
+          "count": 19,
+          "on_time_count": 19,
+          "on_time_rate": 1.0
+        },
+        "生活卫生用品": {
+          "count": 9,
+          "on_time_count": 9,
+          "on_time_rate": 1.0
+        },
+        "饮用水": {
+          "count": 36,
+          "on_time_count": 26,
+          "on_time_rate": 0.7222222222222222
+        }
+      },
+      "hard_deadline_by_item_type": {
+        "医疗物资": {
+          "constraint_count": 31,
+          "compliant_count": 31,
+          "compliance_rate": 1.0
+        },
+        "应急食品": {
+          "constraint_count": 0,
+          "compliant_count": 0,
+          "compliance_rate": 1.0
+        },
+        "生活卫生用品": {
+          "constraint_count": 0,
+          "compliant_count": 0,
+          "compliance_rate": 1.0
+        },
+        "饮用水": {
+          "constraint_count": 15,
+          "compliant_count": 15,
+          "compliance_rate": 1.0
+        }
+      },
+      "soft_tardiness_s": 27475.365497544844,
+      "weighted_soft_tardiness_s": 314906.2095993635,
+      "soft_on_time_rate": 0.84375,
+      "resource_checks": {
+        "airframe_count": 8,
+        "battery_count": 14,
+        "all_conflicts_clear": true
+      },
+      "strategy": "minimum_energy | minimum_energy_merged/heuristic_energy",
+      "method": "heuristic_energy",
+      "search": {
+        "dispatch_order": "slack",
+        "assignment_profile": "energy"
+      }
+    },
+    "constructive/cp_sat": {
+      "feasible": true,
+      "violations": [],
+      "hard_deadlines_feasible": true,
+      "resource_schedule_feasible": true,
+      "physics_and_timeline_feasible": true,
+      "box_count": 80,
+      "assigned_box_count": 80,
+      "sortie_count": 31,
+      "total_energy_kwh": 83.54895236812112,
+      "makespan_s": 8368.00812658254,
+      "hard_deadline_check_count": 46,
+      "hard_deadline_compliant_count": 46,
+      "hard_deadline_compliance_rate": 1.0,
+      "all_due_box_count": 80,
+      "all_expected_on_time_count": 71,
+      "all_expected_on_time_rate": 0.8875,
+      "all_expected_tardiness_s": 23731.37376493462,
+      "weighted_all_expected_tardiness": 280990.6750407764,
+      "expected_time_by_item_type": {
+        "医疗物资": {
+          "count": 16,
+          "on_time_count": 16,
+          "on_time_rate": 1.0
+        },
+        "应急食品": {
+          "count": 19,
+          "on_time_count": 16,
+          "on_time_rate": 0.8421052631578947
+        },
+        "生活卫生用品": {
+          "count": 9,
+          "on_time_count": 9,
+          "on_time_rate": 1.0
+        },
+        "饮用水": {
+          "count": 36,
+          "on_time_count": 30,
+          "on_time_rate": 0.8333333333333334
+        }
+      },
+      "hard_deadline_by_item_type": {
+        "医疗物资": {
+          "constraint_count": 31,
+          "compliant_count": 31,
+          "compliance_rate": 1.0
+        },
+        "应急食品": {
+          "constraint_count": 0,
+          "compliant_count": 0,
+          "compliance_rate": 1.0
+        },
+        "生活卫生用品": {
+          "constraint_count": 0,
+          "compliant_count": 0,
+          "compliance_rate": 1.0
+        },
+        "饮用水": {
+          "constraint_count": 15,
+          "compliant_count": 15,
+          "compliance_rate": 1.0
+        }
+      },
+      "soft_tardiness_s": 23731.37376493462,
+      "weighted_soft_tardiness_s": 280990.6750407764,
+      "soft_on_time_rate": 0.859375,
+      "resource_checks": {
+        "airframe_count": 8,
+        "battery_count": 14,
+        "all_conflicts_clear": true
+      },
+      "strategy": "constructive/cp_sat",
+      "method": "cp_sat",
+      "search": {
+        "status": "OPTIMAL",
+        "time_grid_s": 1,
+        "integer_makespan_s": 8369,
+        "best_bound_s": 8369.0,
+        "fixed_grouping_optimal": true
+      }
+    },
+    "constructive/heuristic_balanced": {
+      "feasible": true,
+      "violations": [],
+      "hard_deadlines_feasible": true,
+      "resource_schedule_feasible": true,
+      "physics_and_timeline_feasible": true,
+      "box_count": 80,
+      "assigned_box_count": 80,
+      "sortie_count": 31,
+      "total_energy_kwh": 81.82379438434599,
+      "makespan_s": 10112.388551671855,
+      "hard_deadline_check_count": 46,
+      "hard_deadline_compliant_count": 46,
+      "hard_deadline_compliance_rate": 1.0,
+      "all_due_box_count": 80,
+      "all_expected_on_time_count": 71,
+      "all_expected_on_time_rate": 0.8875,
+      "all_expected_tardiness_s": 10552.487581968739,
+      "weighted_all_expected_tardiness": 114024.43336490939,
+      "expected_time_by_item_type": {
+        "医疗物资": {
+          "count": 16,
+          "on_time_count": 16,
+          "on_time_rate": 1.0
+        },
+        "应急食品": {
+          "count": 19,
+          "on_time_count": 17,
+          "on_time_rate": 0.8947368421052632
+        },
+        "生活卫生用品": {
+          "count": 9,
+          "on_time_count": 9,
+          "on_time_rate": 1.0
+        },
+        "饮用水": {
+          "count": 36,
+          "on_time_count": 29,
+          "on_time_rate": 0.8055555555555556
+        }
+      },
+      "hard_deadline_by_item_type": {
+        "医疗物资": {
+          "constraint_count": 31,
+          "compliant_count": 31,
+          "compliance_rate": 1.0
+        },
+        "应急食品": {
+          "constraint_count": 0,
+          "compliant_count": 0,
+          "compliance_rate": 1.0
+        },
+        "生活卫生用品": {
+          "constraint_count": 0,
+          "compliant_count": 0,
+          "compliance_rate": 1.0
+        },
+        "饮用水": {
+          "constraint_count": 15,
+          "compliant_count": 15,
+          "compliance_rate": 1.0
+        }
+      },
+      "soft_tardiness_s": 10552.487581968739,
+      "weighted_soft_tardiness_s": 114024.43336490939,
+      "soft_on_time_rate": 0.859375,
+      "resource_checks": {
+        "airframe_count": 8,
+        "battery_count": 14,
+        "all_conflicts_clear": true
+      },
+      "strategy": "constructive/heuristic_balanced",
+      "method": "heuristic_balanced",
+      "search": {
+        "dispatch_order": "shortest",
+        "assignment_profile": "energy"
+      }
+    },
+    "constructive/heuristic_energy": {
+      "feasible": true,
+      "violations": [],
+      "hard_deadlines_feasible": true,
+      "resource_schedule_feasible": true,
+      "physics_and_timeline_feasible": true,
+      "box_count": 80,
+      "assigned_box_count": 80,
+      "sortie_count": 31,
+      "total_energy_kwh": 78.96694314743418,
+      "makespan_s": 15283.41089855333,
+      "hard_deadline_check_count": 46,
+      "hard_deadline_compliant_count": 46,
+      "hard_deadline_compliance_rate": 1.0,
+      "all_due_box_count": 80,
+      "all_expected_on_time_count": 69,
+      "all_expected_on_time_rate": 0.8625,
+      "all_expected_tardiness_s": 30156.818418321396,
+      "weighted_all_expected_tardiness": 310067.74172843597,
+      "expected_time_by_item_type": {
+        "医疗物资": {
+          "count": 16,
+          "on_time_count": 16,
+          "on_time_rate": 1.0
+        },
+        "应急食品": {
+          "count": 19,
+          "on_time_count": 15,
+          "on_time_rate": 0.7894736842105263
+        },
+        "生活卫生用品": {
+          "count": 9,
+          "on_time_count": 9,
+          "on_time_rate": 1.0
+        },
+        "饮用水": {
+          "count": 36,
+          "on_time_count": 29,
+          "on_time_rate": 0.8055555555555556
+        }
+      },
+      "hard_deadline_by_item_type": {
+        "医疗物资": {
+          "constraint_count": 31,
+          "compliant_count": 31,
+          "compliance_rate": 1.0
+        },
+        "应急食品": {
+          "constraint_count": 0,
+          "compliant_count": 0,
+          "compliance_rate": 1.0
+        },
+        "生活卫生用品": {
+          "constraint_count": 0,
+          "compliant_count": 0,
+          "compliance_rate": 1.0
+        },
+        "饮用水": {
+          "constraint_count": 15,
+          "compliant_count": 15,
+          "compliance_rate": 1.0
+        }
+      },
+      "soft_tardiness_s": 30156.818418321396,
+      "weighted_soft_tardiness_s": 310067.74172843597,
+      "soft_on_time_rate": 0.828125,
+      "resource_checks": {
+        "airframe_count": 8,
+        "battery_count": 14,
+        "all_conflicts_clear": true
+      },
+      "strategy": "constructive/heuristic_energy",
+      "method": "heuristic_energy",
+      "search": {
+        "dispatch_order": "slack",
+        "assignment_profile": "energy"
+      }
+    },
+    "constructive_merged/cp_sat": {
+      "feasible": true,
+      "violations": [],
+      "hard_deadlines_feasible": true,
+      "resource_schedule_feasible": true,
+      "physics_and_timeline_feasible": true,
+      "box_count": 80,
+      "assigned_box_count": 80,
+      "sortie_count": 25,
+      "total_energy_kwh": 74.56630951850056,
+      "makespan_s": 7983.810858112425,
+      "hard_deadline_check_count": 46,
+      "hard_deadline_compliant_count": 46,
+      "hard_deadline_compliance_rate": 1.0,
+      "all_due_box_count": 80,
+      "all_expected_on_time_count": 72,
+      "all_expected_on_time_rate": 0.9,
+      "all_expected_tardiness_s": 7565.01992869324,
+      "weighted_all_expected_tardiness": 90637.98816138331,
+      "expected_time_by_item_type": {
+        "医疗物资": {
+          "count": 16,
+          "on_time_count": 16,
+          "on_time_rate": 1.0
+        },
+        "应急食品": {
+          "count": 19,
+          "on_time_count": 19,
+          "on_time_rate": 1.0
+        },
+        "生活卫生用品": {
+          "count": 9,
+          "on_time_count": 9,
+          "on_time_rate": 1.0
+        },
+        "饮用水": {
+          "count": 36,
+          "on_time_count": 28,
+          "on_time_rate": 0.7777777777777778
+        }
+      },
+      "hard_deadline_by_item_type": {
+        "医疗物资": {
+          "constraint_count": 31,
+          "compliant_count": 31,
+          "compliance_rate": 1.0
+        },
+        "应急食品": {
+          "constraint_count": 0,
+          "compliant_count": 0,
+          "compliance_rate": 1.0
+        },
+        "生活卫生用品": {
+          "constraint_count": 0,
+          "compliant_count": 0,
+          "compliance_rate": 1.0
+        },
+        "饮用水": {
+          "constraint_count": 15,
+          "compliant_count": 15,
+          "compliance_rate": 1.0
+        }
+      },
+      "soft_tardiness_s": 7565.01992869324,
+      "weighted_soft_tardiness_s": 90637.98816138331,
+      "soft_on_time_rate": 0.875,
+      "resource_checks": {
+        "airframe_count": 8,
+        "battery_count": 14,
+        "all_conflicts_clear": true
+      },
+      "strategy": "constructive_merged/cp_sat",
+      "method": "cp_sat",
+      "search": {
+        "status": "OPTIMAL",
+        "time_grid_s": 1,
+        "integer_makespan_s": 7984,
+        "best_bound_s": 7984.0,
+        "fixed_grouping_optimal": true
+      }
+    },
+    "constructive_merged/heuristic_balanced": {
+      "feasible": true,
+      "violations": [],
+      "hard_deadlines_feasible": true,
+      "resource_schedule_feasible": true,
+      "physics_and_timeline_feasible": true,
+      "box_count": 80,
+      "assigned_box_count": 80,
+      "sortie_count": 25,
+      "total_energy_kwh": 73.9853708859809,
+      "makespan_s": 12569.271164984364,
+      "hard_deadline_check_count": 46,
+      "hard_deadline_compliant_count": 46,
+      "hard_deadline_compliance_rate": 1.0,
+      "all_due_box_count": 80,
+      "all_expected_on_time_count": 66,
+      "all_expected_on_time_rate": 0.825,
+      "all_expected_tardiness_s": 29399.99497781573,
+      "weighted_all_expected_tardiness": 312706.1673999756,
+      "expected_time_by_item_type": {
+        "医疗物资": {
+          "count": 16,
+          "on_time_count": 16,
+          "on_time_rate": 1.0
+        },
+        "应急食品": {
+          "count": 19,
+          "on_time_count": 16,
+          "on_time_rate": 0.8421052631578947
+        },
+        "生活卫生用品": {
+          "count": 9,
+          "on_time_count": 9,
+          "on_time_rate": 1.0
+        },
+        "饮用水": {
+          "count": 36,
+          "on_time_count": 25,
+          "on_time_rate": 0.6944444444444444
+        }
+      },
+      "hard_deadline_by_item_type": {
+        "医疗物资": {
+          "constraint_count": 31,
+          "compliant_count": 31,
+          "compliance_rate": 1.0
+        },
+        "应急食品": {
+          "constraint_count": 0,
+          "compliant_count": 0,
+          "compliance_rate": 1.0
+        },
+        "生活卫生用品": {
+          "constraint_count": 0,
+          "compliant_count": 0,
+          "compliance_rate": 1.0
+        },
+        "饮用水": {
+          "constraint_count": 15,
+          "compliant_count": 15,
+          "compliance_rate": 1.0
+        }
+      },
+      "soft_tardiness_s": 29399.99497781573,
+      "weighted_soft_tardiness_s": 312706.1673999756,
+      "soft_on_time_rate": 0.78125,
+      "resource_checks": {
+        "airframe_count": 8,
+        "battery_count": 14,
+        "all_conflicts_clear": true
+      },
+      "strategy": "constructive_merged/heuristic_balanced",
+      "method": "heuristic_balanced",
+      "search": {
+        "dispatch_order": "slack",
+        "assignment_profile": "energy"
+      }
+    },
+    "constructive_merged/heuristic_energy": {
+      "feasible": true,
+      "violations": [],
+      "hard_deadlines_feasible": true,
+      "resource_schedule_feasible": true,
+      "physics_and_timeline_feasible": true,
+      "box_count": 80,
+      "assigned_box_count": 80,
+      "sortie_count": 25,
+      "total_energy_kwh": 73.9853708859809,
+      "makespan_s": 12569.271164984364,
+      "hard_deadline_check_count": 46,
+      "hard_deadline_compliant_count": 46,
+      "hard_deadline_compliance_rate": 1.0,
+      "all_due_box_count": 80,
+      "all_expected_on_time_count": 66,
+      "all_expected_on_time_rate": 0.825,
+      "all_expected_tardiness_s": 29399.99497781573,
+      "weighted_all_expected_tardiness": 312706.1673999756,
+      "expected_time_by_item_type": {
+        "医疗物资": {
+          "count": 16,
+          "on_time_count": 16,
+          "on_time_rate": 1.0
+        },
+        "应急食品": {
+          "count": 19,
+          "on_time_count": 16,
+          "on_time_rate": 0.8421052631578947
+        },
+        "生活卫生用品": {
+          "count": 9,
+          "on_time_count": 9,
+          "on_time_rate": 1.0
+        },
+        "饮用水": {
+          "count": 36,
+          "on_time_count": 25,
+          "on_time_rate": 0.6944444444444444
+        }
+      },
+      "hard_deadline_by_item_type": {
+        "医疗物资": {
+          "constraint_count": 31,
+          "compliant_count": 31,
+          "compliance_rate": 1.0
+        },
+        "应急食品": {
+          "constraint_count": 0,
+          "compliant_count": 0,
+          "compliance_rate": 1.0
+        },
+        "生活卫生用品": {
+          "constraint_count": 0,
+          "compliant_count": 0,
+          "compliance_rate": 1.0
+        },
+        "饮用水": {
+          "constraint_count": 15,
+          "compliant_count": 15,
+          "compliance_rate": 1.0
+        }
+      },
+      "soft_tardiness_s": 29399.99497781573,
+      "weighted_soft_tardiness_s": 312706.1673999756,
+      "soft_on_time_rate": 0.78125,
+      "resource_checks": {
+        "airframe_count": 8,
+        "battery_count": 14,
+        "all_conflicts_clear": true
+      },
+      "strategy": "constructive_merged/heuristic_energy",
+      "method": "heuristic_energy",
+      "search": {
+        "dispatch_order": "slack",
+        "assignment_profile": "energy"
+      }
+    }
+  }
+}
