@@ -66,7 +66,7 @@ def load_problem23_schedule(directory: Path):
         evaluator.close()
 
 
-def solve_delays(sorties, groups, gap_count, time_limit_s=60.0, maximum_delay_s=14400,
+def solve_delays(sorties, groups, gap_count, time_limit_s=60.0, maximum_delay_s=10800,
                  objective="sorties", max_relay_sorties=None):
     """Jointly delay transports and form overlapping service windows at fixed points.
 
@@ -221,7 +221,7 @@ def solve_delays(sorties, groups, gap_count, time_limit_s=60.0, maximum_delay_s=
 
 
 def coordinate_timeline(initial, sample_step_s, candidate_step_s, max_iterations=12, time_limit_s=60,
-                        objective="sorties", max_relay_sorties=None):
+                        objective="sorties", max_relay_sorties=None, maximum_delay_s=10800):
     from src.problem3.solver import (
         build_trajectory, screen_direct_links, _merge_gap_intervals, _assign_gap_ids,
         search_relay_candidates, select_relay_schedule,
@@ -250,6 +250,7 @@ def coordinate_timeline(initial, sample_step_s, candidate_step_s, max_iterations
             history[-1]["stop_reason"] = "iteration limit"
             break
         shifted, info = solve_delays(sorties, groups, len(gaps), time_limit_s,
+                                    maximum_delay_s=maximum_delay_s,
                                     objective=objective, max_relay_sorties=max_relay_sorties)
         history[-1]["delay_solver"] = info
         if shifted is None:

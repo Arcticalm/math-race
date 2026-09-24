@@ -15,9 +15,12 @@ def _relay_at(selected, time_s):
     return None
 
 
-def _mission_for_interval(selected, start_s, end_s):
+def _mission_for_interval(selected, start_s, end_s, sortie=None):
     """Return the relay that covers a complete half-open time cell."""
     for mission in selected:
+        covered_sorties = mission.get("covered_sorties", "").split(",")
+        if (sortie is not None and sortie not in covered_sorties):
+            continue
         if (mission["service_start_s"] - 1e-7 <= start_s
                 and end_s <= mission["service_end_s"] + 1e-7):
             return mission
@@ -83,7 +86,7 @@ def audit_communication(phases, selected, step_s=30.0, minimum_step_s=1.0):
                 direct_ok = certify_moving_link(
                     evaluator, first, first_altitude, last, last_altitude,
                     gateway, gateway.elevation_m, threshold_direct)
-                mission = _mission_for_interval(selected, start, end)
+                mission = _mission_for_interval(selected, start, end, phase.sortie)
                 relay_ok = False
                 relay_code = ""
                 if not direct_ok and mission is not None:
@@ -121,7 +124,7 @@ def audit_communication(phases, selected, step_s=30.0, minimum_step_s=1.0):
                 mid_direct = evaluator.evaluate(
                     mid_node, mid_altitude, gateway, gateway.elevation_m,
                     threshold_direct)
-                mid_mission = _mission_for_interval(selected, start, end)
+                mid_mission = _mission_for_interval(selected, start, end, phase.sortie)
                 mid_relay = False
                 if not mid_direct.available and mid_mission is not None:
                     mid_hover = Node("H", mid_mission["longitude"],
@@ -148,7 +151,7 @@ def audit_communication(phases, selected, step_s=30.0, minimum_step_s=1.0):
                     direct_ok = certify_moving_link(
                         evaluator, first, first_altitude, last, last_altitude,
                         gateway, gateway.elevation_m, threshold_direct)
-                    mission = _mission_for_interval(selected, start, end)
+                    mission = _mission_for_interval(selected, start, end, phase.sortie)
                     relay_ok = False
                     if not direct_ok and mission is not None:
                         hover = Node("H", mission["longitude"], mission["latitude"], 0.0)

@@ -631,7 +631,8 @@ def run(output_dir: Path = OUTPUT_DEFAULT, sample_step_s: float = 10.0,
         relay_candidate_step_s: float = 10.0,
         q2_output: Path = ROOT / "outputs/problem23/clearance50",
         max_iterations: int = 12, time_limit_s: float = 180.0,
-        objective: str = "sorties", max_relay_sorties: int | None = None) -> dict:
+        objective: str = "sorties", max_relay_sorties: int | None = None,
+        maximum_delay_s: float = 10800) -> dict:
     from src.problem3.timeline import load_problem23_schedule, coordinate_timeline
     from importlib.metadata import version
     import platform
@@ -641,7 +642,8 @@ def run(output_dir: Path = OUTPUT_DEFAULT, sample_step_s: float = 10.0,
     primary_sorties, boxes, source_metrics = load_problem23_schedule(q2_output)
     drones, batteries = load_resources()
     result = coordinate_timeline(primary_sorties, sample_step_s, relay_candidate_step_s,
-                                 max_iterations, time_limit_s, objective, max_relay_sorties)
+                                 max_iterations, time_limit_s, objective, max_relay_sorties,
+                                 maximum_delay_s)
     sorties, phases, samples, intervals, gaps, relay_candidates, selected = (
         result[key] for key in ("sorties", "phases", "samples", "intervals", "gaps", "groups", "selected"))
     coordination = result["coordination"]
@@ -654,8 +656,9 @@ def run(output_dir: Path = OUTPUT_DEFAULT, sample_step_s: float = 10.0,
         transport_metrics = _validate(sorties, boxes, drones, batteries, transport_evaluator)
     finally:
         transport_evaluator.close()
-    from src.problem3.audit import audit_checkpoints, audit_relay_resources
+    from src.problem3.audit import audit_checkpoints, audit_communication, audit_relay_resources
     communication_rows, communication_metrics, link_audit = audit_checkpoints(samples, intervals, selected)
+    continuous_rows, continuous_metrics = audit_communication(phases, selected, step_s=30.0, minimum_step_s=1.0)
     relay_metrics = audit_relay_resources(selected)
     hard_deadline_metrics = _hard_deadline_audit(sorties)
     audit_evaluator = LinkEvaluator()
@@ -667,6 +670,7 @@ def run(output_dir: Path = OUTPUT_DEFAULT, sample_step_s: float = 10.0,
         "status": "relay candidate/partial schedule diagnostic; not a feasible Q3 solution",
         "transport_feasible": transport_metrics["feasible"],
         "objective": objective, "max_relay_sorties": max_relay_sorties,
+        "maximum_transport_delay_s": maximum_delay_s,
         "box_count": len(boxes),
         "sortie_count": len(sorties),
         "direct_link_threshold_db": link_limits(load_link_parameters())["transport_gateway_db"],
@@ -687,12 +691,13 @@ def run(output_dir: Path = OUTPUT_DEFAULT, sample_step_s: float = 10.0,
         "relay_schedule_feasibility": relay_schedule["method"],
         "relay_schedule": {key: value for key, value in relay_schedule.items() if key != "selected"},
         "DSM_node_elevation_audit_count": len(elevation_audit),
-        "continuity_certified": False,
+        "continuity_certified": continuous_metrics["certified"],
         "checkpoint_coverage_verified": communication_metrics["certified"],
         "q2_source": source_metrics,
         "software_versions": {"python": platform.python_version(), **{
             package: version(package) for package in ("numpy", "scipy", "rasterio", "ortools", "openpyxl")}},
         "communication_validation": communication_metrics,
+        "continuous_communication_validation": continuous_metrics,
         "transport_validation": transport_metrics,
         "hard_deadline_audit": hard_deadline_metrics,
         "relay_validation": relay_metrics,
@@ -700,16 +705,18 @@ def run(output_dir: Path = OUTPUT_DEFAULT, sample_step_s: float = 10.0,
         "transport_energy_kwh": sum(s.energy_kwh for s in sorties),
         "relay_energy_kwh": sum(r["energy_kwh"] for r in relay_schedule["selected"]),
         "joint_energy_kwh": sum(s.energy_kwh for s in sorties) + sum(r["energy_kwh"] for r in relay_schedule["selected"]),
-        "note": "Feasibility covers all trajectory checkpoints; no continuous-time certificate is claimed.",
+        "note": "Feasibility requires checkpoint coverage and recursive continuous communication certification under the stated DSM/LOS model.",
     }
     metrics["feasible"] = (transport_metrics["feasible"] and hard_deadline_metrics["passed"]
                            and relay_schedule["feasible_cover"]
-                           and communication_metrics["certified"] and relay_metrics["feasible"])
+                           and communication_metrics["certified"] and continuous_metrics["certified"]
+                           and relay_metrics["feasible"])
     if metrics["feasible"]:
-        metrics["status"] = "feasible joint schedule at all trajectory checkpoints under the stated DSM/LOS model"
+        metrics["status"] = "feasible joint schedule with continuous communication certification under the stated DSM/LOS model"
     output_dir.mkdir(parents=True, exist_ok=True)
     _write_csv(output_dir / "link_samples.csv", samples)
     _write_csv(output_dir / "two_hop_link_audit.csv", link_audit)
+    _write_csv(output_dir / "continuous_communication_audit.csv", continuous_rows)
     _write_csv(output_dir / "trajectory_phases.csv", [
         {"sortie": p.sortie, "phase": p.name, "start_s": p.start_s, "end_s": p.end_s,
          "start_longitude": p.start_node.longitude, "start_latitude": p.start_node.latitude,
@@ -779,13 +786,16 @@ def main() -> None:
     parser.add_argument("--time-limit", type=float, default=180.0)
     parser.add_argument("--objective", choices=("sorties", "delay"), default="sorties")
     parser.add_argument("--max-relay-sorties", type=int)
+    parser.add_argument("--max-transport-delay", type=float, default=10800.0)
     args = parser.parse_args()
     if (args.sample_step <= 0 or args.relay_candidate_step <= 0
             or args.max_iterations < 1 or args.time_limit <= 0
+            or args.max_transport_delay <= 0
             or (args.max_relay_sorties is not None and args.max_relay_sorties < 0)):
         parser.error("sampling steps must be positive")
     result = run(args.output, args.sample_step, args.relay_candidate_step, args.q2_output,
-                 args.max_iterations, args.time_limit, args.objective, args.max_relay_sorties)
+                 args.max_iterations, args.time_limit, args.objective, args.max_relay_sorties,
+                 args.max_transport_delay)
     print(json.dumps(result, ensure_ascii=False, indent=2))
     if not result["feasible"]:
         raise SystemExit(2)
