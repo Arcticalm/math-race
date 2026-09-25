@@ -76,20 +76,25 @@ def joint_tradeoff(rows, selected, output):
     points = [row for row in rows if row.get("joint_score")]
     if not points:
         raise ValueError("No Q3 candidates available for the tradeoff chart")
+    # An independently solved Q3 carries no frozen-partition terms, so the second
+    # panel falls back to the joint sortie count instead of a partition deficit.
+    coupled = len(points[0]["joint_score"]) > 4
     figure, axes = plt.subplots(1, 2, figsize=(12, 5), layout="constrained")
     for row in points:
-        time_s, late, energy, sorties, deficit, *_ = row["joint_score"]
+        time_s, late, energy, sorties, deficit, *_ = (*row["joint_score"], 0)
         chosen = row["run"] == selected["run"] and abs(time_s - selected["time_s"]) < 1e-6
         color = "#c0392b" if chosen else "#2878b5"
-        for axis, horizontal in zip(axes, (energy, deficit)):
+        for axis, horizontal in zip(axes, (energy, deficit if coupled else sorties)):
             axis.scatter(horizontal, time_s, color=color, s=90 if chosen else 45,
                          edgecolor="white", linewidth=.5, zorder=3)
             axis.annotate(f"{row['run']}-{row['iteration']}", (horizontal, time_s),
                           xytext=(4, 4), textcoords="offset points", fontsize=8)
     axes[0].set(xlabel="Joint energy (kWh)", ylabel="Joint completion time (s)",
                 title="Completion time and energy")
-    axes[1].set(xlabel="K=2 + K=3 resource deficit", ylabel="Joint completion time (s)",
-                title="Completion time and partition deficit")
+    axes[1].set(xlabel="K=2 + K=3 resource deficit" if coupled else "Joint sortie count",
+                ylabel="Joint completion time (s)",
+                title="Completion time and partition deficit" if coupled
+                else "Completion time and sorties")
     for axis in axes:
         axis.grid(alpha=.25)
         axis.scatter([], [], color="#c0392b", label="Selected")
@@ -230,7 +235,7 @@ def partition_map(source: Path, output: Path):
                  xlabel="Longitude (deg)")
         axis.grid(alpha=.25)
         axis.legend(loc="best", fontsize=8)
-    axes[0].set_ylabel("Latitude (deg)")
+    axes[0, 0].set_ylabel("Latitude (deg)")
     save(figure, output)
 
 
@@ -387,18 +392,14 @@ def publish(source: Path, output: Path, q1_source: Path | None = None) -> dict:
              "- [第三问巡航净空](q3_terrain_clearance.png) · [分区地图](q4_partitions.png)",
              "- [分区资源需求与库存](q4_inventory.png) · [联合方案权衡](q3_tradeoff.png)", "",
              "图中候选点只代表已认证或已审计的搜索结果；红点是当前选中方案。",
-             "第二问和第三问分别来自不同运行，原始方案及审计表保存在 `final/`。"]
+             "各问的选定来源运行见 `summary.json` 的 `q2.source` 与 `q3_q4.source`，原始方案及审计表保存在 `final/`。"]
     if infeasible:
         index.append("第四问中 " + "、".join(f"K={k}" for k in infeasible)
                      + " 在冻结的第三问排程下不可行，原因见 `q4/result.json`，未在结果表中虚构方案。")
     index.append("")
     (output / "README.md").write_text("\n".join(index), encoding="utf-8")
-    result = {"selected_source": str(source.resolve()), "q1_source": str(q1_source.resolve()),
-              "infeasible_partitions": infeasible,
-              "q2_candidate_count": len(q2_candidates), "q3_candidate_count": len(q3_candidates),
-              "files": {name: digest(output / name) for name in assets + ["unified_results.zip"]}}
-    (output / "README.md").write_text("\n".join(index), encoding="utf-8")
     result = {"selected_source": str(source.resolve()), "output": str(output.resolve()),
+              "q1_source": str(q1_source.resolve()), "infeasible_partitions": infeasible,
               "q2_candidate_count": len(q2_candidates), "q3_candidate_count": len(q3_candidates),
               "files": {name: digest(output / name) for name in assets + ["unified_results.zip"]}}
     (output / "deliverables.json").write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
