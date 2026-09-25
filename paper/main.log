@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2026.9.24)  24 SEP 2026 20:24
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2022/dev/Debian) (preloaded format=xelatex 2026.9.24)  24 SEP 2026 21:14
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -980,9 +980,11 @@ File: figures/energy_model_sensitivity.png Graphic file (type bmp)
 File: figures/routes.png Graphic file (type bmp)
 <figures/routes.png>
  [30]
+File: figures/terrain_clearance.png Graphic file (type bmp)
+<figures/terrain_clearance.png>
+ [31]
 File: figures/resource_gantt.png Graphic file (type bmp)
 <figures/resource_gantt.png>
- [31]
 File: figures/delivery_times.png Graphic file (type bmp)
 <figures/delivery_times.png>
  [32]
@@ -994,13 +996,13 @@ File: figures/time_priority_tradeoff.png Graphic file (type bmp)
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: F48A256FD2C870CFB1E2FC3CDA13728D;12956.
+(rerunfilecheck)             Checksum: A892035813499678F64BC191530705C2;12956.
  ) 
 Here is how much of TeX's memory you used:
- 24465 strings out of 476191
- 548014 string characters out of 5812072
+ 24475 strings out of 476191
+ 548314 string characters out of 5812072
  867673 words of memory out of 5000000
- 44750 multiletter control sequences out of 15000+600000
+ 44759 multiletter control sequences out of 15000+600000
  493403 words of font info for 199 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  104i,15n,111p,574b,641s stack positions out of 5000i,500n,10000p,200000b,80000s

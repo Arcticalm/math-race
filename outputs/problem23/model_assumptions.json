@@ -1,7 +1,18 @@
 {
   "reserve_fraction": 0.2,
   "horizontal_energy_scale": 1.0,
+  "horizontal_energy_model": "E_hor = E_use * distance / L(payload); baseline E_use/L0 scaled by L0/L(payload)",
+  "distance": "great-circle haversine, mean Earth radius 6371008.8 m",
+  "dem_sampling": "maximum over every DEM cell touched by the coordinate-linear segment, including edge and corner contacts",
+  "cruise_clearance_m": 50.0,
+  "template_start_time": "preparation start",
+  "airframe_release": "at return to O01; no extra turnaround data provided",
+  "battery_reuse": "only after full recharge; independent of airframe release",
+  "handoff_timing": "each site's handoff duration is applied after arrival and before the next leg; final-site handoff occurs before return to O01",
+  "loading_and_preparation": "fixed preparation followed by serial per-box loading",
   "solver": "exact per-site partitions and constructive partitions, optional two-site merges; CP-SAT or heuristic scheduling for each fixed grouping",
+  "objective_profile": "makespan, weighted lateness, energy, sorties",
   "optimality_status": "best audited candidate; global Problem 2 optimum unproven",
-  "cp_sat_available": true
+  "cp_sat_available": true,
+  "clearance_audit": "independent segment/closed-cell rectangle intersection"
 }

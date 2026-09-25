@@ -7,7 +7,7 @@
   "box_count": 80,
   "assigned_box_count": 80,
   "sortie_count": 25,
-  "total_energy_kwh": 74.56630951850056,
+  "total_energy_kwh": 74.62767725833724,
   "makespan_s": 7983.810858112425,
   "hard_deadline_check_count": 46,
   "hard_deadline_compliant_count": 46,
@@ -15,8 +15,8 @@
   "all_due_box_count": 80,
   "all_expected_on_time_count": 72,
   "all_expected_on_time_rate": 0.9,
-  "all_expected_tardiness_s": 7565.01992869324,
-  "weighted_all_expected_tardiness": 90637.98816138331,
+  "all_expected_tardiness_s": 7583.01992869324,
+  "weighted_all_expected_tardiness": 90817.98816138331,
   "expected_time_by_item_type": {
     "医疗物资": {
       "count": 16,
@@ -61,8 +61,8 @@
       "compliance_rate": 1.0
     }
   },
-  "soft_tardiness_s": 7565.01992869324,
-  "weighted_soft_tardiness_s": 90637.98816138331,
+  "soft_tardiness_s": 7583.01992869324,
+  "weighted_soft_tardiness_s": 90817.98816138331,
   "soft_on_time_rate": 0.875,
   "resource_checks": {
     "airframe_count": 8,
@@ -77,6 +77,634 @@
     "integer_makespan_s": 7984,
     "best_bound_s": 7984.0,
     "fixed_grouping_optimal": true
+  },
+  "terrain_clearance": {
+    "method": "independent segment/closed-cell rectangle intersection",
+    "scope": "horizontal cruise; departure/arrival work heights follow the task statement",
+    "required_clearance_m": 50.0,
+    "minimum_clearance_m": 50.0,
+    "unique_directed_leg_count": 35,
+    "leg_count": 56,
+    "feasible": true,
+    "violation_count": 0,
+    "legs": [
+      {
+        "sortie": "Q23-001",
+        "leg": 1,
+        "from": "O01",
+        "to": "S001",
+        "intersected_cell_count": 136,
+        "maximum_ground_m": 223.05661010742188,
+        "cruise_altitude_m": 273.0566101074219,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-001",
+        "leg": 2,
+        "from": "S001",
+        "to": "O01",
+        "intersected_cell_count": 136,
+        "maximum_ground_m": 223.05661010742188,
+        "cruise_altitude_m": 273.0566101074219,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-002",
+        "leg": 1,
+        "from": "O01",
+        "to": "S001",
+        "intersected_cell_count": 136,
+        "maximum_ground_m": 223.05661010742188,
+        "cruise_altitude_m": 273.0566101074219,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-002",
+        "leg": 2,
+        "from": "S001",
+        "to": "O01",
+        "intersected_cell_count": 136,
+        "maximum_ground_m": 223.05661010742188,
+        "cruise_altitude_m": 273.0566101074219,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-003",
+        "leg": 1,
+        "from": "O01",
+        "to": "S001",
+        "intersected_cell_count": 136,
+        "maximum_ground_m": 223.05661010742188,
+        "cruise_altitude_m": 273.0566101074219,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-003",
+        "leg": 2,
+        "from": "S001",
+        "to": "O01",
+        "intersected_cell_count": 136,
+        "maximum_ground_m": 223.05661010742188,
+        "cruise_altitude_m": 273.0566101074219,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-004",
+        "leg": 1,
+        "from": "O01",
+        "to": "S002",
+        "intersected_cell_count": 323,
+        "maximum_ground_m": 258.9542541503906,
+        "cruise_altitude_m": 308.9542541503906,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-004",
+        "leg": 2,
+        "from": "S002",
+        "to": "O01",
+        "intersected_cell_count": 323,
+        "maximum_ground_m": 258.9542541503906,
+        "cruise_altitude_m": 308.9542541503906,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-005",
+        "leg": 1,
+        "from": "O01",
+        "to": "S002",
+        "intersected_cell_count": 323,
+        "maximum_ground_m": 258.9542541503906,
+        "cruise_altitude_m": 308.9542541503906,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-005",
+        "leg": 2,
+        "from": "S002",
+        "to": "O01",
+        "intersected_cell_count": 323,
+        "maximum_ground_m": 258.9542541503906,
+        "cruise_altitude_m": 308.9542541503906,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-006",
+        "leg": 1,
+        "from": "O01",
+        "to": "S003",
+        "intersected_cell_count": 338,
+        "maximum_ground_m": 511.80413818359375,
+        "cruise_altitude_m": 561.8041381835938,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-006",
+        "leg": 2,
+        "from": "S003",
+        "to": "O01",
+        "intersected_cell_count": 338,
+        "maximum_ground_m": 511.80413818359375,
+        "cruise_altitude_m": 561.8041381835938,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-007",
+        "leg": 1,
+        "from": "O01",
+        "to": "S003",
+        "intersected_cell_count": 338,
+        "maximum_ground_m": 511.80413818359375,
+        "cruise_altitude_m": 561.8041381835938,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-007",
+        "leg": 2,
+        "from": "S003",
+        "to": "O01",
+        "intersected_cell_count": 338,
+        "maximum_ground_m": 511.80413818359375,
+        "cruise_altitude_m": 561.8041381835938,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-008",
+        "leg": 1,
+        "from": "O01",
+        "to": "S004",
+        "intersected_cell_count": 276,
+        "maximum_ground_m": 348.2391662597656,
+        "cruise_altitude_m": 398.2391662597656,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-008",
+        "leg": 2,
+        "from": "S004",
+        "to": "O01",
+        "intersected_cell_count": 276,
+        "maximum_ground_m": 348.2391662597656,
+        "cruise_altitude_m": 398.2391662597656,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-009",
+        "leg": 1,
+        "from": "O01",
+        "to": "S004",
+        "intersected_cell_count": 276,
+        "maximum_ground_m": 348.2391662597656,
+        "cruise_altitude_m": 398.2391662597656,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-009",
+        "leg": 2,
+        "from": "S004",
+        "to": "O01",
+        "intersected_cell_count": 276,
+        "maximum_ground_m": 348.2391662597656,
+        "cruise_altitude_m": 398.2391662597656,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-010",
+        "leg": 1,
+        "from": "O01",
+        "to": "S005",
+        "intersected_cell_count": 181,
+        "maximum_ground_m": 276.410888671875,
+        "cruise_altitude_m": 326.410888671875,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-010",
+        "leg": 2,
+        "from": "S005",
+        "to": "O01",
+        "intersected_cell_count": 181,
+        "maximum_ground_m": 276.410888671875,
+        "cruise_altitude_m": 326.410888671875,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-011",
+        "leg": 1,
+        "from": "O01",
+        "to": "S005",
+        "intersected_cell_count": 181,
+        "maximum_ground_m": 276.410888671875,
+        "cruise_altitude_m": 326.410888671875,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-011",
+        "leg": 2,
+        "from": "S005",
+        "to": "O01",
+        "intersected_cell_count": 181,
+        "maximum_ground_m": 276.410888671875,
+        "cruise_altitude_m": 326.410888671875,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-012",
+        "leg": 1,
+        "from": "O01",
+        "to": "S006",
+        "intersected_cell_count": 116,
+        "maximum_ground_m": 316.09783935546875,
+        "cruise_altitude_m": 366.09783935546875,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-012",
+        "leg": 2,
+        "from": "S006",
+        "to": "O01",
+        "intersected_cell_count": 116,
+        "maximum_ground_m": 316.09783935546875,
+        "cruise_altitude_m": 366.09783935546875,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-013",
+        "leg": 1,
+        "from": "O01",
+        "to": "S008",
+        "intersected_cell_count": 321,
+        "maximum_ground_m": 322.9093322753906,
+        "cruise_altitude_m": 372.9093322753906,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-013",
+        "leg": 2,
+        "from": "S008",
+        "to": "O01",
+        "intersected_cell_count": 321,
+        "maximum_ground_m": 322.9093322753906,
+        "cruise_altitude_m": 372.9093322753906,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-014",
+        "leg": 1,
+        "from": "O01",
+        "to": "S008",
+        "intersected_cell_count": 321,
+        "maximum_ground_m": 322.9093322753906,
+        "cruise_altitude_m": 372.9093322753906,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-014",
+        "leg": 2,
+        "from": "S008",
+        "to": "O01",
+        "intersected_cell_count": 321,
+        "maximum_ground_m": 322.9093322753906,
+        "cruise_altitude_m": 372.9093322753906,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-015",
+        "leg": 1,
+        "from": "O01",
+        "to": "S011",
+        "intersected_cell_count": 123,
+        "maximum_ground_m": 245.36175537109375,
+        "cruise_altitude_m": 295.36175537109375,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-015",
+        "leg": 2,
+        "from": "S011",
+        "to": "O01",
+        "intersected_cell_count": 123,
+        "maximum_ground_m": 245.36175537109375,
+        "cruise_altitude_m": 295.36175537109375,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-016",
+        "leg": 1,
+        "from": "O01",
+        "to": "S011",
+        "intersected_cell_count": 123,
+        "maximum_ground_m": 245.36175537109375,
+        "cruise_altitude_m": 295.36175537109375,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-016",
+        "leg": 2,
+        "from": "S011",
+        "to": "O01",
+        "intersected_cell_count": 123,
+        "maximum_ground_m": 245.36175537109375,
+        "cruise_altitude_m": 295.36175537109375,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-017",
+        "leg": 1,
+        "from": "O01",
+        "to": "S012",
+        "intersected_cell_count": 354,
+        "maximum_ground_m": 363.3009948730469,
+        "cruise_altitude_m": 413.3009948730469,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-017",
+        "leg": 2,
+        "from": "S012",
+        "to": "O01",
+        "intersected_cell_count": 354,
+        "maximum_ground_m": 363.3009948730469,
+        "cruise_altitude_m": 413.3009948730469,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-018",
+        "leg": 1,
+        "from": "O01",
+        "to": "S014",
+        "intersected_cell_count": 203,
+        "maximum_ground_m": 541.9473876953125,
+        "cruise_altitude_m": 591.9473876953125,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-018",
+        "leg": 2,
+        "from": "S014",
+        "to": "O01",
+        "intersected_cell_count": 203,
+        "maximum_ground_m": 541.9473876953125,
+        "cruise_altitude_m": 591.9473876953125,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-019",
+        "leg": 1,
+        "from": "O01",
+        "to": "S015",
+        "intersected_cell_count": 286,
+        "maximum_ground_m": 521.7992553710938,
+        "cruise_altitude_m": 571.7992553710938,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-019",
+        "leg": 2,
+        "from": "S015",
+        "to": "O01",
+        "intersected_cell_count": 286,
+        "maximum_ground_m": 521.7992553710938,
+        "cruise_altitude_m": 571.7992553710938,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-020",
+        "leg": 1,
+        "from": "O01",
+        "to": "S013",
+        "intersected_cell_count": 228,
+        "maximum_ground_m": 349.18182373046875,
+        "cruise_altitude_m": 399.18182373046875,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-020",
+        "leg": 2,
+        "from": "S013",
+        "to": "S010",
+        "intersected_cell_count": 60,
+        "maximum_ground_m": 454.07037353515625,
+        "cruise_altitude_m": 504.07037353515625,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-020",
+        "leg": 3,
+        "from": "S010",
+        "to": "O01",
+        "intersected_cell_count": 203,
+        "maximum_ground_m": 385.63653564453125,
+        "cruise_altitude_m": 435.63653564453125,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-021",
+        "leg": 1,
+        "from": "O01",
+        "to": "S010",
+        "intersected_cell_count": 203,
+        "maximum_ground_m": 385.63653564453125,
+        "cruise_altitude_m": 435.63653564453125,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-021",
+        "leg": 2,
+        "from": "S010",
+        "to": "S014",
+        "intersected_cell_count": 79,
+        "maximum_ground_m": 487.5635681152344,
+        "cruise_altitude_m": 537.5635681152344,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-021",
+        "leg": 3,
+        "from": "S014",
+        "to": "O01",
+        "intersected_cell_count": 203,
+        "maximum_ground_m": 541.9473876953125,
+        "cruise_altitude_m": 591.9473876953125,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-022",
+        "leg": 1,
+        "from": "O01",
+        "to": "S007",
+        "intersected_cell_count": 213,
+        "maximum_ground_m": 461.9731750488281,
+        "cruise_altitude_m": 511.9731750488281,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-022",
+        "leg": 2,
+        "from": "S007",
+        "to": "S015",
+        "intersected_cell_count": 74,
+        "maximum_ground_m": 452.918212890625,
+        "cruise_altitude_m": 502.918212890625,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-022",
+        "leg": 3,
+        "from": "S015",
+        "to": "O01",
+        "intersected_cell_count": 286,
+        "maximum_ground_m": 521.7992553710938,
+        "cruise_altitude_m": 571.7992553710938,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-023",
+        "leg": 1,
+        "from": "O01",
+        "to": "S013",
+        "intersected_cell_count": 228,
+        "maximum_ground_m": 349.18182373046875,
+        "cruise_altitude_m": 399.18182373046875,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-023",
+        "leg": 2,
+        "from": "S013",
+        "to": "S009",
+        "intersected_cell_count": 150,
+        "maximum_ground_m": 322.2989807128906,
+        "cruise_altitude_m": 372.2989807128906,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-023",
+        "leg": 3,
+        "from": "S009",
+        "to": "O01",
+        "intersected_cell_count": 253,
+        "maximum_ground_m": 243.22891235351562,
+        "cruise_altitude_m": 293.2289123535156,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-024",
+        "leg": 1,
+        "from": "O01",
+        "to": "S009",
+        "intersected_cell_count": 253,
+        "maximum_ground_m": 243.22891235351562,
+        "cruise_altitude_m": 293.2289123535156,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-024",
+        "leg": 2,
+        "from": "S009",
+        "to": "S012",
+        "intersected_cell_count": 108,
+        "maximum_ground_m": 310.91961669921875,
+        "cruise_altitude_m": 360.91961669921875,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-024",
+        "leg": 3,
+        "from": "S012",
+        "to": "O01",
+        "intersected_cell_count": 354,
+        "maximum_ground_m": 363.3009948730469,
+        "cruise_altitude_m": 413.3009948730469,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-025",
+        "leg": 1,
+        "from": "O01",
+        "to": "S006",
+        "intersected_cell_count": 116,
+        "maximum_ground_m": 316.09783935546875,
+        "cruise_altitude_m": 366.09783935546875,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-025",
+        "leg": 2,
+        "from": "S006",
+        "to": "S007",
+        "intersected_cell_count": 104,
+        "maximum_ground_m": 540.361328125,
+        "cruise_altitude_m": 590.361328125,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "Q23-025",
+        "leg": 3,
+        "from": "S007",
+        "to": "O01",
+        "intersected_cell_count": 213,
+        "maximum_ground_m": 461.9731750488281,
+        "cruise_altitude_m": 511.9731750488281,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      }
+    ]
   },
   "objective_profile": "makespan, weighted lateness, energy, sorties",
   "primary_candidate": [
@@ -96,16 +724,16 @@
       "box_count": 80,
       "assigned_box_count": 80,
       "sortie_count": 18,
-      "total_energy_kwh": 60.65621243255153,
-      "makespan_s": 9577.810858112427,
+      "total_energy_kwh": 60.66448430966645,
+      "makespan_s": 9581.426741698548,
       "hard_deadline_check_count": 46,
       "hard_deadline_compliant_count": 46,
       "hard_deadline_compliance_rate": 1.0,
       "all_due_box_count": 80,
       "all_expected_on_time_count": 68,
       "all_expected_on_time_rate": 0.85,
-      "all_expected_tardiness_s": 31842.228702138083,
-      "weighted_all_expected_tardiness": 360277.16162622423,
+      "all_expected_tardiness_s": 32004.228702138083,
+      "weighted_all_expected_tardiness": 362113.16162622423,
       "expected_time_by_item_type": {
         "医疗物资": {
           "count": 16,
@@ -150,8 +778,8 @@
           "compliance_rate": 1.0
         }
       },
-      "soft_tardiness_s": 31842.228702138083,
-      "weighted_soft_tardiness_s": 360277.16162622423,
+      "soft_tardiness_s": 32004.228702138083,
+      "weighted_soft_tardiness_s": 362113.16162622423,
       "soft_on_time_rate": 0.8125,
       "resource_checks": {
         "airframe_count": 8,
@@ -163,8 +791,8 @@
       "search": {
         "status": "OPTIMAL",
         "time_grid_s": 1,
-        "integer_makespan_s": 9578,
-        "best_bound_s": 9578.0,
+        "integer_makespan_s": 9582,
+        "best_bound_s": 9582.0,
         "fixed_grouping_optimal": true
       }
     },
@@ -177,16 +805,16 @@
       "box_count": 80,
       "assigned_box_count": 80,
       "sortie_count": 18,
-      "total_energy_kwh": 60.656212432551534,
-      "makespan_s": 10637.578633572322,
+      "total_energy_kwh": 60.66448430966645,
+      "makespan_s": 10657.756122334016,
       "hard_deadline_check_count": 46,
       "hard_deadline_compliant_count": 46,
       "hard_deadline_compliance_rate": 1.0,
       "all_due_box_count": 80,
       "all_expected_on_time_count": 70,
       "all_expected_on_time_rate": 0.875,
-      "all_expected_tardiness_s": 38866.61690519486,
-      "weighted_all_expected_tardiness": 445798.4045458401,
+      "all_expected_tardiness_s": 38987.68183776502,
+      "weighted_all_expected_tardiness": 447130.1188041119,
       "expected_time_by_item_type": {
         "医疗物资": {
           "count": 16,
@@ -231,8 +859,8 @@
           "compliance_rate": 1.0
         }
       },
-      "soft_tardiness_s": 38866.61690519486,
-      "weighted_soft_tardiness_s": 445798.4045458401,
+      "soft_tardiness_s": 38987.68183776502,
+      "weighted_soft_tardiness_s": 447130.1188041119,
       "soft_on_time_rate": 0.84375,
       "resource_checks": {
         "airframe_count": 8,
@@ -255,16 +883,16 @@
       "box_count": 80,
       "assigned_box_count": 80,
       "sortie_count": 18,
-      "total_energy_kwh": 60.656212432551534,
-      "makespan_s": 10637.578633572322,
+      "total_energy_kwh": 60.66448430966645,
+      "makespan_s": 10657.756122334016,
       "hard_deadline_check_count": 46,
       "hard_deadline_compliant_count": 46,
       "hard_deadline_compliance_rate": 1.0,
       "all_due_box_count": 80,
       "all_expected_on_time_count": 70,
       "all_expected_on_time_rate": 0.875,
-      "all_expected_tardiness_s": 38866.61690519486,
-      "weighted_all_expected_tardiness": 445798.4045458401,
+      "all_expected_tardiness_s": 38987.68183776502,
+      "weighted_all_expected_tardiness": 447130.1188041119,
       "expected_time_by_item_type": {
         "医疗物资": {
           "count": 16,
@@ -309,8 +937,8 @@
           "compliance_rate": 1.0
         }
       },
-      "soft_tardiness_s": 38866.61690519486,
-      "weighted_soft_tardiness_s": 445798.4045458401,
+      "soft_tardiness_s": 38987.68183776502,
+      "weighted_soft_tardiness_s": 447130.1188041119,
       "soft_on_time_rate": 0.84375,
       "resource_checks": {
         "airframe_count": 8,
@@ -333,7 +961,7 @@
       "box_count": 80,
       "assigned_box_count": 80,
       "sortie_count": 19,
-      "total_energy_kwh": 61.30585826459298,
+      "total_energy_kwh": 61.3141301417079,
       "makespan_s": 8677.045617096052,
       "hard_deadline_check_count": 46,
       "hard_deadline_compliant_count": 46,
@@ -341,8 +969,8 @@
       "all_due_box_count": 80,
       "all_expected_on_time_count": 71,
       "all_expected_on_time_rate": 0.8875,
-      "all_expected_tardiness_s": 12087.533589590264,
-      "weighted_all_expected_tardiness": 141346.21050074592,
+      "all_expected_tardiness_s": 12141.533589590264,
+      "weighted_all_expected_tardiness": 141886.21050074592,
       "expected_time_by_item_type": {
         "医疗物资": {
           "count": 16,
@@ -387,8 +1015,8 @@
           "compliance_rate": 1.0
         }
       },
-      "soft_tardiness_s": 12087.533589590264,
-      "weighted_soft_tardiness_s": 141346.21050074592,
+      "soft_tardiness_s": 12141.533589590264,
+      "weighted_soft_tardiness_s": 141886.21050074592,
       "soft_on_time_rate": 0.859375,
       "resource_checks": {
         "airframe_count": 8,
@@ -414,16 +1042,16 @@
       "box_count": 80,
       "assigned_box_count": 80,
       "sortie_count": 19,
-      "total_energy_kwh": 60.55816714751669,
-      "makespan_s": 9875.461999202495,
+      "total_energy_kwh": 60.566439024631606,
+      "makespan_s": 9895.639487964188,
       "hard_deadline_check_count": 46,
       "hard_deadline_compliant_count": 46,
       "hard_deadline_compliance_rate": 1.0,
       "all_due_box_count": 80,
       "all_expected_on_time_count": 70,
       "all_expected_on_time_rate": 0.875,
-      "all_expected_tardiness_s": 27475.365497544844,
-      "weighted_all_expected_tardiness": 314906.2095993635,
+      "all_expected_tardiness_s": 27596.430430115004,
+      "weighted_all_expected_tardiness": 316237.92385763535,
       "expected_time_by_item_type": {
         "医疗物资": {
           "count": 16,
@@ -468,8 +1096,8 @@
           "compliance_rate": 1.0
         }
       },
-      "soft_tardiness_s": 27475.365497544844,
-      "weighted_soft_tardiness_s": 314906.2095993635,
+      "soft_tardiness_s": 27596.430430115004,
+      "weighted_soft_tardiness_s": 316237.92385763535,
       "soft_on_time_rate": 0.84375,
       "resource_checks": {
         "airframe_count": 8,
@@ -492,16 +1120,16 @@
       "box_count": 80,
       "assigned_box_count": 80,
       "sortie_count": 19,
-      "total_energy_kwh": 60.55816714751669,
-      "makespan_s": 9875.461999202495,
+      "total_energy_kwh": 60.566439024631606,
+      "makespan_s": 9895.639487964188,
       "hard_deadline_check_count": 46,
       "hard_deadline_compliant_count": 46,
       "hard_deadline_compliance_rate": 1.0,
       "all_due_box_count": 80,
       "all_expected_on_time_count": 70,
       "all_expected_on_time_rate": 0.875,
-      "all_expected_tardiness_s": 27475.365497544844,
-      "weighted_all_expected_tardiness": 314906.2095993635,
+      "all_expected_tardiness_s": 27596.430430115004,
+      "weighted_all_expected_tardiness": 316237.92385763535,
       "expected_time_by_item_type": {
         "医疗物资": {
           "count": 16,
@@ -546,8 +1174,8 @@
           "compliance_rate": 1.0
         }
       },
-      "soft_tardiness_s": 27475.365497544844,
-      "weighted_soft_tardiness_s": 314906.2095993635,
+      "soft_tardiness_s": 27596.430430115004,
+      "weighted_soft_tardiness_s": 316237.92385763535,
       "soft_on_time_rate": 0.84375,
       "resource_checks": {
         "airframe_count": 8,
@@ -570,16 +1198,16 @@
       "box_count": 80,
       "assigned_box_count": 80,
       "sortie_count": 31,
-      "total_energy_kwh": 83.54895236812112,
-      "makespan_s": 8368.00812658254,
+      "total_energy_kwh": 82.92409714926535,
+      "makespan_s": 8370.863885273964,
       "hard_deadline_check_count": 46,
       "hard_deadline_compliant_count": 46,
       "hard_deadline_compliance_rate": 1.0,
       "all_due_box_count": 80,
       "all_expected_on_time_count": 71,
       "all_expected_on_time_rate": 0.8875,
-      "all_expected_tardiness_s": 23731.37376493462,
-      "weighted_all_expected_tardiness": 280990.6750407764,
+      "all_expected_tardiness_s": 23794.5021951104,
+      "weighted_all_expected_tardiness": 281712.2162028858,
       "expected_time_by_item_type": {
         "医疗物资": {
           "count": 16,
@@ -624,8 +1252,8 @@
           "compliance_rate": 1.0
         }
       },
-      "soft_tardiness_s": 23731.37376493462,
-      "weighted_soft_tardiness_s": 280990.6750407764,
+      "soft_tardiness_s": 23794.5021951104,
+      "weighted_soft_tardiness_s": 281712.2162028858,
       "soft_on_time_rate": 0.859375,
       "resource_checks": {
         "airframe_count": 8,
@@ -637,8 +1265,8 @@
       "search": {
         "status": "OPTIMAL",
         "time_grid_s": 1,
-        "integer_makespan_s": 8369,
-        "best_bound_s": 8369.0,
+        "integer_makespan_s": 8371,
+        "best_bound_s": 8371.0,
         "fixed_grouping_optimal": true
       }
     },
@@ -651,16 +1279,16 @@
       "box_count": 80,
       "assigned_box_count": 80,
       "sortie_count": 31,
-      "total_energy_kwh": 81.82379438434599,
-      "makespan_s": 10112.388551671855,
+      "total_energy_kwh": 81.83842859951294,
+      "makespan_s": 10115.34054955597,
       "hard_deadline_check_count": 46,
       "hard_deadline_compliant_count": 46,
       "hard_deadline_compliance_rate": 1.0,
       "all_due_box_count": 80,
       "all_expected_on_time_count": 71,
       "all_expected_on_time_rate": 0.8875,
-      "all_expected_tardiness_s": 10552.487581968739,
-      "weighted_all_expected_tardiness": 114024.43336490939,
+      "all_expected_tardiness_s": 10622.290588967431,
+      "weighted_all_expected_tardiness": 114740.72029524787,
       "expected_time_by_item_type": {
         "医疗物资": {
           "count": 16,
@@ -705,8 +1333,8 @@
           "compliance_rate": 1.0
         }
       },
-      "soft_tardiness_s": 10552.487581968739,
-      "weighted_soft_tardiness_s": 114024.43336490939,
+      "soft_tardiness_s": 10622.290588967431,
+      "weighted_soft_tardiness_s": 114740.72029524787,
       "soft_on_time_rate": 0.859375,
       "resource_checks": {
         "airframe_count": 8,
@@ -729,16 +1357,16 @@
       "box_count": 80,
       "assigned_box_count": 80,
       "sortie_count": 31,
-      "total_energy_kwh": 78.96694314743418,
-      "makespan_s": 15283.41089855333,
+      "total_energy_kwh": 78.98119362066103,
+      "makespan_s": 15298.286858839787,
       "hard_deadline_check_count": 46,
       "hard_deadline_compliant_count": 46,
       "hard_deadline_compliance_rate": 1.0,
       "all_due_box_count": 80,
       "all_expected_on_time_count": 69,
       "all_expected_on_time_rate": 0.8625,
-      "all_expected_tardiness_s": 30156.818418321396,
-      "weighted_all_expected_tardiness": 310067.74172843597,
+      "all_expected_tardiness_s": 30250.469350124775,
+      "weighted_all_expected_tardiness": 311022.5079068213,
       "expected_time_by_item_type": {
         "医疗物资": {
           "count": 16,
@@ -783,8 +1411,8 @@
           "compliance_rate": 1.0
         }
       },
-      "soft_tardiness_s": 30156.818418321396,
-      "weighted_soft_tardiness_s": 310067.74172843597,
+      "soft_tardiness_s": 30250.469350124775,
+      "weighted_soft_tardiness_s": 311022.5079068213,
       "soft_on_time_rate": 0.828125,
       "resource_checks": {
         "airframe_count": 8,
@@ -807,7 +1435,7 @@
       "box_count": 80,
       "assigned_box_count": 80,
       "sortie_count": 25,
-      "total_energy_kwh": 74.56630951850056,
+      "total_energy_kwh": 74.62767725833724,
       "makespan_s": 7983.810858112425,
       "hard_deadline_check_count": 46,
       "hard_deadline_compliant_count": 46,
@@ -815,8 +1443,8 @@
       "all_due_box_count": 80,
       "all_expected_on_time_count": 72,
       "all_expected_on_time_rate": 0.9,
-      "all_expected_tardiness_s": 7565.01992869324,
-      "weighted_all_expected_tardiness": 90637.98816138331,
+      "all_expected_tardiness_s": 7583.01992869324,
+      "weighted_all_expected_tardiness": 90817.98816138331,
       "expected_time_by_item_type": {
         "医疗物资": {
           "count": 16,
@@ -861,8 +1489,8 @@
           "compliance_rate": 1.0
         }
       },
-      "soft_tardiness_s": 7565.01992869324,
-      "weighted_soft_tardiness_s": 90637.98816138331,
+      "soft_tardiness_s": 7583.01992869324,
+      "weighted_soft_tardiness_s": 90817.98816138331,
       "soft_on_time_rate": 0.875,
       "resource_checks": {
         "airframe_count": 8,
@@ -888,16 +1516,16 @@
       "box_count": 80,
       "assigned_box_count": 80,
       "sortie_count": 25,
-      "total_energy_kwh": 73.9853708859809,
-      "makespan_s": 12569.271164984364,
+      "total_energy_kwh": 73.99385135552542,
+      "makespan_s": 12576.709145127594,
       "hard_deadline_check_count": 46,
       "hard_deadline_compliant_count": 46,
       "hard_deadline_compliance_rate": 1.0,
       "all_due_box_count": 80,
       "all_expected_on_time_count": 66,
       "all_expected_on_time_rate": 0.825,
-      "all_expected_tardiness_s": 29399.99497781573,
-      "weighted_all_expected_tardiness": 312706.1673999756,
+      "all_expected_tardiness_s": 29436.02274211863,
+      "weighted_all_expected_tardiness": 313069.9189754025,
       "expected_time_by_item_type": {
         "医疗物资": {
           "count": 16,
@@ -942,8 +1570,8 @@
           "compliance_rate": 1.0
         }
       },
-      "soft_tardiness_s": 29399.99497781573,
-      "weighted_soft_tardiness_s": 312706.1673999756,
+      "soft_tardiness_s": 29436.02274211863,
+      "weighted_soft_tardiness_s": 313069.9189754025,
       "soft_on_time_rate": 0.78125,
       "resource_checks": {
         "airframe_count": 8,
@@ -966,16 +1594,16 @@
       "box_count": 80,
       "assigned_box_count": 80,
       "sortie_count": 25,
-      "total_energy_kwh": 73.9853708859809,
-      "makespan_s": 12569.271164984364,
+      "total_energy_kwh": 73.99385135552542,
+      "makespan_s": 12576.709145127594,
       "hard_deadline_check_count": 46,
       "hard_deadline_compliant_count": 46,
       "hard_deadline_compliance_rate": 1.0,
       "all_due_box_count": 80,
       "all_expected_on_time_count": 66,
       "all_expected_on_time_rate": 0.825,
-      "all_expected_tardiness_s": 29399.99497781573,
-      "weighted_all_expected_tardiness": 312706.1673999756,
+      "all_expected_tardiness_s": 29436.02274211863,
+      "weighted_all_expected_tardiness": 313069.9189754025,
       "expected_time_by_item_type": {
         "医疗物资": {
           "count": 16,
@@ -1020,8 +1648,8 @@
           "compliance_rate": 1.0
         }
       },
-      "soft_tardiness_s": 29399.99497781573,
-      "weighted_soft_tardiness_s": 312706.1673999756,
+      "soft_tardiness_s": 29436.02274211863,
+      "weighted_soft_tardiness_s": 313069.9189754025,
       "soft_on_time_rate": 0.78125,
       "resource_checks": {
         "airframe_count": 8,
