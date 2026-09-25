@@ -183,8 +183,8 @@
           "reserve_fraction": 0.2,
           "max_safe_payload_kg": 25.0,
           "route_distance_m": 4533.827897987457,
-          "cruise_altitude_m": 501.8304748535156,
-          "empty_round_trip_energy_kwh": 2.0112805109155016
+          "cruise_altitude_m": 511.9731750488281,
+          "empty_round_trip_energy_kwh": 2.0176122529269254
         },
         {
           "site": "S007",
@@ -192,8 +192,8 @@
           "reserve_fraction": 0.2,
           "max_safe_payload_kg": 30.0,
           "route_distance_m": 4533.827897987457,
-          "cruise_altitude_m": 501.8304748535156,
-          "empty_round_trip_energy_kwh": 1.9533263110131993
+          "cruise_altitude_m": 511.9731750488281,
+          "empty_round_trip_energy_kwh": 1.9594661820545798
         },
         {
           "site": "S007",
@@ -201,8 +201,8 @@
           "reserve_fraction": 0.2,
           "max_safe_payload_kg": 80.0,
           "route_distance_m": 4533.827897987457,
-          "cruise_altitude_m": 501.8304748535156,
-          "empty_round_trip_energy_kwh": 4.670308852677486
+          "cruise_altitude_m": 511.9731750488281,
+          "empty_round_trip_energy_kwh": 4.678743500520582
         },
         {
           "site": "S008",
@@ -291,8 +291,8 @@
           "reserve_fraction": 0.2,
           "max_safe_payload_kg": 25.0,
           "route_distance_m": 2817.1517251516107,
-          "cruise_altitude_m": 293.3490295410156,
-          "empty_round_trip_energy_kwh": 1.222002988410741
+          "cruise_altitude_m": 295.36175537109375,
+          "empty_round_trip_energy_kwh": 1.2232594645413943
         },
         {
           "site": "S011",
@@ -300,8 +300,8 @@
           "reserve_fraction": 0.2,
           "max_safe_payload_kg": 30.0,
           "route_distance_m": 2817.1517251516107,
-          "cruise_altitude_m": 293.3490295410156,
-          "empty_round_trip_energy_kwh": 1.186257717471059
+          "cruise_altitude_m": 295.36175537109375,
+          "empty_round_trip_energy_kwh": 1.18747611856745
         },
         {
           "site": "S011",
@@ -309,8 +309,8 @@
           "reserve_fraction": 0.2,
           "max_safe_payload_kg": 80.0,
           "route_distance_m": 2817.1517251516107,
-          "cruise_altitude_m": 293.3490295410156,
-          "empty_round_trip_energy_kwh": 2.860349874072284
+          "cruise_altitude_m": 295.36175537109375,
+          "empty_round_trip_energy_kwh": 2.8620236525784515
         },
         {
           "site": "S012",
@@ -448,7 +448,7 @@
         },
         "S007": {
           "distance_m": 4533.827897987457,
-          "max_ground_elevation_m": 451.8304748535156
+          "max_ground_elevation_m": 461.9731750488281
         },
         "S008": {
           "distance_m": 8109.473184927932,
@@ -464,7 +464,7 @@
         },
         "S011": {
           "distance_m": 2817.1517251516107,
-          "max_ground_elevation_m": 243.34902954101562
+          "max_ground_elevation_m": 245.36175537109375
         },
         "S012": {
           "distance_m": 7398.449561287365,
@@ -738,17 +738,17 @@
             ],
             "mass_kg": 45.0,
             "volume_m3": 0.129,
-            "energy_kwh": 3.403284441394841,
-            "outbound_energy_kwh": 1.9677104283174849,
-            "return_energy_kwh": 1.435574013077356,
-            "flight_time_s": 1079.2252411346558,
-            "outbound_time_s": 528.5726205673278,
-            "return_time_s": 550.6526205673279,
-            "work_time_s": 1889.2252411346558,
+            "energy_kwh": 3.4103759924476353,
+            "outbound_energy_kwh": 1.972119623209076,
+            "return_energy_kwh": 1.438256369238559,
+            "flight_time_s": 1097.4821014862182,
+            "outbound_time_s": 537.7010507431091,
+            "return_time_s": 559.7810507431091,
+            "work_time_s": 1907.4821014862182,
             "range_budget_m": 20093.75,
             "return_range_budget_m": 26000.0,
-            "reserve_kwh": 2.9967155586051595,
-            "return_soc_percent": 57.45894448256449,
+            "reserve_kwh": 2.989624007552365,
+            "return_soc_percent": 57.370300094404556,
             "feasible": true
           }
         ],
@@ -840,17 +840,17 @@
             ],
             "mass_kg": 25.0,
             "volume_m3": 0.067,
-            "energy_kwh": 1.0759658121278484,
-            "outbound_energy_kwh": 0.6535345657892517,
-            "return_energy_kwh": 0.4224312463385967,
-            "flight_time_s": 556.678806680371,
-            "outbound_time_s": 275.5260700068522,
-            "return_time_s": 281.1527366735188,
-            "work_time_s": 1186.678806680371,
+            "energy_kwh": 1.0771461381899774,
+            "outbound_energy_kwh": 0.6542199164059718,
+            "return_energy_kwh": 0.4229262217840056,
+            "flight_time_s": 559.6308045644856,
+            "outbound_time_s": 277.0020689489095,
+            "return_time_s": 282.62873561557615,
+            "work_time_s": 1189.6308045644855,
             "range_budget_m": 18871.29070824723,
             "return_range_budget_m": 28000.0,
-            "reserve_kwh": 2.1240341878721516,
-            "return_soc_percent": 73.10085469680378,
+            "reserve_kwh": 2.1228538618100226,
+            "return_soc_percent": 73.07134654525056,
             "feasible": true
           }
         ],
@@ -959,20 +959,20 @@
         {
           "policy": "架次优先",
           "flight_count": 18,
-          "total_energy_kwh": 59.23198592446156,
-          "total_work_time_s": 32777.29117378634
+          "total_energy_kwh": 59.24025780157648,
+          "total_work_time_s": 32798.50003202202
         },
         {
           "policy": "能耗优先",
           "flight_count": 19,
-          "total_energy_kwh": 59.13394063942671,
-          "total_work_time_s": 34445.31150835551
+          "total_energy_kwh": 59.14221251654163,
+          "total_work_time_s": 34466.52036659118
         },
         {
           "policy": "时间优先",
           "flight_count": 18,
-          "total_energy_kwh": 59.23198592446156,
-          "total_work_time_s": 32777.29117378634
+          "total_energy_kwh": 59.24025780157648,
+          "total_work_time_s": 32798.50003202202
         }
       ],
       "sampled_nondominated_policies": [
@@ -983,8 +983,8 @@
       "summary": {
         "box_count": 80,
         "flight_count": 18,
-        "total_energy_kwh": 59.23198592446156,
-        "total_work_time_s": 32777.29117378634
+        "total_energy_kwh": 59.24025780157648,
+        "total_work_time_s": 32798.50003202202
       }
     },
     {
@@ -1162,8 +1162,8 @@
           "reserve_fraction": 0.1,
           "max_safe_payload_kg": 25.0,
           "route_distance_m": 4533.827897987457,
-          "cruise_altitude_m": 501.8304748535156,
-          "empty_round_trip_energy_kwh": 2.0112805109155016
+          "cruise_altitude_m": 511.9731750488281,
+          "empty_round_trip_energy_kwh": 2.0176122529269254
         },
         {
           "site": "S007",
@@ -1171,8 +1171,8 @@
           "reserve_fraction": 0.1,
           "max_safe_payload_kg": 30.0,
           "route_distance_m": 4533.827897987457,
-          "cruise_altitude_m": 501.8304748535156,
-          "empty_round_trip_energy_kwh": 1.9533263110131993
+          "cruise_altitude_m": 511.9731750488281,
+          "empty_round_trip_energy_kwh": 1.9594661820545798
         },
         {
           "site": "S007",
@@ -1180,8 +1180,8 @@
           "reserve_fraction": 0.1,
           "max_safe_payload_kg": 80.0,
           "route_distance_m": 4533.827897987457,
-          "cruise_altitude_m": 501.8304748535156,
-          "empty_round_trip_energy_kwh": 4.670308852677486
+          "cruise_altitude_m": 511.9731750488281,
+          "empty_round_trip_energy_kwh": 4.678743500520582
         },
         {
           "site": "S008",
@@ -1270,8 +1270,8 @@
           "reserve_fraction": 0.1,
           "max_safe_payload_kg": 25.0,
           "route_distance_m": 2817.1517251516107,
-          "cruise_altitude_m": 293.3490295410156,
-          "empty_round_trip_energy_kwh": 1.222002988410741
+          "cruise_altitude_m": 295.36175537109375,
+          "empty_round_trip_energy_kwh": 1.2232594645413943
         },
         {
           "site": "S011",
@@ -1279,8 +1279,8 @@
           "reserve_fraction": 0.1,
           "max_safe_payload_kg": 30.0,
           "route_distance_m": 2817.1517251516107,
-          "cruise_altitude_m": 293.3490295410156,
-          "empty_round_trip_energy_kwh": 1.186257717471059
+          "cruise_altitude_m": 295.36175537109375,
+          "empty_round_trip_energy_kwh": 1.18747611856745
         },
         {
           "site": "S011",
@@ -1288,8 +1288,8 @@
           "reserve_fraction": 0.1,
           "max_safe_payload_kg": 80.0,
           "route_distance_m": 2817.1517251516107,
-          "cruise_altitude_m": 293.3490295410156,
-          "empty_round_trip_energy_kwh": 2.860349874072284
+          "cruise_altitude_m": 295.36175537109375,
+          "empty_round_trip_energy_kwh": 2.8620236525784515
         },
         {
           "site": "S012",
@@ -1427,7 +1427,7 @@
         },
         "S007": {
           "distance_m": 4533.827897987457,
-          "max_ground_elevation_m": 451.8304748535156
+          "max_ground_elevation_m": 461.9731750488281
         },
         "S008": {
           "distance_m": 8109.473184927932,
@@ -1443,7 +1443,7 @@
         },
         "S011": {
           "distance_m": 2817.1517251516107,
-          "max_ground_elevation_m": 243.34902954101562
+          "max_ground_elevation_m": 245.36175537109375
         },
         "S012": {
           "distance_m": 7398.449561287365,
@@ -1717,17 +1717,17 @@
             ],
             "mass_kg": 45.0,
             "volume_m3": 0.129,
-            "energy_kwh": 3.403284441394841,
-            "outbound_energy_kwh": 1.9677104283174849,
-            "return_energy_kwh": 1.435574013077356,
-            "flight_time_s": 1079.2252411346558,
-            "outbound_time_s": 528.5726205673278,
-            "return_time_s": 550.6526205673279,
-            "work_time_s": 1889.2252411346558,
+            "energy_kwh": 3.4103759924476353,
+            "outbound_energy_kwh": 1.972119623209076,
+            "return_energy_kwh": 1.438256369238559,
+            "flight_time_s": 1097.4821014862182,
+            "outbound_time_s": 537.7010507431091,
+            "return_time_s": 559.7810507431091,
+            "work_time_s": 1907.4821014862182,
             "range_budget_m": 20093.75,
             "return_range_budget_m": 26000.0,
-            "reserve_kwh": 3.7967155586051593,
-            "return_soc_percent": 57.45894448256449,
+            "reserve_kwh": 3.789624007552365,
+            "return_soc_percent": 57.370300094404556,
             "feasible": true
           }
         ],
@@ -1819,17 +1819,17 @@
             ],
             "mass_kg": 25.0,
             "volume_m3": 0.067,
-            "energy_kwh": 1.0759658121278484,
-            "outbound_energy_kwh": 0.6535345657892517,
-            "return_energy_kwh": 0.4224312463385967,
-            "flight_time_s": 556.678806680371,
-            "outbound_time_s": 275.5260700068522,
-            "return_time_s": 281.1527366735188,
-            "work_time_s": 1186.678806680371,
+            "energy_kwh": 1.0771461381899774,
+            "outbound_energy_kwh": 0.6542199164059718,
+            "return_energy_kwh": 0.4229262217840056,
+            "flight_time_s": 559.6308045644856,
+            "outbound_time_s": 277.0020689489095,
+            "return_time_s": 282.62873561557615,
+            "work_time_s": 1189.6308045644855,
             "range_budget_m": 18871.29070824723,
             "return_range_budget_m": 28000.0,
-            "reserve_kwh": 2.524034187872152,
-            "return_soc_percent": 73.10085469680378,
+            "reserve_kwh": 2.522853861810023,
+            "return_soc_percent": 73.07134654525056,
             "feasible": true
           }
         ],
@@ -1938,20 +1938,20 @@
         {
           "policy": "架次优先",
           "flight_count": 18,
-          "total_energy_kwh": 59.23198592446156,
-          "total_work_time_s": 32777.29117378634
+          "total_energy_kwh": 59.24025780157648,
+          "total_work_time_s": 32798.50003202202
         },
         {
           "policy": "能耗优先",
           "flight_count": 19,
-          "total_energy_kwh": 59.13394063942671,
-          "total_work_time_s": 34445.31150835551
+          "total_energy_kwh": 59.14221251654163,
+          "total_work_time_s": 34466.52036659118
         },
         {
           "policy": "时间优先",
           "flight_count": 18,
-          "total_energy_kwh": 59.23198592446156,
-          "total_work_time_s": 32777.29117378634
+          "total_energy_kwh": 59.24025780157648,
+          "total_work_time_s": 32798.50003202202
         }
       ],
       "sampled_nondominated_policies": [
@@ -1962,8 +1962,8 @@
       "summary": {
         "box_count": 80,
         "flight_count": 18,
-        "total_energy_kwh": 59.23198592446156,
-        "total_work_time_s": 32777.29117378634
+        "total_energy_kwh": 59.24025780157648,
+        "total_work_time_s": 32798.50003202202
       }
     },
     {
@@ -2141,8 +2141,8 @@
           "reserve_fraction": 0.15,
           "max_safe_payload_kg": 25.0,
           "route_distance_m": 4533.827897987457,
-          "cruise_altitude_m": 501.8304748535156,
-          "empty_round_trip_energy_kwh": 2.0112805109155016
+          "cruise_altitude_m": 511.9731750488281,
+          "empty_round_trip_energy_kwh": 2.0176122529269254
         },
         {
           "site": "S007",
@@ -2150,8 +2150,8 @@
           "reserve_fraction": 0.15,
           "max_safe_payload_kg": 30.0,
           "route_distance_m": 4533.827897987457,
-          "cruise_altitude_m": 501.8304748535156,
-          "empty_round_trip_energy_kwh": 1.9533263110131993
+          "cruise_altitude_m": 511.9731750488281,
+          "empty_round_trip_energy_kwh": 1.9594661820545798
         },
         {
           "site": "S007",
@@ -2159,8 +2159,8 @@
           "reserve_fraction": 0.15,
           "max_safe_payload_kg": 80.0,
           "route_distance_m": 4533.827897987457,
-          "cruise_altitude_m": 501.8304748535156,
-          "empty_round_trip_energy_kwh": 4.670308852677486
+          "cruise_altitude_m": 511.9731750488281,
+          "empty_round_trip_energy_kwh": 4.678743500520582
         },
         {
           "site": "S008",
@@ -2249,8 +2249,8 @@
           "reserve_fraction": 0.15,
           "max_safe_payload_kg": 25.0,
           "route_distance_m": 2817.1517251516107,
-          "cruise_altitude_m": 293.3490295410156,
-          "empty_round_trip_energy_kwh": 1.222002988410741
+          "cruise_altitude_m": 295.36175537109375,
+          "empty_round_trip_energy_kwh": 1.2232594645413943
         },
         {
           "site": "S011",
@@ -2258,8 +2258,8 @@
           "reserve_fraction": 0.15,
           "max_safe_payload_kg": 30.0,
           "route_distance_m": 2817.1517251516107,
-          "cruise_altitude_m": 293.3490295410156,
-          "empty_round_trip_energy_kwh": 1.186257717471059
+          "cruise_altitude_m": 295.36175537109375,
+          "empty_round_trip_energy_kwh": 1.18747611856745
         },
         {
           "site": "S011",
@@ -2267,8 +2267,8 @@
           "reserve_fraction": 0.15,
           "max_safe_payload_kg": 80.0,
           "route_distance_m": 2817.1517251516107,
-          "cruise_altitude_m": 293.3490295410156,
-          "empty_round_trip_energy_kwh": 2.860349874072284
+          "cruise_altitude_m": 295.36175537109375,
+          "empty_round_trip_energy_kwh": 2.8620236525784515
         },
         {
           "site": "S012",
@@ -2406,7 +2406,7 @@
         },
         "S007": {
           "distance_m": 4533.827897987457,
-          "max_ground_elevation_m": 451.8304748535156
+          "max_ground_elevation_m": 461.9731750488281
         },
         "S008": {
           "distance_m": 8109.473184927932,
@@ -2422,7 +2422,7 @@
         },
         "S011": {
           "distance_m": 2817.1517251516107,
-          "max_ground_elevation_m": 243.34902954101562
+          "max_ground_elevation_m": 245.36175537109375
         },
         "S012": {
           "distance_m": 7398.449561287365,
@@ -2696,17 +2696,17 @@
             ],
             "mass_kg": 45.0,
             "volume_m3": 0.129,
-            "energy_kwh": 3.403284441394841,
-            "outbound_energy_kwh": 1.9677104283174849,
-            "return_energy_kwh": 1.435574013077356,
-            "flight_time_s": 1079.2252411346558,
-            "outbound_time_s": 528.5726205673278,
-            "return_time_s": 550.6526205673279,
-            "work_time_s": 1889.2252411346558,
+            "energy_kwh": 3.4103759924476353,
+            "outbound_energy_kwh": 1.972119623209076,
+            "return_energy_kwh": 1.438256369238559,
+            "flight_time_s": 1097.4821014862182,
+            "outbound_time_s": 537.7010507431091,
+            "return_time_s": 559.7810507431091,
+            "work_time_s": 1907.4821014862182,
             "range_budget_m": 20093.75,
             "return_range_budget_m": 26000.0,
-            "reserve_kwh": 3.396715558605159,
-            "return_soc_percent": 57.45894448256449,
+            "reserve_kwh": 3.3896240075523645,
+            "return_soc_percent": 57.370300094404556,
             "feasible": true
           }
         ],
@@ -2798,17 +2798,17 @@
             ],
             "mass_kg": 25.0,
             "volume_m3": 0.067,
-            "energy_kwh": 1.0759658121278484,
-            "outbound_energy_kwh": 0.6535345657892517,
-            "return_energy_kwh": 0.4224312463385967,
-            "flight_time_s": 556.678806680371,
-            "outbound_time_s": 275.5260700068522,
-            "return_time_s": 281.1527366735188,
-            "work_time_s": 1186.678806680371,
+            "energy_kwh": 1.0771461381899774,
+            "outbound_energy_kwh": 0.6542199164059718,
+            "return_energy_kwh": 0.4229262217840056,
+            "flight_time_s": 559.6308045644856,
+            "outbound_time_s": 277.0020689489095,
+            "return_time_s": 282.62873561557615,
+            "work_time_s": 1189.6308045644855,
             "range_budget_m": 18871.29070824723,
             "return_range_budget_m": 28000.0,
-            "reserve_kwh": 2.3240341878721518,
-            "return_soc_percent": 73.10085469680378,
+            "reserve_kwh": 2.3228538618100227,
+            "return_soc_percent": 73.07134654525056,
             "feasible": true
           }
         ],
@@ -2917,20 +2917,20 @@
         {
           "policy": "架次优先",
           "flight_count": 18,
-          "total_energy_kwh": 59.23198592446156,
-          "total_work_time_s": 32777.29117378634
+          "total_energy_kwh": 59.24025780157648,
+          "total_work_time_s": 32798.50003202202
         },
         {
           "policy": "能耗优先",
           "flight_count": 19,
-          "total_energy_kwh": 59.13394063942671,
-          "total_work_time_s": 34445.31150835551
+          "total_energy_kwh": 59.14221251654163,
+          "total_work_time_s": 34466.52036659118
         },
         {
           "policy": "时间优先",
           "flight_count": 18,
-          "total_energy_kwh": 59.23198592446156,
-          "total_work_time_s": 32777.29117378634
+          "total_energy_kwh": 59.24025780157648,
+          "total_work_time_s": 32798.50003202202
         }
       ],
       "sampled_nondominated_policies": [
@@ -2941,8 +2941,8 @@
       "summary": {
         "box_count": 80,
         "flight_count": 18,
-        "total_energy_kwh": 59.23198592446156,
-        "total_work_time_s": 32777.29117378634
+        "total_energy_kwh": 59.24025780157648,
+        "total_work_time_s": 32798.50003202202
       }
     },
     {
@@ -3120,8 +3120,8 @@
           "reserve_fraction": 0.25,
           "max_safe_payload_kg": 25.0,
           "route_distance_m": 4533.827897987457,
-          "cruise_altitude_m": 501.8304748535156,
-          "empty_round_trip_energy_kwh": 2.0112805109155016
+          "cruise_altitude_m": 511.9731750488281,
+          "empty_round_trip_energy_kwh": 2.0176122529269254
         },
         {
           "site": "S007",
@@ -3129,8 +3129,8 @@
           "reserve_fraction": 0.25,
           "max_safe_payload_kg": 30.0,
           "route_distance_m": 4533.827897987457,
-          "cruise_altitude_m": 501.8304748535156,
-          "empty_round_trip_energy_kwh": 1.9533263110131993
+          "cruise_altitude_m": 511.9731750488281,
+          "empty_round_trip_energy_kwh": 1.9594661820545798
         },
         {
           "site": "S007",
@@ -3138,8 +3138,8 @@
           "reserve_fraction": 0.25,
           "max_safe_payload_kg": 80.0,
           "route_distance_m": 4533.827897987457,
-          "cruise_altitude_m": 501.8304748535156,
-          "empty_round_trip_energy_kwh": 4.670308852677486
+          "cruise_altitude_m": 511.9731750488281,
+          "empty_round_trip_energy_kwh": 4.678743500520582
         },
         {
           "site": "S008",
@@ -3228,8 +3228,8 @@
           "reserve_fraction": 0.25,
           "max_safe_payload_kg": 25.0,
           "route_distance_m": 2817.1517251516107,
-          "cruise_altitude_m": 293.3490295410156,
-          "empty_round_trip_energy_kwh": 1.222002988410741
+          "cruise_altitude_m": 295.36175537109375,
+          "empty_round_trip_energy_kwh": 1.2232594645413943
         },
         {
           "site": "S011",
@@ -3237,8 +3237,8 @@
           "reserve_fraction": 0.25,
           "max_safe_payload_kg": 30.0,
           "route_distance_m": 2817.1517251516107,
-          "cruise_altitude_m": 293.3490295410156,
-          "empty_round_trip_energy_kwh": 1.186257717471059
+          "cruise_altitude_m": 295.36175537109375,
+          "empty_round_trip_energy_kwh": 1.18747611856745
         },
         {
           "site": "S011",
@@ -3246,8 +3246,8 @@
           "reserve_fraction": 0.25,
           "max_safe_payload_kg": 80.0,
           "route_distance_m": 2817.1517251516107,
-          "cruise_altitude_m": 293.3490295410156,
-          "empty_round_trip_energy_kwh": 2.860349874072284
+          "cruise_altitude_m": 295.36175537109375,
+          "empty_round_trip_energy_kwh": 2.8620236525784515
         },
         {
           "site": "S012",
@@ -3385,7 +3385,7 @@
         },
         "S007": {
           "distance_m": 4533.827897987457,
-          "max_ground_elevation_m": 451.8304748535156
+          "max_ground_elevation_m": 461.9731750488281
         },
         "S008": {
           "distance_m": 8109.473184927932,
@@ -3401,7 +3401,7 @@
         },
         "S011": {
           "distance_m": 2817.1517251516107,
-          "max_ground_elevation_m": 243.34902954101562
+          "max_ground_elevation_m": 245.36175537109375
         },
         "S012": {
           "distance_m": 7398.449561287365,
@@ -3695,17 +3695,17 @@
             ],
             "mass_kg": 45.0,
             "volume_m3": 0.129,
-            "energy_kwh": 3.403284441394841,
-            "outbound_energy_kwh": 1.9677104283174849,
-            "return_energy_kwh": 1.435574013077356,
-            "flight_time_s": 1079.2252411346558,
-            "outbound_time_s": 528.5726205673278,
-            "return_time_s": 550.6526205673279,
-            "work_time_s": 1889.2252411346558,
+            "energy_kwh": 3.4103759924476353,
+            "outbound_energy_kwh": 1.972119623209076,
+            "return_energy_kwh": 1.438256369238559,
+            "flight_time_s": 1097.4821014862182,
+            "outbound_time_s": 537.7010507431091,
+            "return_time_s": 559.7810507431091,
+            "work_time_s": 1907.4821014862182,
             "range_budget_m": 20093.75,
             "return_range_budget_m": 26000.0,
-            "reserve_kwh": 2.596715558605159,
-            "return_soc_percent": 57.45894448256449,
+            "reserve_kwh": 2.5896240075523647,
+            "return_soc_percent": 57.370300094404556,
             "feasible": true
           }
         ],
@@ -3797,17 +3797,17 @@
             ],
             "mass_kg": 25.0,
             "volume_m3": 0.067,
-            "energy_kwh": 1.0759658121278484,
-            "outbound_energy_kwh": 0.6535345657892517,
-            "return_energy_kwh": 0.4224312463385967,
-            "flight_time_s": 556.678806680371,
-            "outbound_time_s": 275.5260700068522,
-            "return_time_s": 281.1527366735188,
-            "work_time_s": 1186.678806680371,
+            "energy_kwh": 1.0771461381899774,
+            "outbound_energy_kwh": 0.6542199164059718,
+            "return_energy_kwh": 0.4229262217840056,
+            "flight_time_s": 559.6308045644856,
+            "outbound_time_s": 277.0020689489095,
+            "return_time_s": 282.62873561557615,
+            "work_time_s": 1189.6308045644855,
             "range_budget_m": 18871.29070824723,
             "return_range_budget_m": 28000.0,
-            "reserve_kwh": 1.9240341878721516,
-            "return_soc_percent": 73.10085469680378,
+            "reserve_kwh": 1.9228538618100226,
+            "return_soc_percent": 73.07134654525056,
             "feasible": true
           }
         ],
@@ -3916,20 +3916,20 @@
         {
           "policy": "架次优先",
           "flight_count": 19,
-          "total_energy_kwh": 61.18140067935332,
-          "total_work_time_s": 34571.06360983421
+          "total_energy_kwh": 61.189672556468246,
+          "total_work_time_s": 34592.27246806989
         },
         {
           "policy": "能耗优先",
           "flight_count": 21,
-          "total_energy_kwh": 60.973279725392786,
-          "total_work_time_s": 37917.44332503132
+          "total_energy_kwh": 60.98155160250771,
+          "total_work_time_s": 37938.652183267004
         },
         {
           "policy": "时间优先",
           "flight_count": 19,
-          "total_energy_kwh": 61.27311108028108,
-          "total_work_time_s": 34565.06360983421
+          "total_energy_kwh": 61.281382957396005,
+          "total_work_time_s": 34586.27246806989
         }
       ],
       "sampled_nondominated_policies": [
@@ -3940,8 +3940,8 @@
       "summary": {
         "box_count": 80,
         "flight_count": 19,
-        "total_energy_kwh": 61.18140067935332,
-        "total_work_time_s": 34571.06360983421
+        "total_energy_kwh": 61.189672556468246,
+        "total_work_time_s": 34592.27246806989
       }
     },
     {
@@ -4119,8 +4119,8 @@
           "reserve_fraction": 0.3,
           "max_safe_payload_kg": 25.0,
           "route_distance_m": 4533.827897987457,
-          "cruise_altitude_m": 501.8304748535156,
-          "empty_round_trip_energy_kwh": 2.0112805109155016
+          "cruise_altitude_m": 511.9731750488281,
+          "empty_round_trip_energy_kwh": 2.0176122529269254
         },
         {
           "site": "S007",
@@ -4128,8 +4128,8 @@
           "reserve_fraction": 0.3,
           "max_safe_payload_kg": 30.0,
           "route_distance_m": 4533.827897987457,
-          "cruise_altitude_m": 501.8304748535156,
-          "empty_round_trip_energy_kwh": 1.9533263110131993
+          "cruise_altitude_m": 511.9731750488281,
+          "empty_round_trip_energy_kwh": 1.9594661820545798
         },
         {
           "site": "S007",
@@ -4137,8 +4137,8 @@
           "reserve_fraction": 0.3,
           "max_safe_payload_kg": 80.0,
           "route_distance_m": 4533.827897987457,
-          "cruise_altitude_m": 501.8304748535156,
-          "empty_round_trip_energy_kwh": 4.670308852677486
+          "cruise_altitude_m": 511.9731750488281,
+          "empty_round_trip_energy_kwh": 4.678743500520582
         },
         {
           "site": "S008",
@@ -4227,8 +4227,8 @@
           "reserve_fraction": 0.3,
           "max_safe_payload_kg": 25.0,
           "route_distance_m": 2817.1517251516107,
-          "cruise_altitude_m": 293.3490295410156,
-          "empty_round_trip_energy_kwh": 1.222002988410741
+          "cruise_altitude_m": 295.36175537109375,
+          "empty_round_trip_energy_kwh": 1.2232594645413943
         },
         {
           "site": "S011",
@@ -4236,8 +4236,8 @@
           "reserve_fraction": 0.3,
           "max_safe_payload_kg": 30.0,
           "route_distance_m": 2817.1517251516107,
-          "cruise_altitude_m": 293.3490295410156,
-          "empty_round_trip_energy_kwh": 1.186257717471059
+          "cruise_altitude_m": 295.36175537109375,
+          "empty_round_trip_energy_kwh": 1.18747611856745
         },
         {
           "site": "S011",
@@ -4245,8 +4245,8 @@
           "reserve_fraction": 0.3,
           "max_safe_payload_kg": 80.0,
           "route_distance_m": 2817.1517251516107,
-          "cruise_altitude_m": 293.3490295410156,
-          "empty_round_trip_energy_kwh": 2.860349874072284
+          "cruise_altitude_m": 295.36175537109375,
+          "empty_round_trip_energy_kwh": 2.8620236525784515
         },
         {
           "site": "S012",
@@ -4384,7 +4384,7 @@
         },
         "S007": {
           "distance_m": 4533.827897987457,
-          "max_ground_elevation_m": 451.8304748535156
+          "max_ground_elevation_m": 461.9731750488281
         },
         "S008": {
           "distance_m": 8109.473184927932,
@@ -4400,7 +4400,7 @@
         },
         "S011": {
           "distance_m": 2817.1517251516107,
-          "max_ground_elevation_m": 243.34902954101562
+          "max_ground_elevation_m": 245.36175537109375
         },
         "S012": {
           "distance_m": 7398.449561287365,
@@ -4694,17 +4694,17 @@
             ],
             "mass_kg": 45.0,
             "volume_m3": 0.129,
-            "energy_kwh": 3.403284441394841,
-            "outbound_energy_kwh": 1.9677104283174849,
-            "return_energy_kwh": 1.435574013077356,
-            "flight_time_s": 1079.2252411346558,
-            "outbound_time_s": 528.5726205673278,
-            "return_time_s": 550.6526205673279,
-            "work_time_s": 1889.2252411346558,
+            "energy_kwh": 3.4103759924476353,
+            "outbound_energy_kwh": 1.972119623209076,
+            "return_energy_kwh": 1.438256369238559,
+            "flight_time_s": 1097.4821014862182,
+            "outbound_time_s": 537.7010507431091,
+            "return_time_s": 559.7810507431091,
+            "work_time_s": 1907.4821014862182,
             "range_budget_m": 20093.75,
             "return_range_budget_m": 26000.0,
-            "reserve_kwh": 2.1967155586051588,
-            "return_soc_percent": 57.45894448256449,
+            "reserve_kwh": 2.1896240075523643,
+            "return_soc_percent": 57.370300094404556,
             "feasible": true
           }
         ],
@@ -4816,17 +4816,17 @@
             ],
             "mass_kg": 25.0,
             "volume_m3": 0.067,
-            "energy_kwh": 1.0759658121278484,
-            "outbound_energy_kwh": 0.6535345657892517,
-            "return_energy_kwh": 0.4224312463385967,
-            "flight_time_s": 556.678806680371,
-            "outbound_time_s": 275.5260700068522,
-            "return_time_s": 281.1527366735188,
-            "work_time_s": 1186.678806680371,
+            "energy_kwh": 1.0771461381899774,
+            "outbound_energy_kwh": 0.6542199164059718,
+            "return_energy_kwh": 0.4229262217840056,
+            "flight_time_s": 559.6308045644856,
+            "outbound_time_s": 277.0020689489095,
+            "return_time_s": 282.62873561557615,
+            "work_time_s": 1189.6308045644855,
             "range_budget_m": 18871.29070824723,
             "return_range_budget_m": 28000.0,
-            "reserve_kwh": 1.7240341878721515,
-            "return_soc_percent": 73.10085469680378,
+            "reserve_kwh": 1.7228538618100224,
+            "return_soc_percent": 73.07134654525056,
             "feasible": true
           }
         ],
@@ -4935,20 +4935,20 @@
         {
           "policy": "架次优先",
           "flight_count": 20,
-          "total_energy_kwh": 67.3494393357804,
-          "total_work_time_s": 36595.6398526065
+          "total_energy_kwh": 67.35771121289532,
+          "total_work_time_s": 36616.848710842176
         },
         {
           "policy": "能耗优先",
           "flight_count": 26,
-          "total_energy_kwh": 66.63711525551874,
-          "total_work_time_s": 46508.91301408157
+          "total_energy_kwh": 66.64538713263367,
+          "total_work_time_s": 46530.12187231724
         },
         {
           "policy": "时间优先",
           "flight_count": 20,
-          "total_energy_kwh": 67.3494393357804,
-          "total_work_time_s": 36595.6398526065
+          "total_energy_kwh": 67.35771121289532,
+          "total_work_time_s": 36616.848710842176
         }
       ],
       "sampled_nondominated_policies": [
@@ -4959,8 +4959,8 @@
       "summary": {
         "box_count": 80,
         "flight_count": 20,
-        "total_energy_kwh": 67.3494393357804,
-        "total_work_time_s": 36595.6398526065
+        "total_energy_kwh": 67.35771121289532,
+        "total_work_time_s": 36616.848710842176
       }
     },
     {
@@ -5138,8 +5138,8 @@
           "reserve_fraction": 0.2,
           "max_safe_payload_kg": 25.0,
           "route_distance_m": 4533.827897987457,
-          "cruise_altitude_m": 501.8304748535156,
-          "empty_round_trip_energy_kwh": 1.6440404511785178
+          "cruise_altitude_m": 511.9731750488281,
+          "empty_round_trip_energy_kwh": 1.6503721931899413
         },
         {
           "site": "S007",
@@ -5147,8 +5147,8 @@
           "reserve_fraction": 0.2,
           "max_safe_payload_kg": 30.0,
           "route_distance_m": 4533.827897987457,
-          "cruise_altitude_m": 501.8304748535156,
-          "empty_round_trip_energy_kwh": 1.5970969761713276
+          "cruise_altitude_m": 511.9731750488281,
+          "empty_round_trip_energy_kwh": 1.6032368472127079
         },
         {
           "site": "S007",
@@ -5156,8 +5156,8 @@
           "reserve_fraction": 0.2,
           "max_safe_payload_kg": 80.0,
           "route_distance_m": 4533.827897987457,
-          "cruise_altitude_m": 501.8304748535156,
-          "empty_round_trip_energy_kwh": 3.786793672556854
+          "cruise_altitude_m": 511.9731750488281,
+          "empty_round_trip_energy_kwh": 3.795228320399951
         },
         {
           "site": "S008",
@@ -5246,8 +5246,8 @@
           "reserve_fraction": 0.2,
           "max_safe_payload_kg": 25.0,
           "route_distance_m": 2817.1517251516107,
-          "cruise_altitude_m": 293.3490295410156,
-          "empty_round_trip_energy_kwh": 0.9938136986734608
+          "cruise_altitude_m": 295.36175537109375,
+          "empty_round_trip_energy_kwh": 0.995070174804114
         },
         {
           "site": "S011",
@@ -5255,8 +5255,8 @@
           "reserve_fraction": 0.2,
           "max_safe_payload_kg": 30.0,
           "route_distance_m": 2817.1517251516107,
-          "cruise_altitude_m": 293.3490295410156,
-          "empty_round_trip_energy_kwh": 0.9649100819234323
+          "cruise_altitude_m": 295.36175537109375,
+          "empty_round_trip_energy_kwh": 0.9661284830198233
         },
         {
           "site": "S011",
@@ -5264,8 +5264,8 @@
           "reserve_fraction": 0.2,
           "max_safe_payload_kg": 80.0,
           "route_distance_m": 2817.1517251516107,
-          "cruise_altitude_m": 293.3490295410156,
-          "empty_round_trip_energy_kwh": 2.311366460965816
+          "cruise_altitude_m": 295.36175537109375,
+          "empty_round_trip_energy_kwh": 2.3130402394719836
         },
         {
           "site": "S012",
@@ -5403,7 +5403,7 @@
         },
         "S007": {
           "distance_m": 4533.827897987457,
-          "max_ground_elevation_m": 451.8304748535156
+          "max_ground_elevation_m": 461.9731750488281
         },
         "S008": {
           "distance_m": 8109.473184927932,
@@ -5419,7 +5419,7 @@
         },
         "S011": {
           "distance_m": 2817.1517251516107,
-          "max_ground_elevation_m": 243.34902954101562
+          "max_ground_elevation_m": 245.36175537109375
         },
         "S012": {
           "distance_m": 7398.449561287365,
@@ -5693,17 +5693,17 @@
             ],
             "mass_kg": 45.0,
             "volume_m3": 0.129,
-            "energy_kwh": 2.763265668859227,
-            "outbound_energy_kwh": 1.606696449504176,
-            "return_energy_kwh": 1.1565692193550512,
-            "flight_time_s": 1079.2252411346558,
-            "outbound_time_s": 528.5726205673278,
-            "return_time_s": 550.6526205673279,
-            "work_time_s": 1889.2252411346558,
+            "energy_kwh": 2.7703572199120217,
+            "outbound_energy_kwh": 1.6111056443957672,
+            "return_energy_kwh": 1.1592515755162542,
+            "flight_time_s": 1097.4821014862182,
+            "outbound_time_s": 537.7010507431091,
+            "return_time_s": 559.7810507431091,
+            "work_time_s": 1907.4821014862182,
             "range_budget_m": 20093.75,
             "return_range_budget_m": 26000.0,
-            "reserve_kwh": 3.636734331140773,
-            "return_soc_percent": 65.45917913925966,
+            "reserve_kwh": 3.6296427800879787,
+            "return_soc_percent": 65.37053475109973,
             "feasible": true
           }
         ],
@@ -5795,17 +5795,17 @@
             ],
             "mass_kg": 25.0,
             "volume_m3": 0.067,
-            "energy_kwh": 0.8760498361768159,
-            "outbound_energy_kwh": 0.5341086391282652,
-            "return_energy_kwh": 0.34194119704855064,
-            "flight_time_s": 556.678806680371,
-            "outbound_time_s": 275.5260700068522,
-            "return_time_s": 281.1527366735188,
-            "work_time_s": 1186.678806680371,
+            "energy_kwh": 0.8772301622389448,
+            "outbound_energy_kwh": 0.5347939897449853,
+            "return_energy_kwh": 0.3424361724939595,
+            "flight_time_s": 559.6308045644856,
+            "outbound_time_s": 277.0020689489095,
+            "return_time_s": 282.62873561557615,
+            "work_time_s": 1189.6308045644855,
             "range_budget_m": 18871.29070824723,
             "return_range_budget_m": 28000.0,
-            "reserve_kwh": 2.3239501638231843,
-            "return_soc_percent": 78.09875409557961,
+            "reserve_kwh": 2.3227698377610553,
+            "return_soc_percent": 78.06924594402638,
             "feasible": true
           }
         ],
@@ -5914,20 +5914,20 @@
         {
           "policy": "架次优先",
           "flight_count": 18,
-          "total_energy_kwh": 47.89490760897958,
-          "total_work_time_s": 32777.29117378634
+          "total_energy_kwh": 47.9031794860945,
+          "total_work_time_s": 32798.50003202202
         },
         {
           "policy": "能耗优先",
           "flight_count": 19,
-          "total_energy_kwh": 47.8322617837445,
-          "total_work_time_s": 34445.31150835551
+          "total_energy_kwh": 47.84053366085942,
+          "total_work_time_s": 34466.52036659118
         },
         {
           "policy": "时间优先",
           "flight_count": 18,
-          "total_energy_kwh": 47.89490760897958,
-          "total_work_time_s": 32777.29117378634
+          "total_energy_kwh": 47.9031794860945,
+          "total_work_time_s": 32798.50003202202
         }
       ],
       "sampled_nondominated_policies": [
@@ -5938,8 +5938,8 @@
       "summary": {
         "box_count": 80,
         "flight_count": 18,
-        "total_energy_kwh": 47.89490760897958,
-        "total_work_time_s": 32777.29117378634
+        "total_energy_kwh": 47.9031794860945,
+        "total_work_time_s": 32798.50003202202
       }
     },
     {
@@ -6117,8 +6117,8 @@
           "reserve_fraction": 0.2,
           "max_safe_payload_kg": 25.0,
           "route_distance_m": 4533.827897987457,
-          "cruise_altitude_m": 501.8304748535156,
-          "empty_round_trip_energy_kwh": 2.3785205706524857
+          "cruise_altitude_m": 511.9731750488281,
+          "empty_round_trip_energy_kwh": 2.3848523126639094
         },
         {
           "site": "S007",
@@ -6126,8 +6126,8 @@
           "reserve_fraction": 0.2,
           "max_safe_payload_kg": 30.0,
           "route_distance_m": 4533.827897987457,
-          "cruise_altitude_m": 501.8304748535156,
-          "empty_round_trip_energy_kwh": 2.3095556458550703
+          "cruise_altitude_m": 511.9731750488281,
+          "empty_round_trip_energy_kwh": 2.315695516896451
         },
         {
           "site": "S007",
@@ -6135,8 +6135,8 @@
           "reserve_fraction": 0.2,
           "max_safe_payload_kg": 80.0,
           "route_distance_m": 4533.827897987457,
-          "cruise_altitude_m": 501.8304748535156,
-          "empty_round_trip_energy_kwh": 5.5538240327981185
+          "cruise_altitude_m": 511.9731750488281,
+          "empty_round_trip_energy_kwh": 5.562258680641215
         },
         {
           "site": "S008",
@@ -6225,8 +6225,8 @@
           "reserve_fraction": 0.2,
           "max_safe_payload_kg": 25.0,
           "route_distance_m": 2817.1517251516107,
-          "cruise_altitude_m": 293.3490295410156,
-          "empty_round_trip_energy_kwh": 1.4501922781480217
+          "cruise_altitude_m": 295.36175537109375,
+          "empty_round_trip_energy_kwh": 1.451448754278675
         },
         {
           "site": "S011",
@@ -6234,8 +6234,8 @@
           "reserve_fraction": 0.2,
           "max_safe_payload_kg": 30.0,
           "route_distance_m": 2817.1517251516107,
-          "cruise_altitude_m": 293.3490295410156,
-          "empty_round_trip_energy_kwh": 1.4076053530186852
+          "cruise_altitude_m": 295.36175537109375,
+          "empty_round_trip_energy_kwh": 1.4088237541150763
         },
         {
           "site": "S011",
@@ -6243,8 +6243,8 @@
           "reserve_fraction": 0.2,
           "max_safe_payload_kg": 80.0,
           "route_distance_m": 2817.1517251516107,
-          "cruise_altitude_m": 293.3490295410156,
-          "empty_round_trip_energy_kwh": 3.4093332871787516
+          "cruise_altitude_m": 295.36175537109375,
+          "empty_round_trip_energy_kwh": 3.4110070656849185
         },
         {
           "site": "S012",
@@ -6382,7 +6382,7 @@
         },
         "S007": {
           "distance_m": 4533.827897987457,
-          "max_ground_elevation_m": 451.8304748535156
+          "max_ground_elevation_m": 461.9731750488281
         },
         "S008": {
           "distance_m": 8109.473184927932,
@@ -6398,7 +6398,7 @@
         },
         "S011": {
           "distance_m": 2817.1517251516107,
-          "max_ground_elevation_m": 243.34902954101562
+          "max_ground_elevation_m": 245.36175537109375
         },
         "S012": {
           "distance_m": 7398.449561287365,
@@ -6692,17 +6692,17 @@
             ],
             "mass_kg": 45.0,
             "volume_m3": 0.129,
-            "energy_kwh": 4.043303213930455,
-            "outbound_energy_kwh": 2.328724407130794,
-            "return_energy_kwh": 1.714578806799661,
-            "flight_time_s": 1079.2252411346558,
-            "outbound_time_s": 528.5726205673278,
-            "return_time_s": 550.6526205673279,
-            "work_time_s": 1889.2252411346558,
+            "energy_kwh": 4.050394764983249,
+            "outbound_energy_kwh": 2.3331336020223854,
+            "return_energy_kwh": 1.717261162960864,
+            "flight_time_s": 1097.4821014862182,
+            "outbound_time_s": 537.7010507431091,
+            "return_time_s": 559.7810507431091,
+            "work_time_s": 1907.4821014862182,
             "range_budget_m": 20093.75,
             "return_range_budget_m": 26000.0,
-            "reserve_kwh": 2.356696786069545,
-            "return_soc_percent": 49.458709825869306,
+            "reserve_kwh": 2.3496052350167513,
+            "return_soc_percent": 49.370065437709385,
             "feasible": true
           }
         ],
@@ -6814,17 +6814,17 @@
             ],
             "mass_kg": 25.0,
             "volume_m3": 0.067,
-            "energy_kwh": 1.2758817880788806,
-            "outbound_energy_kwh": 0.772960492450238,
-            "return_energy_kwh": 0.5029212956286426,
-            "flight_time_s": 556.678806680371,
-            "outbound_time_s": 275.5260700068522,
-            "return_time_s": 281.1527366735188,
-            "work_time_s": 1186.678806680371,
+            "energy_kwh": 1.2770621141410095,
+            "outbound_energy_kwh": 0.773645843066958,
+            "return_energy_kwh": 0.5034162710740515,
+            "flight_time_s": 559.6308045644856,
+            "outbound_time_s": 277.0020689489095,
+            "return_time_s": 282.62873561557615,
+            "work_time_s": 1189.6308045644855,
             "range_budget_m": 18871.29070824723,
             "return_range_budget_m": 28000.0,
-            "reserve_kwh": 1.9241182119211195,
-            "return_soc_percent": 68.102955298028,
+            "reserve_kwh": 1.9229378858589907,
+            "return_soc_percent": 68.07344714647476,
             "feasible": true
           }
         ],
@@ -6933,20 +6933,20 @@
         {
           "policy": "架次优先",
           "flight_count": 20,
-          "total_energy_kwh": 88.76774768239319,
-          "total_work_time_s": 36928.7730170759
+          "total_energy_kwh": 88.77601955950811,
+          "total_work_time_s": 36949.98187531158
         },
         {
           "policy": "能耗优先",
           "flight_count": 28,
-          "total_energy_kwh": 84.1544045705089,
-          "total_work_time_s": 50058.486850781555
+          "total_energy_kwh": 84.16267644762382,
+          "total_work_time_s": 50079.69570901723
         },
         {
           "policy": "时间优先",
           "flight_count": 20,
-          "total_energy_kwh": 88.76774768239319,
-          "total_work_time_s": 36928.7730170759
+          "total_energy_kwh": 88.77601955950811,
+          "total_work_time_s": 36949.98187531158
         }
       ],
       "sampled_nondominated_policies": [
@@ -6957,8 +6957,8 @@
       "summary": {
         "box_count": 80,
         "flight_count": 20,
-        "total_energy_kwh": 88.76774768239319,
-        "total_work_time_s": 36928.7730170759
+        "total_energy_kwh": 88.77601955950811,
+        "total_work_time_s": 36949.98187531158
       }
     }
   ]
