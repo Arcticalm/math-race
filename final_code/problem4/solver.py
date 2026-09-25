@@ -197,7 +197,15 @@ def read_q3(input_dir: Path) -> tuple[list[dict], list[dict]]:
     return transport, relay
 
 
-def atomic_units(transport: list[dict], relay: list[dict]) -> list[frozenset[str]]:
+def atomic_units(transport: list[dict]) -> list[frozenset[str]]:
+    """Merge sites that cannot be separated by any legal partition.
+
+    The task statement requires sites sharing one transport sortie to be in the
+    same group, so those are merged here. Sites that merely share a relay sortie
+    are not merged: a relay mission is neither split nor duplicated, which is
+    checked per candidate by ``relay_spans_groups`` instead of being folded into
+    the unit definition.
+    """
     parent = {site: site for site in SITES}
     def find(x):
         while parent[x] != x:
@@ -210,17 +218,58 @@ def atomic_units(transport: list[dict], relay: list[dict]) -> list[frozenset[str
     for row in transport:
         sites = _sites(row["访问服务区顺序"])
         for site in sites[1:]: union(sites[0], site)
-    by_relay = defaultdict(set)
-    for row in relay:
-        covered = row.get("covered_sorties") or row.get("保障运输架次", "")
-        by_relay[row.get("relay_sortie", row.get("中继架次编号", ""))].update(_sites(covered))
-    by_sortie = {row.get("架次编号", ""): _sites(row.get("访问服务区顺序", "")) for row in transport}
-    for sorties in by_relay.values():
-        sites = [site for sortie in sorties for site in by_sortie.get(sortie, ())]
-        for site in sites[1:]: union(sites[0], site)
     groups = defaultdict(set)
     for site in SITES: groups[find(site)].add(site)
     return sorted((frozenset(group) for group in groups.values()), key=lambda group: min(group))
+
+
+def _relay_id(row: dict) -> str:
+    return row.get("中继架次编号") or row.get("relay_sortie") or "relay"
+
+
+def _covered_sorties(row: dict) -> list[str]:
+    value = row.get("covered_sorties") or row.get("保障运输架次") or ""
+    return [item.strip() for item in value.replace("→", ",").split(",") if item.strip()]
+
+
+def group_attribution(group, transport: list[dict], relay: list[dict]) -> tuple[set[str], int]:
+    """Tasks one task group must field on its own, and its shared relay count.
+
+    Sites sharing a transport sortie are already merged by ``atomic_units``, so a
+    sortie is either wholly inside this group or wholly outside it. A relay
+    mission is not merged: when its covered transport sorties fall in several
+    groups, every one of those groups has to field its own relay aircraft and
+    energy component for the frozen hover point and service window, because
+    resources may not be moved between groups. Its flight and charging profile is
+    inherited from Question 3 unchanged; only the ownership of the asset is
+    duplicated. The count of such missions is reported as
+    ``shared_relay_missions`` so the overhead stays visible.
+    """
+    members = set(group)
+    known = {row["架次编号"] for row in transport}
+    own: set[str] = set()
+    for row in transport:
+        sites = set(_sites(row["访问服务区顺序"]))
+        if sites <= members:
+            own.add(row["架次编号"])
+        elif sites & members:
+            raise ValueError(f"运输架次跨组: {row['架次编号']}")
+    shared = 0
+    for row in relay:
+        task = _relay_id(row)
+        covered = _covered_sorties(row)
+        if not covered:
+            raise ValueError(f"中继架次缺少运输映射: {task}")
+        unknown = set(covered) - known
+        if unknown:
+            raise ValueError(f"中继架次引用未知运输架次: {sorted(unknown)}")
+        inside = [item for item in covered if item in own]
+        if not inside:
+            continue
+        own.add(task)
+        if len(inside) != len(covered):
+            shared += 1
+    return own, shared
 
 
 def partitions(units: list[frozenset[str]], k: int, max_candidates: int | None = None):
@@ -310,36 +359,24 @@ def evaluate_partition(groups, transport, relay, inventory, intervals=None, grou
         raise ValueError("每个服务区必须且只能属于一个非空任务组")
     if group_cache is not None and all(group in group_cache for group in groups):
         return [{**group_cache[group], "group": index} for index, group in enumerate(groups, 1)]
-    site_to_group = {site: index for index, group in enumerate(groups, 1) for site in group}
-    task_group = {}
-    for row in transport:
-        memberships = {site_to_group[s] for s in _sites(row["访问服务区顺序"])}
-        if len(memberships) != 1: raise ValueError(f"运输架次跨组: {row['架次编号']}")
-        task_group[row["架次编号"]] = memberships.pop()
-    for row in relay:
-        covered_value = row.get("covered_sorties") or row.get("保障运输架次") or ""
-        covered = [item.strip() for item in covered_value.replace("→", ",").split(",") if item.strip()]
-        unknown = set(covered) - set(task_group)
-        if unknown:
-            raise ValueError(f"中继架次引用未知运输架次: {sorted(unknown)}")
-        memberships = {task_group[item] for item in covered}
-        if not covered or len(memberships) != 1:
-            raise ValueError(f"中继架次跨组或缺少运输映射: {row.get('relay_sortie', row.get('中继架次编号', ''))}")
-        task_group[row.get("relay_sortie", row.get("中继架次编号", "relay"))] = memberships.pop() if memberships else 1
     intervals = intervals if intervals is not None else resource_intervals(transport, relay)
     rows = []
+    tasks_by_group = {index: group_attribution(group, transport, relay)
+                      for index, group in enumerate(groups, 1)}
     for index, group in enumerate(groups, 1):
         if group_cache is not None and group in group_cache:
             rows.append({**group_cache[group], "group": index})
             continue
+        own, shared = tasks_by_group[index]
         demand = {}
         for key in RESOURCE_KEYS:
-            demand[key] = _peak([(a, b) for a, b, task in intervals[key] if task_group.get(task) == index])
-        work_sorties = [row for row in transport if task_group[row["架次编号"]] == index]
-        relay_sorties = [row for row in relay if task_group.get(row["中继架次编号"]) == index]
+            demand[key] = _peak([(a, b) for a, b, task in intervals[key] if task in own])
+        work_sorties = [row for row in transport if row["架次编号"] in own]
+        relay_sorties = [row for row in relay if _relay_id(row) in own]
         rows.append({"group": index, "sites": ",".join(sorted(group)), **demand,
                      "transport_sorties": ",".join(sorted(row["架次编号"] for row in work_sorties)),
-                     "relay_sorties": ",".join(sorted(row["中继架次编号"] for row in relay_sorties)),
+                     "relay_sorties": ",".join(sorted(_relay_id(row) for row in relay_sorties)),
+                     "shared_relay_missions": shared,
                      "site_count": len(group), "sortie_count": len(work_sorties),
                      "transport_flight_time_s": sum(_float(row, "返回O01时刻（s）") - _float(row, "起飞时刻（s）") for row in work_sorties),
                      "box_count": sum(int(_float(row, "逐箱交付数")) for row in work_sorties),
@@ -402,7 +439,7 @@ def run(input_dir: Path = DEFAULT_INPUT, output_dir: Path = DEFAULT_OUTPUT) -> d
         return result
     transport, relay = read_q3(input_dir)
     inventory = load_inventory()
-    units = atomic_units(transport, relay)
+    units = atomic_units(transport)
     frozen_files = ("screening.json", "transport_inherited_audit.csv", "relay_schedule.csv",
                     "relay_resource_audit.csv", "communication_audit.csv", "box_delivery_audit.csv")
     result = {"status": "ready", "inventory": inventory, "atomic_units": [sorted(x) for x in units],
@@ -425,13 +462,19 @@ def run(input_dir: Path = DEFAULT_INPUT, output_dir: Path = DEFAULT_OUTPUT) -> d
             if best is None or score < best[0]:
                 best = (score, candidate, rows)
         if best is None:
-            result["solutions"][str(k)] = {"feasible": False, "reason": "原子任务单元数量小于 K"}
+            result["solutions"][str(k)] = {
+                "feasible": False, "candidate_count": candidate_count,
+                "reason": "原子任务单元数量小于 K"}
             continue
         score, groups, rows = best
+        relay_missions = {_relay_id(row) for row in relay}
+        duplicated = sorted(task for task in relay_missions if sum(
+            task in row["relay_sorties"].split(",") for row in rows) > 1)
         result["solutions"][str(k)] = {"feasible": True, "candidate_count": candidate_count,
                                           "inventory_feasible": score[0] == 0,
                                           "partition_search_complete": True,
-                                          "optimality_scope": "all partitions of the frozen Q3 task graph under the stated lexicographic objective",
+                                          "shared_relay_missions": duplicated,
+                                          "optimality_scope": "all partitions of the frozen Q3 task graph under the stated lexicographic objective, fielding one relay asset per group that a shared relay mission serves",
                                           "selection_rule": "minimize total inventory deficit, then total resource demand, then max workload CV",
                                           "score": score, "groups": rows}
         for row in rows:
@@ -476,11 +519,12 @@ def run(input_dir: Path = DEFAULT_INPUT, output_dir: Path = DEFAULT_OUTPUT) -> d
                                   "deficit_reason": "冻结各组任务时序后，资源不得跨组复用，各组占用峰值之和超过总库存" if totals[key] > inventory[key] else "无库存缺口",
                                   "inventory_scope": "全局总库存；未指定初始分组配给，不将同一库存重复计为各组余量"})
             for start, end, task in intervals_by_key[key]:
-                task_group = next((row["group"] for row in rows if task in
-                                   (row["transport_sorties"] + "," + row["relay_sorties"]).split(",")), None)
-                if task_group is not None:
+                owners = [row["group"] for row in rows if task in
+                          (row["transport_sorties"] + "," + row["relay_sorties"]).split(",")]
+                for task_group in owners:
                     interval_rows.append({"K": k, "group": task_group, "resource": key, "task_id": task,
-                                          "start_s": start, "end_s": end, "half_open": True})
+                                          "start_s": start, "end_s": end, "half_open": True,
+                                          "shared_across_groups": len(owners) > 1})
     _write_csv(output_dir / "problem4_configuration.csv", template_rows)
     _write_csv(output_dir / "inventory_comparison.csv", inventory_rows)
     _write_csv(output_dir / "workload_comparison.csv", workload_rows)
@@ -491,7 +535,7 @@ def run(input_dir: Path = DEFAULT_INPUT, output_dir: Path = DEFAULT_OUTPUT) -> d
     (output_dir / "assumptions.json").write_text(json.dumps({
         "q3_fixed_schedule": True,
         "partition_selection": "lexicographic: total inventory deficit, total resource demand, maximum CV of transport time/relay service time/sortie count/box count",
-        "relay_partition_rule": "a frozen relay sortie and all its covered transport sorties belong to one group; duplicating or splitting relay missions changes Q3 and is excluded",
+        "relay_partition_rule": "atomic units merge only sites sharing a transport sortie, as the task statement requires; a relay mission is never split or re-timed, but when the transport sorties it covers fall in several groups each of those groups fields its own relay aircraft and energy component for the same frozen hover point and window (资源不得跨组调配), so no partition is lost and the duplication is reported per group as shared_relay_missions",
         "inventory_comparison": "resource counts are kept separately by type; aggregate deficit and scale are unweighted modeling objectives, not procurement costs",
         "resource_reassignment": "task start/end times remain fixed; identical units may be recolored within each group; no resource is reused across groups",
         "optimality_scope": "complete partition enumeration for this frozen Q3 schedule and the stated objective only",
