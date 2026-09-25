@@ -6,3 +6,6 @@
 # Python caches
 __pycache__/
 *.py[cod]
+
+# Generated validation outputs for the refactored Problem 3 scheduler
+outputs/problem3/refactored/

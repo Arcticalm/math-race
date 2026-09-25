@@ -20,15 +20,32 @@ from src.problem3.physics import (
 from src.problem3.solver import (
     build_trajectory,
     _sample_intervals,
-    coordinate_transport_starts,
     _assign_gap_ids,
     _merge_gap_intervals,
+    _prune_dominated_candidates,
     select_relay_schedule,
     _maximal_overlap_cliques,
 )
 
 
 class CommunicationPhysicsTests(unittest.TestCase):
+    def test_dominated_relay_options_are_removed_only_when_all_costs_are_worse(self):
+        base = {
+            "covered_gap_ids": [1, 2], "service_start_s": 1000.0,
+            "service_end_s": 1500.0, "return_soc_percent": 80.0,
+            "latitude": 23.0, "hover_altitude_m": 300.0,
+        }
+        dominated = {**base, "preparation_start_s": 100.0, "return_o01_s": 1700.0,
+                     "energy_kwh": 0.8, "longitude": 1.0}
+        dominant = {**base, "preparation_start_s": 150.0, "return_o01_s": 1650.0,
+                    "energy_kwh": 0.7, "longitude": 1.0}
+        energy_tradeoff = {**base, "preparation_start_s": 200.0, "return_o01_s": 1600.0,
+                           "energy_kwh": 0.9, "longitude": 3.0}
+
+        kept = _prune_dominated_candidates([dominated, dominant, energy_tradeoff])
+
+        self.assertEqual({item["longitude"] for item in kept}, {1.0, 3.0})
+
     def test_adjacent_phase_gaps_merge_by_sortie_and_keep_interval_ids(self):
         intervals = [
             {"sortie": "Q3-01", "phase": "climb", "start_s": 10.0, "end_s": 20.0,
@@ -114,6 +131,42 @@ class CommunicationPhysicsTests(unittest.TestCase):
                                           "candidates": [candidate([1], 1500, 2000, 1000, 2000)]}], gap_count=2)
         self.assertFalse(missing["feasible_cover"])
         self.assertEqual(missing["uncovered_gap_ids"], [2])
+
+    def test_robust_relay_objective_prefers_higher_hover_with_small_energy_tradeoff(self):
+        base = {
+            "covered_gap_ids": [1], "preparation_start_s": 400.0,
+            "service_start_s": 1000.0, "service_end_s": 1300.0,
+            "return_o01_s": 1500.0, "return_soc_percent": 80.0,
+        }
+        candidates = [
+            {**base, "longitude": 109.2, "latitude": 23.0,
+             "hover_altitude_m": 250.0, "agl_m": 250.0, "energy_kwh": 0.50},
+            {**base, "longitude": 109.21, "latitude": 23.0,
+             "hover_altitude_m": 300.0, "agl_m": 300.0, "energy_kwh": 0.53},
+        ]
+        schedule = select_relay_schedule(
+            [{"group": 1, "candidates": candidates}], 1, objective="robust"
+        )
+
+        self.assertTrue(schedule["feasible_cover"])
+        self.assertEqual(schedule["selected"][0]["agl_m"], 300.0)
+
+    def test_sortie_objective_precedes_energy_and_enforces_count_limit(self):
+        def candidate(ids, energy):
+            return dict(covered_gap_ids=ids, preparation_start_s=0,
+                        service_start_s=300, service_end_s=500, return_o01_s=600,
+                        return_soc_percent=80, energy_kwh=energy)
+        merged = candidate([1, 2], 2)
+        split = [candidate([1], 0.1), candidate([2], 0.1)]
+        groups = [{"group": 1, "candidates": [merged, *split]}]
+        energy = select_relay_schedule(groups, 2, objective="energy")
+        count = select_relay_schedule(groups, 2, objective="sorties")
+        self.assertEqual(energy["selected_count"], 2)
+        self.assertEqual(count["selected_count"], 1)
+        self.assertEqual(count["selected"][0]["covered_gap_ids"], [1, 2])
+        capped = select_relay_schedule([{"group": 1, "candidates": split}], 2,
+                                      objective="sorties", max_relay_sorties=1)
+        self.assertFalse(capped["feasible_cover"])
 
     def test_maximal_interval_cliques_preserve_capacity_constraints(self):
         cliques = _maximal_overlap_cliques([0, 1, 2, 8], [5, 6, 7, 9], 2)
@@ -215,9 +268,7 @@ class CommunicationPhysicsTests(unittest.TestCase):
 
         from unittest.mock import patch
         with TemporaryDirectory() as temporary_directory, patch(
-                "src.problem3.solver.search_relay_candidates", return_value=[]), patch(
-                "src.problem3.joint.coordinate_joint_schedule",
-                return_value=(None, [], {"feasible": False, "status": "infeasible fixture"})):
+                "src.problem3.solver.search_relay_candidates", return_value=[]):
             result = run(Path(temporary_directory), sample_step_s=300, relay_candidate_step_s=300)
             self.assertFalse(result["relay_schedule"]["feasible_cover"])
             self.assertIn("not a feasible Q3 solution", result["status"])

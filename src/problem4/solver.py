@@ -4,6 +4,7 @@ import argparse
 import csv
 import json
 import math
+import shutil
 from collections import defaultdict
 from functools import lru_cache
 from pathlib import Path
@@ -12,7 +13,7 @@ from openpyxl import load_workbook
 
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "data" / "无人机应急物资运输基础数据"
-DEFAULT_INPUT = ROOT / "outputs" / "problem3"
+DEFAULT_INPUT = ROOT / "outputs" / "problem3" / "refactored" / "final"
 DEFAULT_OUTPUT = ROOT / "outputs" / "problem4"
 SITES = tuple(f"S{i:03d}" for i in range(1, 16))
 AIR_TYPES = ("A", "B", "C")
@@ -315,6 +316,23 @@ def _write_csv(path: Path, rows: list[dict], fields: list[str] | None = None) ->
         writer.writerows(rows)
 
 
+def _write_submission_workbook(path: Path, rows: list[dict]) -> None:
+    """Fill the Q4 sheet of the official submission template."""
+    source = ROOT / "docs" / "结果提交模板.xlsx"
+    shutil.copy2(source, path)
+    workbook = load_workbook(path)
+    sheet = workbook["Q4_分区配置"]
+    headers = [sheet.cell(1, column).value for column in range(1, 12)]
+    for row_index in range(2, sheet.max_row + 1):
+        for column in range(1, 12):
+            sheet.cell(row_index, column).value = None
+    for row_index, row in enumerate(rows, 2):
+        for column, header in enumerate(headers, 1):
+            key = "K" if header == "K（2或3）" else header
+            sheet.cell(row_index, column).value = row.get(key, "")
+    workbook.save(path)
+
+
 def run(input_dir: Path = DEFAULT_INPUT, output_dir: Path = DEFAULT_OUTPUT) -> dict:
     output_dir.mkdir(parents=True, exist_ok=True)
     gate = q3_gate(input_dir)
@@ -391,6 +409,7 @@ def run(input_dir: Path = DEFAULT_INPUT, output_dir: Path = DEFAULT_OUTPUT) -> d
     _write_csv(output_dir / "task_mapping_audit.csv", mapping_rows)
     _write_csv(output_dir / "site_mapping_audit.csv", site_mapping_rows)
     _write_csv(output_dir / "resource_interval_audit.csv", interval_rows)
+    _write_submission_workbook(output_dir / "problem4_submission.xlsx", template_rows)
     (output_dir / "assumptions.json").write_text(json.dumps({
         "q3_fixed_schedule": True,
         "partition_selection": "lexicographic: total inventory deficit, total resource demand, maximum CV of transport time/relay service time/sortie count",

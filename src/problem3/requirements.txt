@@ -1,3 +1,2 @@
--r ../problem2/requirements.txt
-
+-r ../problem23/requirements.txt
 scipy>=1.11

@@ -54,7 +54,8 @@ def route_options(route: Sortie, evaluator: RouteEvaluator,
     return options
 
 def solve_fixed_routes(routes: list[Sortie], drones: list[Drone], batteries: list[Battery],
-                       evaluator: RouteEvaluator, time_limit_s: float = 30.0):
+                       evaluator: RouteEvaluator, time_limit_s: float = 30.0,
+                       num_search_workers: int = 8, random_seed: int | None = None):
     from ortools.sat.python import cp_model
     alternatives = [route_options(route, evaluator, batteries) for route in routes]
     if any(not options for options in alternatives):
@@ -129,7 +130,9 @@ def solve_fixed_routes(routes: list[Sortie], drones: list[Drone], batteries: lis
     model.minimize(makespan)
     first_solver = cp_model.CpSolver()
     first_solver.parameters.max_time_in_seconds = time_limit_s
-    first_solver.parameters.num_search_workers = 8
+    first_solver.parameters.num_search_workers = num_search_workers
+    if random_seed is not None:
+        first_solver.parameters.random_seed = random_seed
     status = first_solver.solve(model)
     if status not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
         return None, {"status": first_solver.status_name(status),
@@ -143,7 +146,9 @@ def solve_fixed_routes(routes: list[Sortie], drones: list[Drone], batteries: lis
         model.minimize(sum(weighted_late))
         second_solver = cp_model.CpSolver()
         second_solver.parameters.max_time_in_seconds = max(5.0, time_limit_s / 2)
-        second_solver.parameters.num_search_workers = 8
+        second_solver.parameters.num_search_workers = num_search_workers
+        if random_seed is not None:
+            second_solver.parameters.random_seed = random_seed
         second_status = second_solver.solve(model)
         if second_status in (cp_model.OPTIMAL, cp_model.FEASIBLE):
             solver = second_solver

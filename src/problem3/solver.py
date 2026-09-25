@@ -1,11 +1,9 @@
 from __future__ import annotations
 
 import argparse
-import copy
 import csv
 import json
 import math
-import random
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
@@ -15,14 +13,12 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from openpyxl import load_workbook
 
-from src.problem1.solver import Node, load_aircraft, sample_leg
+from src.problem1.solver import Node, load_aircraft
 from src.problem21.solver import (
     RouteEvaluator,
     _hard_deadlines,
     _validate,
-    _charge_duration as transport_charge_duration,
     load_resources,
-    solve as solve_problem2,
 )
 from src.problem3.physics import (
     LinkEvaluator,
@@ -35,6 +31,11 @@ from src.problem3.physics import (
 
 ROOT = Path(__file__).resolve().parents[2]
 OUTPUT_DEFAULT = ROOT / "outputs" / "problem3"
+REFERENCE_RELAY_POSITIONS = {
+    "P1": (109.19944444, 23.05750000),
+    "P2": (109.28027778, 23.03333333),
+    "P3": (109.19444444, 23.06333333),
+}
 
 
 @dataclass(frozen=True)
@@ -158,26 +159,6 @@ def _sample_intervals(samples: list[dict]) -> list[dict]:
     return sorted(intervals, key=lambda item: (item["start_s"], item["sortie"]))
 
 
-def _peak_gap_load(intervals: list[dict]) -> tuple[int, float]:
-    events = []
-    for item in intervals:
-        if item["direct_available"] or item["end_s"] <= item["start_s"]:
-            continue
-        events.append((item["start_s"], 1))
-        events.append((item["end_s"], -1))
-    events.sort(key=lambda item: (item[0], item[1]))
-    active = peak = 0
-    previous = None
-    squared_load = 0.0
-    for time_s, change in events:
-        if previous is not None and time_s > previous:
-            squared_load += (time_s - previous) * active * active
-        active += change
-        peak = max(peak, active)
-        previous = time_s
-    return peak, squared_load
-
-
 def _merge_gap_intervals(intervals: list[dict]) -> list[dict]:
     merged = []
     by_sortie = {}
@@ -219,52 +200,6 @@ def _assign_gap_ids(intervals: list[dict], gaps: list[dict]) -> None:
             interval["gap_id"] = matches[0]
 
 
-def _transport_schedule_resource_feasible(sorties, batteries) -> bool:
-    by_drone: dict[str, list[tuple[float, float]]] = {}
-    by_battery: dict[str, list[tuple[float, float]]] = {}
-    battery_by_id = {item.code: item for item in batteries}
-    aircrafts = load_aircraft()
-    for sortie in sorties:
-        by_drone.setdefault(sortie.drone, []).append((sortie.prep_start_s, sortie.return_s))
-        battery = battery_by_id[sortie.battery]
-        soc = 1 - sortie.energy_kwh / aircrafts[sortie.aircraft].usable_energy_kwh
-        available = sortie.return_s + transport_charge_duration(battery.full_charge_s, soc)
-        by_battery.setdefault(sortie.battery, []).append((sortie.prep_start_s, available))
-    for intervals in (*by_drone.values(), *by_battery.values()):
-        intervals.sort()
-        if any(previous[1] > current[0] + 1e-7 for previous, current in zip(intervals, intervals[1:])):
-            return False
-    return True
-
-
-def _changed_sortie_resource_feasible(sortie, schedule, batteries) -> bool:
-    battery_by_id = {item.code: item for item in batteries}
-    aircrafts = load_aircraft()
-    peers = [item for item in schedule if item.code != sortie.code]
-    same_drone = sorted((item for item in peers if item.drone == sortie.drone),
-                        key=lambda item: item.prep_start_s)
-    if any(item.prep_start_s < sortie.return_s - 1e-7
-           and item.return_s > sortie.prep_start_s + 1e-7 for item in same_drone):
-        return False
-    battery = battery_by_id[sortie.battery]
-    soc = 1 - sortie.energy_kwh / aircrafts[sortie.aircraft].usable_energy_kwh
-    available = sortie.return_s + transport_charge_duration(battery.full_charge_s, soc)
-    same_battery = [item for item in peers if item.battery == sortie.battery]
-    for item in same_battery:
-        item_battery = battery_by_id[item.battery]
-        item_soc = 1 - item.energy_kwh / aircrafts[item.aircraft].usable_energy_kwh
-        item_available = item.return_s + transport_charge_duration(item_battery.full_charge_s, item_soc)
-        if item.prep_start_s < available - 1e-7 and item_available > sortie.prep_start_s + 1e-7:
-            return False
-    return True
-
-
-def _weighted_expected_lateness(sorties, boxes) -> float:
-    delivered = {code: time_s for sortie in sorties for code, time_s in (sortie.deliveries or {}).items()}
-    return sum(box.priority * max(0.0, delivered.get(box.code, 0.0) - box.due_s)
-               for box in boxes if box.due_s is not None)
-
-
 def _hard_deadline_audit(sorties) -> dict:
     checks = []
     for sortie in sorties:
@@ -295,93 +230,11 @@ def _shift_sortie(sortie, delay_s: float) -> None:
     sortie.deliveries = {code: time_s + delay_s for code, time_s in (sortie.deliveries or {}).items()}
 
 
-def coordinate_transport_starts(sorties, boxes, intervals: list[dict], batteries,
-                                step_s: float = 60.0, maximum_delay_s: float = 1800.0,
-                                passes: int = 3, order_seed: int | None = None) -> tuple[list, dict]:
-    schedule = copy.deepcopy(sorties)
-    gaps_by_sortie: dict[str, list[dict]] = {}
-    for interval in intervals:
-        if not interval["direct_available"] and interval["end_s"] > interval["start_s"]:
-            gaps_by_sortie.setdefault(interval["sortie"], []).append(dict(interval))
-    max_delay = {}
-    for sortie in schedule:
-        slack = min((deadline_s - sortie.deliveries[box.code]
-                     for box in sortie.boxes for _, deadline_s in _hard_deadlines(box)),
-                    default=maximum_delay_s)
-        if not math.isfinite(slack):
-            slack = maximum_delay_s
-        max_delay[sortie.code] = max(0.0, min(maximum_delay_s, slack))
-
-    delays = {sortie.code: 0.0 for sortie in schedule}
-    current_gaps = [item for values in gaps_by_sortie.values() for item in values]
-    current_peak, current_load = _peak_gap_load(current_gaps)
-    current_lateness = _weighted_expected_lateness(schedule, boxes)
-    rng = random.Random(order_seed)
-    for _ in range(max(1, passes)):
-        improved = False
-        ordered = sorted(schedule, key=lambda sortie: (
-            -sum(item["end_s"] - item["start_s"] for item in gaps_by_sortie.get(sortie.code, [])),
-            sortie.prep_start_s,
-        ))
-        if order_seed is not None:
-            rng.shuffle(ordered)
-        for sortie in ordered:
-            original_delay = delays[sortie.code]
-            best = (current_peak, current_load, current_lateness, sum(delays.values()), original_delay)
-            best_delay = original_delay
-            delay_values = [original_delay]
-            delay_values.extend(value for value in range(0, int(max_delay[sortie.code]) + 1, int(step_s)))
-            if max_delay[sortie.code] > 0:
-                delay_values.append(max_delay[sortie.code])
-            for candidate_delay in sorted(set(delay_values)):
-                offset = candidate_delay - original_delay
-                if abs(offset) < 1e-7:
-                    continue
-                candidate_schedule = copy.deepcopy(schedule)
-                candidate_sortie = next(item for item in candidate_schedule if item.code == sortie.code)
-                _shift_sortie(candidate_sortie, offset)
-                if not _changed_sortie_resource_feasible(candidate_sortie, candidate_schedule, batteries):
-                    continue
-                candidate_gaps = []
-                for code, values in gaps_by_sortie.items():
-                    shift = candidate_delay if code == sortie.code else delays[code]
-                    candidate_gaps.extend({**item, "start_s": item["start_s"] + shift,
-                                           "end_s": item["end_s"] + shift} for item in values)
-                peak, load = _peak_gap_load(candidate_gaps)
-                lateness = _weighted_expected_lateness(candidate_schedule, boxes)
-                score = (peak, load, lateness, sum(delays.values()) + offset, candidate_delay)
-                if score < best:
-                    best, best_delay = score, candidate_delay
-            if best_delay != original_delay:
-                offset = best_delay - original_delay
-                _shift_sortie(sortie, offset)
-                delays[sortie.code] = best_delay
-                current_gaps = [
-                    {**item, "start_s": item["start_s"] + delays[code],
-                     "end_s": item["end_s"] + delays[code]}
-                    for code, values in gaps_by_sortie.items() for item in values
-                ]
-                current_peak, current_load = _peak_gap_load(current_gaps)
-                current_lateness = _weighted_expected_lateness(schedule, boxes)
-                improved = True
-        if not improved:
-            break
-    return schedule, {
-        "method": f"{max(1, passes)}-pass coordinate search over delayed sortie starts",
-        "order_seed": order_seed,
-        "maximum_delay_s": maximum_delay_s,
-        "step_s": step_s,
-        "delays_s": {code: delay for code, delay in delays.items() if delay > 0},
-        "peak_simultaneous_direct_gaps": current_peak,
-        "integrated_squared_gap_load_s": current_load,
-        "weighted_expected_lateness_s": current_lateness,
-        "resource_schedule_feasible": _transport_schedule_resource_feasible(schedule, batteries),
-    }
-
-
 def search_relay_candidates(sorties, phases: list[TrackPhase], gaps: list[dict],
                             sample_step_s: float = 30.0,
-                            candidate_window_s: float = 20000.0) -> list[dict]:
+                            candidate_window_s: float = 20000.0,
+                            checkpoints: list[dict] | None = None,
+                            allow_early_departure: bool = False) -> list[dict]:
     params = load_link_parameters()
     relay = load_relay_parameters()
     evaluator = LinkEvaluator(params)
@@ -420,13 +273,34 @@ def search_relay_candidates(sorties, phases: list[TrackPhase], gaps: list[dict],
                         continue
                     transport_node, transport_altitude = _position(phase, time_s)
                     demand_by_gap[gap["gap_id"]].append((time_s, transport_node, transport_altitude))
+                # Include every original trajectory checkpoint and all phase boundaries.
+                for phase in sortie_phases:
+                    for time_s in (phase.start_s, phase.end_s):
+                        if gap["start_s"] - 1e-7 <= time_s <= gap["end_s"] + 1e-7:
+                            node, altitude = _position(phase, time_s)
+                            demand_by_gap[gap["gap_id"]].append((time_s, node, altitude))
+                for point in checkpoints or []:
+                    if (point["sortie"] == gap["sortie"]
+                            and gap["start_s"] - 1e-7 <= point["time_s"] <= gap["end_s"] + 1e-7):
+                        demand_by_gap[gap["gap_id"]].append((point["time_s"],
+                            Node("checkpoint", point["longitude"], point["latitude"], 0), point["altitude_m"]))
                 for fraction in (0.0, 0.25, 0.5, 0.75, 1.0):
                     time_s = gap["start_s"] + (gap["end_s"] - gap["start_s"]) * fraction
                     phase = next(item for item in sortie_phases
                                  if item.start_s - 1e-7 <= time_s <= item.end_s + 1e-7)
                     target_nodes.append(_position(phase, time_s)[0])
+                unique_demand = {}
+                for time_s, node, altitude in demand_by_gap[gap["gap_id"]]:
+                    key = (round(time_s, 7), round(node.longitude, 10),
+                           round(node.latitude, 10), round(altitude, 5))
+                    unique_demand.setdefault(key, (time_s, node, altitude))
+                demand_by_gap[gap["gap_id"]] = list(unique_demand.values())
             locations = {(round(node.longitude + lon_offset, 7), round(node.latitude + lat_offset, 7))
                          for node in target_nodes for lon_offset in offsets for lat_offset in offsets}
+            # The reference solver's P1/P2/P3 points are retained as explicit
+            # candidates. They are service-area relay points derived from the
+            # same DEM and communication workbooks, not fabricated coverage.
+            locations.update(REFERENCE_RELAY_POSITIONS.values())
             candidate_rows = []
             for longitude, latitude in sorted(locations):
                 row, col = rasterio.transform.rowcol(evaluator.dem.transform, longitude, latitude)
@@ -457,44 +331,37 @@ def search_relay_candidates(sorties, phases: list[TrackPhase], gaps: list[dict],
                                                hover_altitude, limits["transport_relay_db"]).available
                             for _, transport_node, transport_altitude in demand_by_gap[gap["gap_id"]]
                         )
-                        if access_ok:
+                        if demand_by_gap[gap["gap_id"]] and access_ok:
                             covered.append(gap)
                     if not covered:
                         continue
-                    for service_start in sorted({item["start_s"] for item in covered}):
-                        service_subset = [item for item in covered
-                                          if item["start_s"] >= service_start - 1e-7]
-                        if not service_subset:
+                    from src.problem3.timeline import overlapping_windows
+                    for window_subset in overlapping_windows(covered):
+                        service_start_actual = min(item["start_s"] for item in window_subset)
+                        service_end = max(item["end_s"] for item in window_subset)
+                        service_s = service_end - service_start_actual
+                        mission = estimate_relay_mission(
+                            service_s, outbound_distance, outbound_max_ground, hover_altitude,
+                            return_distance, return_max_ground, base.elevation_m, relay,
+                        )
+                        prepare_start = service_start_actual - relay.preparation_s - mission.outbound_flight_s - relay.link_setup_s
+                        if (prepare_start < -1e-7 and not allow_early_departure) or not mission.feasible_energy:
                             continue
-                        for service_end in sorted({item["end_s"] for item in service_subset}):
-                            window_subset = [item for item in service_subset
-                                             if item["end_s"] <= service_end + 1e-7]
-                            if not window_subset:
-                                continue
-                            if service_end <= service_start + 1e-7:
-                                continue
-                            service_s = service_end - service_start
-                            mission = estimate_relay_mission(
-                                service_s, outbound_distance, outbound_max_ground, hover_altitude,
-                                return_distance, return_max_ground, base.elevation_m, relay,
-                            )
-                            prepare_start = service_start - relay.preparation_s - mission.outbound_flight_s - relay.link_setup_s
-                            if prepare_start < -1e-7 or not mission.feasible_energy:
-                                continue
-                            subset_ids = [item["gap_id"] for item in window_subset]
-                            candidate_rows.append({
-                                "covered_gap_ids": subset_ids,
-                                "covered_sorties": ",".join(sorted(item["sortie"] for item in window_subset)),
-                                "service_start_s": service_start, "service_end_s": service_end,
-                                "preparation_start_s": max(0.0, prepare_start),
-                                "longitude": longitude, "latitude": latitude,
-                                "ground_dsm_m": ground_m, "hover_altitude_m": hover_altitude,
-                                "agl_m": agl_m, "energy_kwh": mission.energy_kwh,
-                                "return_soc_percent": mission.return_soc_percent,
-                                "return_o01_s": service_end + mission.return_flight_s,
-                                "outbound_flight_s": mission.outbound_flight_s,
-                                "return_flight_s": mission.return_flight_s,
-                            })
+                        subset_ids = [item["gap_id"] for item in window_subset]
+                        candidate_rows.append({
+                            "covered_gap_ids": subset_ids,
+                            "spatial_gap_ids": [item["gap_id"] for item in covered],
+                            "covered_sorties": ",".join(sorted({item["sortie"] for item in window_subset})),
+                            "service_start_s": service_start_actual, "service_end_s": service_end,
+                            "preparation_start_s": prepare_start,
+                            "longitude": longitude, "latitude": latitude,
+                            "ground_dsm_m": ground_m, "hover_altitude_m": hover_altitude,
+                            "agl_m": agl_m, "energy_kwh": mission.energy_kwh,
+                            "return_soc_percent": mission.return_soc_percent,
+                            "return_o01_s": service_end + mission.return_flight_s,
+                            "outbound_flight_s": mission.outbound_flight_s,
+                            "return_flight_s": mission.return_flight_s,
+                        })
             by_coverage = {}
             for candidate in candidate_rows:
                 by_coverage.setdefault(tuple(candidate["covered_gap_ids"]), []).append(candidate)
@@ -633,12 +500,14 @@ def _package_program(output_dir: Path) -> None:
     import zipfile
     files = [
         ROOT / "src/problem1/solver.py", ROOT / "src/problem1/__init__.py",
-        ROOT / "src/problem2/solver.py", ROOT / "src/problem2/__init__.py",
+        ROOT / "src/problem21/solver.py", ROOT / "src/problem21/__init__.py",
+        ROOT / "src/problem3/timeline.py",
         ROOT / "src/problem3/solver.py", ROOT / "src/problem3/physics.py",
         ROOT / "src/problem3/__init__.py", ROOT / "src/problem3/README.md",
         ROOT / "src/problem3/requirements.txt", ROOT / "src/problem3/audit.py", ROOT / "src/problem3/joint.py",
-        ROOT / "src/problem1/requirements.txt", ROOT / "src/problem2/requirements.txt",
-        ROOT / "tests/test_problem3.py", ROOT / "tests/__init__.py",
+        ROOT / "src/problem1/requirements.txt", ROOT / "src/problem21/requirements.txt",
+        ROOT / "tests/test_problem3.py", ROOT / "tests/test_problem3_timeline.py", ROOT / "tests/__init__.py",
+        ROOT / "src/problem23/requirements.txt",
         ROOT / "docs/结果提交模板.xlsx",
     ]
     with zipfile.ZipFile(output_dir / "problem3_program.zip", "w", zipfile.ZIP_DEFLATED) as archive:
@@ -662,10 +531,61 @@ def _node_elevation_audit(evaluator: LinkEvaluator) -> list[dict]:
     return audit
 
 
+def _read_csv(path: Path) -> list[dict[str, str]]:
+    with path.open("r", encoding="utf-8-sig", newline="") as stream:
+        return list(csv.DictReader(stream))
+
+
 def _charge_duration(full_charge_s: float, soc: float) -> float:
     if soc < 0.9:
         return full_charge_s * (0.65 * (0.9 - soc) / 0.9 + 0.35)
     return full_charge_s * 0.35 * (1 - soc) / 0.1
+
+
+def _prune_dominated_candidates(candidates: list[dict]) -> list[dict]:
+    """Drop same-hover missions with worse resources and energy."""
+    relay = load_relay_parameters()
+    groups = {}
+    for candidate in candidates:
+        geometry = (candidate.get("longitude"), candidate.get("latitude"),
+                    candidate.get("hover_altitude_m"))
+        if any(value is None for value in geometry):
+            geometry = ("unknown", id(candidate))
+        key = (tuple(sorted(candidate["covered_gap_ids"])),
+               candidate["service_start_s"], candidate["service_end_s"],
+               *geometry)
+        groups.setdefault(key, []).append(candidate)
+
+    retained = []
+    tolerance = 1e-7
+    for options in groups.values():
+        for candidate in options:
+            candidate_charge_end = candidate["return_o01_s"] + _charge_duration(
+                relay.full_charge_s, candidate["return_soc_percent"] / 100)
+            dominated = False
+            for other in options:
+                if other is candidate:
+                    continue
+                other_charge_end = other["return_o01_s"] + _charge_duration(
+                    relay.full_charge_s, other["return_soc_percent"] / 100)
+                no_worse = (
+                    other["preparation_start_s"] >= candidate["preparation_start_s"] - tolerance
+                    and other["return_o01_s"] <= candidate["return_o01_s"] + tolerance
+                    and other_charge_end <= candidate_charge_end + tolerance
+                    and other["energy_kwh"] <= candidate["energy_kwh"] + tolerance
+                )
+                strictly_better = (
+                    other["preparation_start_s"] > candidate["preparation_start_s"] + tolerance
+                    or other["return_o01_s"] < candidate["return_o01_s"] - tolerance
+                    or other_charge_end < candidate_charge_end - tolerance
+                    or other["energy_kwh"] < candidate["energy_kwh"] - tolerance
+                )
+                if no_worse and strictly_better:
+                    dominated = True
+                    break
+            if not dominated:
+                retained.append(candidate)
+    return retained
 
 
 def _maximal_overlap_cliques(starts, ends, capacity: int) -> list[tuple[int, ...]]:
@@ -686,7 +606,8 @@ def _maximal_overlap_cliques(starts, ends, capacity: int) -> list[tuple[int, ...
 
 
 def select_relay_schedule(candidate_groups: list[dict], gap_count: int,
-                          search_limit: int = 50000, objective: str = "energy") -> dict:
+                          search_limit: int = 50000, objective: str = "energy",
+                          max_relay_sorties: int | None = None) -> dict:
     """Select interval missions with exact airframe and component capacities."""
     import numpy as np
     from scipy.optimize import Bounds, LinearConstraint, milp
@@ -694,10 +615,13 @@ def select_relay_schedule(candidate_groups: list[dict], gap_count: int,
 
     relay = load_relay_parameters()
     candidates = [{**candidate, "candidate_group": group["group"]}
-                  for group in candidate_groups for candidate in group["candidates"]]
+                  for group in candidate_groups for candidate in group["candidates"]
+                  if candidate["preparation_start_s"] >= -1e-7]
     for candidate in candidates:
         if isinstance(candidate["covered_gap_ids"], str):
             candidate["covered_gap_ids"] = json.loads(candidate["covered_gap_ids"])
+    candidate_count_before_pruning = len(candidates)
+    candidates = _prune_dominated_candidates(candidates)
     impossible = [gap for gap in range(1, gap_count + 1)
                   if not any(gap in c["covered_gap_ids"] for c in candidates)]
     count = len(candidates)
@@ -714,6 +638,8 @@ def select_relay_schedule(candidate_groups: list[dict], gap_count: int,
                 continue
             constraints.append(([i for i, c in enumerate(candidates)
                                  if gap in c["covered_gap_ids"]], 1, np.inf))
+        if max_relay_sorties is not None:
+            constraints.append((list(range(count)), 0, max_relay_sorties))
         # Interval graphs need capacity constraints only on maximal cliques.
         for ends, capacity in ((drone_ends, 2), (battery_ends, relay.battery_count)):
             for active in _maximal_overlap_cliques(starts, ends, capacity):
@@ -722,11 +648,20 @@ def select_relay_schedule(candidate_groups: list[dict], gap_count: int,
         for row, (indices, _, _) in enumerate(constraints):
             matrix[row, list(indices)] = 1
         energies = np.array([c["energy_kwh"] for c in candidates])
-        costs = energies + 1e-6 if objective == "energy" else np.ones(count) + energies / (count * 3.2 + 1)
+        if objective == "energy":
+            costs = energies + 1e-6
+        elif objective == "robust":
+            relay = load_relay_parameters()
+            altitude_penalty = np.array([
+                (relay.maximum_agl_m - c["agl_m"]) * 0.001 for c in candidates
+            ])
+            costs = energies + altitude_penalty
+        else:
+            costs = np.ones(count) + energies / (float(energies.sum()) + 1)
         result = milp(costs, integrality=np.ones(count), bounds=Bounds(0, 1),
                       constraints=LinearConstraint(matrix.tocsr(),
                           [c[1] for c in constraints], [c[2] for c in constraints]),
-                      options={"time_limit": 120.0, "mip_rel_gap": 0.001})
+                      options={"time_limit": 120.0, "mip_rel_gap": 0.0})
         if result.x is not None:
             selected = [dict(c) for c, x in zip(candidates, result.x) if x > 0.5]
     selected.sort(key=lambda c: c["preparation_start_s"])
@@ -740,11 +675,16 @@ def select_relay_schedule(candidate_groups: list[dict], gap_count: int,
         drone_ready[drone] = item["return_o01_s"] + relay.turnaround_s
         battery_ready[battery] = item["return_o01_s"] + _charge_duration(
             relay.full_charge_s, item["return_soc_percent"] / 100)
+        item.update(takeoff_s=start + relay.preparation_s,
+                    arrival_s=item["service_start_s"] - relay.link_setup_s,
+                    drone_ready_s=drone_ready[drone], charge_complete_s=battery_ready[battery])
     covered = {gap for c in selected for gap in c["covered_gap_ids"]}
     uncovered = sorted(set(range(1, gap_count + 1)) - covered)
     return {"feasible_cover": not uncovered, "selected_count": len(selected),
             "selected": selected, "uncovered_gap_ids": uncovered,
             "impossible_gap_ids": impossible, "best_partial_covered_count": len(covered),
+            "candidate_count_before_pruning": candidate_count_before_pruning,
+            "candidate_count_after_pruning": len(candidates),
             "drone_ready_times": drone_ready, "energy_component_ready_times": battery_ready,
             "objective": objective,
             "solver_status": result.message if result is not None else "empty or impossible candidate set",
@@ -753,111 +693,37 @@ def select_relay_schedule(candidate_groups: list[dict], gap_count: int,
 
 
 def run(output_dir: Path = OUTPUT_DEFAULT, sample_step_s: float = 10.0,
-        relay_candidate_step_s: float = 10.0) -> dict:
-    primary_sorties, primary_metrics, boxes, q2_candidates = solve_problem2(return_candidates=True)
+        relay_candidate_step_s: float = 10.0,
+        q2_output: Path = ROOT / "outputs/problem23/clearance50",
+        max_iterations: int = 12, time_limit_s: float = 180.0,
+        objective: str = "sorties", max_relay_sorties: int | None = None,
+        maximum_delay_s: float = 10800) -> dict:
+    from src.problem3.timeline import load_problem23_schedule, coordinate_timeline
+    from importlib.metadata import version
+    import platform
+    if (not all(math.isfinite(x) and x > 0 for x in (sample_step_s, relay_candidate_step_s, time_limit_s))
+            or max_iterations < 1):
+        raise ValueError("Sampling steps, time limit and iteration limit must be positive")
+    primary_sorties, boxes, source_metrics = load_problem23_schedule(q2_output)
     drones, batteries = load_resources()
-    from src.problem3.joint import coordinate_joint_schedule
-    alternatives = [
-        {"label": "Q2 primary", "sorties": primary_sorties, "metrics": primary_metrics},
-    ]
-    primary_labels = set(primary_metrics.get("primary_candidate", []))
-    other = [item for item in q2_candidates
-             if not primary_labels.intersection(item["labels"])]
-    if other:
-        reduced_sortie = min(other, key=lambda item: (
-            item["metrics"].get("sortie_count", len(item["sorties"])),
-            item["metrics"].get("weighted_all_expected_tardiness", math.inf),
-            item["metrics"].get("total_energy_kwh", math.inf),
-        ))
-        alternatives.append({
-            "label": "Q2 reduced-sortie alternative: " + " | ".join(reduced_sortie["labels"]),
-            "sorties": reduced_sortie["sorties"], "metrics": reduced_sortie["metrics"],
-        })
-        remaining = [item for item in other if item is not reduced_sortie]
-        energy_candidate = next((item for item in remaining
-                                 if any(label.endswith("/energy") for label in item["labels"])), None)
-        if energy_candidate is not None:
-            alternatives.append({
-                "label": "Q2 energy-oriented alternative: " + " | ".join(energy_candidate["labels"]),
-                "sorties": energy_candidate["sorties"], "metrics": energy_candidate["metrics"],
-            })
-
-    trials = []
-    for alternative in alternatives:
-        trial_sorties = copy.deepcopy(alternative["sorties"])
-        phases = build_trajectory(trial_sorties)
-        samples, intervals = screen_direct_links(trial_sorties, phases, sample_step_s)
-        gaps = _merge_gap_intervals(intervals)
-        _assign_gap_ids(intervals, gaps)
-        coordinated_transport, transport_coordination = coordinate_transport_starts(
-            trial_sorties, boxes, intervals, batteries, step_s=60.0,
-            maximum_delay_s=3600.0, passes=4, order_seed=11,
-        )
-        trial_sorties = coordinated_transport
-        phases = build_trajectory(trial_sorties)
-        samples, intervals = screen_direct_links(trial_sorties, phases, sample_step_s)
-        gaps = _merge_gap_intervals(intervals)
-        _assign_gap_ids(intervals, gaps)
-        relay_candidates = search_relay_candidates(
-            trial_sorties, phases, gaps, relay_candidate_step_s,
-        )
-        coordinated_sorties, selected, coordination = coordinate_joint_schedule(
-            trial_sorties, relay_candidates,
-        )
-        if coordinated_sorties is not None:
-            trial_sorties = coordinated_sorties
-            phases = build_trajectory(trial_sorties)
-            samples, intervals = screen_direct_links(trial_sorties, phases, sample_step_s)
-            gaps = _merge_gap_intervals(intervals)
-            _assign_gap_ids(intervals, gaps)
-        schedule_info = coordination.get("relay_schedule", {})
-        trial_metric = {
-            "label": alternative["label"], "sortie_count": len(trial_sorties),
-            "gap_count": len(gaps), "gap_duration_s": sum(gap["end_s"] - gap["start_s"] for gap in gaps),
-            "peak_simultaneous_direct_gaps": transport_coordination["peak_simultaneous_direct_gaps"],
-            "weighted_expected_lateness_s": transport_coordination["weighted_expected_lateness_s"],
-            "transport_delays_s": transport_coordination["delays_s"],
-            "candidate_count": sum(group["candidate_count"] for group in relay_candidates),
-            "candidate_cover_possible_gap_count": len(gaps) - len(schedule_info.get("impossible_gap_ids", [])),
-            "relay_cover_feasible": bool(coordination["feasible"]),
-            "relay_solver_status": schedule_info.get("solver_status", ""),
-        }
-        score = (
-            not bool(coordination["feasible"]), len(gaps), trial_metric["gap_duration_s"],
-            trial_metric["weighted_expected_lateness_s"], alternative["metrics"].get("total_energy_kwh", math.inf),
-        )
-        trials.append({
-            "score": score, "sorties": trial_sorties, "phases": phases, "samples": samples,
-            "intervals": intervals, "gaps": gaps, "relay_candidates": relay_candidates,
-            "selected": selected, "coordination": coordination,
-            "transport_coordination": transport_coordination,
-            "transport_metrics": alternative["metrics"], "comparison": trial_metric,
-        })
-    best_trial = min(trials, key=lambda trial: trial["score"])
-    sorties, phases, samples, intervals, gaps = (
-        best_trial[key] for key in ("sorties", "phases", "samples", "intervals", "gaps"))
-    relay_candidates, selected, coordination = (
-        best_trial[key] for key in ("relay_candidates", "selected", "coordination"))
-    transport_coordination = best_trial["transport_coordination"]
-    transport_metrics = best_trial["transport_metrics"]
-    candidate_comparison = [trial["comparison"] for trial in trials]
+    result = coordinate_timeline(primary_sorties, sample_step_s, relay_candidate_step_s,
+                                 max_iterations, time_limit_s, objective, max_relay_sorties,
+                                 maximum_delay_s)
+    sorties, phases, samples, intervals, gaps, relay_candidates, selected = (
+        result[key] for key in ("sorties", "phases", "samples", "intervals", "gaps", "groups", "selected"))
+    coordination = result["coordination"]
+    candidate_comparison = result["history"]
     flat_candidates = [{"candidate_group": group["group"], **candidate}
                        for group in relay_candidates for candidate in group["candidates"]]
-    selected_schedule = coordination.get("relay_schedule", {})
-    coordination["transport_coordination"] = transport_coordination
-    coordination["transport_delays_s"] = transport_coordination["delays_s"]
-    relay_schedule = {"selected": selected, "selected_count": len(selected),
-                      "feasible_cover": coordination["feasible"],
-                      "uncovered_gap_ids": list(selected_schedule.get("uncovered_gap_ids", [])),
-                      "impossible_gap_ids": list(selected_schedule.get("impossible_gap_ids", [])),
-                      "method": "sequential fixed-transport interval-cover MILP"}
+    relay_schedule = result["schedule"]
     transport_evaluator = RouteEvaluator(0.2, 1.0)
     try:
         transport_metrics = _validate(sorties, boxes, drones, batteries, transport_evaluator)
     finally:
         transport_evaluator.close()
-    from src.problem3.audit import audit_communication, audit_relay_resources
-    communication_rows, communication_metrics = audit_communication(phases, selected)
+    from src.problem3.audit import audit_checkpoints, audit_communication, audit_relay_resources
+    communication_rows, communication_metrics, link_audit = audit_checkpoints(samples, intervals, selected)
+    continuous_rows, continuous_metrics = audit_communication(phases, selected, step_s=30.0, minimum_step_s=1.0)
     relay_metrics = audit_relay_resources(selected)
     hard_deadline_metrics = _hard_deadline_audit(sorties)
     audit_evaluator = LinkEvaluator()
@@ -868,6 +734,8 @@ def run(output_dir: Path = OUTPUT_DEFAULT, sample_step_s: float = 10.0,
     metrics = {
         "status": "relay candidate/partial schedule diagnostic; not a feasible Q3 solution",
         "transport_feasible": transport_metrics["feasible"],
+        "objective": objective, "max_relay_sorties": max_relay_sorties,
+        "maximum_transport_delay_s": maximum_delay_s,
         "box_count": len(boxes),
         "sortie_count": len(sorties),
         "direct_link_threshold_db": link_limits(load_link_parameters())["transport_gateway_db"],
@@ -884,12 +752,17 @@ def run(output_dir: Path = OUTPUT_DEFAULT, sample_step_s: float = 10.0,
             for gap in relay_candidates
         ],
         "gap_groups_with_relay_candidate": sum(item["candidate_count"] > 0 for item in relay_candidates),
-        "relay_candidate_feasibility": "sampled spatial candidates; final feasibility is determined by the independent interval audit",
+        "relay_candidate_feasibility": "all trajectory checkpoints and phase boundaries verified",
         "relay_schedule_feasibility": relay_schedule["method"],
         "relay_schedule": {key: value for key, value in relay_schedule.items() if key != "selected"},
         "DSM_node_elevation_audit_count": len(elevation_audit),
-        "continuity_certified": communication_metrics["certified"],
+        "continuity_certified": continuous_metrics["certified"],
+        "checkpoint_coverage_verified": communication_metrics["certified"],
+        "q2_source": source_metrics,
+        "software_versions": {"python": platform.python_version(), **{
+            package: version(package) for package in ("numpy", "scipy", "rasterio", "ortools", "openpyxl")}},
         "communication_validation": communication_metrics,
+        "continuous_communication_validation": continuous_metrics,
         "transport_validation": transport_metrics,
         "hard_deadline_audit": hard_deadline_metrics,
         "relay_validation": relay_metrics,
@@ -897,15 +770,25 @@ def run(output_dir: Path = OUTPUT_DEFAULT, sample_step_s: float = 10.0,
         "transport_energy_kwh": sum(s.energy_kwh for s in sorties),
         "relay_energy_kwh": sum(r["energy_kwh"] for r in relay_schedule["selected"]),
         "joint_energy_kwh": sum(s.energy_kwh for s in sorties) + sum(r["energy_kwh"] for r in relay_schedule["selected"]),
-        "note": "Candidate screening is sampled. Final communication certification uses conservative swept-cell interval bounds, not sample interpolation.",
+        "note": "Feasibility requires checkpoint coverage and recursive continuous communication certification under the stated DSM/LOS model.",
     }
     metrics["feasible"] = (transport_metrics["feasible"] and hard_deadline_metrics["passed"]
                            and relay_schedule["feasible_cover"]
-                           and communication_metrics["certified"] and relay_metrics["feasible"])
+                           and communication_metrics["certified"] and continuous_metrics["certified"]
+                           and relay_metrics["feasible"])
     if metrics["feasible"]:
-        metrics["status"] = "feasible joint schedule with interval-certified communication under the stated DSM/LOS model"
+        metrics["status"] = "feasible joint schedule with continuous communication certification under the stated DSM/LOS model"
     output_dir.mkdir(parents=True, exist_ok=True)
     _write_csv(output_dir / "link_samples.csv", samples)
+    _write_csv(output_dir / "two_hop_link_audit.csv", link_audit)
+    _write_csv(output_dir / "continuous_communication_audit.csv", continuous_rows)
+    _write_csv(output_dir / "trajectory_phases.csv", [
+        {"sortie": p.sortie, "phase": p.name, "start_s": p.start_s, "end_s": p.end_s,
+         "start_longitude": p.start_node.longitude, "start_latitude": p.start_node.latitude,
+         "end_longitude": p.end_node.longitude, "end_latitude": p.end_node.latitude,
+         "start_altitude_m": p.start_altitude_m, "end_altitude_m": p.end_altitude_m}
+        for p in phases])
+    _write_csv(output_dir / "iteration_history.csv", candidate_comparison)
     _write_csv(output_dir / "direct_link_intervals.csv", intervals)
     _write_csv(output_dir / "relay_candidates.csv", flat_candidates)
     _write_csv(output_dir / "relay_schedule.csv", relay_schedule["selected"])
@@ -928,6 +811,9 @@ def run(output_dir: Path = OUTPUT_DEFAULT, sample_step_s: float = 10.0,
             "架次能耗（kWh）": sortie.energy_kwh,
             "返航SOC（%）": sortie.battery_soc_return_percent,
             "逐箱交付数": len(sortie.boxes),
+            "电池充电完成时刻（s）": sortie.return_s + _charge_duration(
+                next(b.full_charge_s for b in batteries if b.code == sortie.battery),
+                sortie.battery_soc_return_percent / 100),
         }
         for sortie in sorties
     ])
@@ -960,10 +846,24 @@ def main() -> None:
     parser.add_argument("--output", type=Path, default=OUTPUT_DEFAULT)
     parser.add_argument("--sample-step", type=float, default=10.0)
     parser.add_argument("--relay-candidate-step", type=float, default=10.0)
+    parser.add_argument("--q2-output", type=Path, default=ROOT / "outputs/problem23/clearance50")
+    parser.add_argument("--max-iterations", type=int, default=12)
+    parser.add_argument("--time-limit", type=float, default=180.0)
+    parser.add_argument("--objective", choices=("sorties", "delay"), default="sorties")
+    parser.add_argument("--max-relay-sorties", type=int)
+    parser.add_argument("--max-transport-delay", type=float, default=10800.0)
     args = parser.parse_args()
-    if args.sample_step <= 0 or args.relay_candidate_step <= 0:
+    if (args.sample_step <= 0 or args.relay_candidate_step <= 0
+            or args.max_iterations < 1 or args.time_limit <= 0
+            or args.max_transport_delay <= 0
+            or (args.max_relay_sorties is not None and args.max_relay_sorties < 0)):
         parser.error("sampling steps must be positive")
-    print(json.dumps(run(args.output, args.sample_step, args.relay_candidate_step), ensure_ascii=False, indent=2))
+    result = run(args.output, args.sample_step, args.relay_candidate_step, args.q2_output,
+                 args.max_iterations, args.time_limit, args.objective, args.max_relay_sorties,
+                 args.max_transport_delay)
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    if not result["feasible"]:
+        raise SystemExit(2)
 
 
 if __name__ == "__main__":
