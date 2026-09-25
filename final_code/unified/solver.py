@@ -13,9 +13,9 @@ from dataclasses import asdict
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 
-from scripts.unified.communication import build_profiles, locations
-from scripts.unified.master import solve
-from scripts.unified.patterns import expand, generate
+from final_code.unified.communication import build_profiles, locations
+from final_code.unified.master import solve
+from final_code.unified.patterns import expand, generate
 from src.problem1.solver import ROOT, DEM_PATH
 from src.problem21.solver import (
     RouteEvaluator, _charge_duration, _schedule_candidates, _validate,
@@ -143,7 +143,7 @@ def package_versions():
 
 def write_program_bundle(output):
     paths = []
-    for folder in ("scripts/unified", "src/problem1", "src/problem21", "src/problem23",
+    for folder in ("final_code/unified", "src/problem1", "src/problem21", "src/problem23",
                    "src/problem3", "src/problem4"):
         paths.extend(p for p in (ROOT / folder).iterdir()
                      if p.is_file() and p.suffix in (".py", ".md", ".txt"))
@@ -160,7 +160,7 @@ def write_program_bundle(output):
 
 def profile_signature():
     sources = list((ROOT / "data/无人机应急物资运输基础数据").glob("*.xlsx")) + [DEM_PATH]
-    sources += [ROOT / name for name in ("scripts/unified/communication.py",
+    sources += [ROOT / name for name in ("final_code/unified/communication.py",
                  "src/problem3/physics.py", "src/problem3/solver.py",
                  "src/problem21/solver.py", "src/problem1/solver.py")]
     return {str(p.relative_to(ROOT)): digest(p) for p in sorted(sources)}
@@ -312,7 +312,7 @@ def run(output, rounds=2, time_limit=120., max_relays=10, expansion_limit=80, pr
                                expansion_limit=expansion_limit,
                                profile_cache=str(profile_cache) if profile_cache else None),
             "source_sha256": {str(p.relative_to(ROOT)): digest(p)
-                              for folder in ("scripts/unified", "src/problem1", "src/problem21",
+                              for folder in ("final_code/unified", "src/problem1", "src/problem21",
                                              "src/problem23", "src/problem3", "src/problem4")
                               for p in (ROOT / folder).glob("*.py")},
         })

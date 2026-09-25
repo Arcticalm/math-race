@@ -14,7 +14,7 @@ from openpyxl import load_workbook
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[2]
-DATA = ROOT / "outputs" / "problem4" / "final"
+DATA = ROOT / "outputs" / "problem4"
 OUT = Path(__file__).resolve().parent
 BASE = ROOT / "data" / "无人机应急物资运输基础数据"
 GROUP_COLORS = ["#287a8c", "#d3b532", "#b45b3c"]

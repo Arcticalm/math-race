@@ -7,7 +7,7 @@ from collections import defaultdict
 
 from ortools.sat.python import cp_model
 
-from scripts.unified.patterns import identity, replay
+from final_code.unified.patterns import identity, replay
 from src.problem21.solver import _charge_duration, _hard_due
 from src.problem3.physics import load_relay_parameters
 from src.problem4.solver import load_inventory

@@ -7,7 +7,7 @@ import json
 import shutil
 from pathlib import Path
 
-from scripts.unified.solver import (
+from final_code.unified.solver import (
     digest, joint_score, package_versions, save_json, snapshot, transport_score,
     write_program_bundle,
 )

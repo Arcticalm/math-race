@@ -18,7 +18,7 @@ import pandas as pd
 from openpyxl import load_workbook
 
 ROOT = Path(__file__).resolve().parents[2]
-DATA = ROOT / "outputs" / "problem23"
+DATA = ROOT / "outputs" / "problem2"
 OUT = Path(__file__).resolve().parent
 BASE = ROOT / "data" / "无人机应急物资运输基础数据"
 COLORS = {"A": "#1769aa", "B": "#e08e0b", "C": "#c44536"}
@@ -78,8 +78,10 @@ def load_data():
     segments = pd.read_csv(DATA / "route_segments.csv")
     deliveries = pd.read_csv(DATA / "box_delivery_audit.csv")
     batteries = pd.read_csv(DATA / "battery_audit.csv")
-    tradeoff = pd.read_csv(DATA / "objective_tradeoff.csv")
-    return sorties, segments, deliveries, batteries, tradeoff
+    # 候选方案指标表由统一求解器的反馈迭代逐轮输出（publish 汇总）。
+    candidates_path = DATA / "time_priority_candidates.csv"
+    candidates = pd.read_csv(candidates_path) if candidates_path.exists() else None
+    return sorties, segments, deliveries, batteries, candidates
 
 
 def route_list(value):
@@ -207,41 +209,60 @@ def plot_energy(sorties):
     save(fig, "图5_架次能耗与机型.png")
 
 
-def plot_tradeoff(tradeoff):
-    df = tradeoff[tradeoff["可行"].astype(str).str.lower().isin(["true", "1", "是"])].copy()
-    selected_time = 7983.810858112425
-    fig, ax = plt.subplots(figsize=(8.5, 5.8))
-    for _, row in df.iterrows():
-        selected = abs(row["完成时间（s）"] - selected_time) < 1e-3
-        ax.scatter(row["总能耗（kWh）"], row["完成时间（s）"] / 3600,
-                   s=125 if selected else 65, color="#c44536" if selected else "#9aa7b2",
-                   edgecolor="white", linewidth=1.2, zorder=3 if selected else 2)
-        if selected:
-            ax.annotate("最终方案\nconstructive_merged / cp_sat",
-                        (row["总能耗（kWh）"], row["完成时间（s）"] / 3600),
-                        xytext=(8, 8), textcoords="offset points", fontsize=9,
-                        fontweight="bold")
-    ax.set_xlabel("总运输能耗 / kWh"); ax.set_ylabel("全部任务完成时间 / h")
-    ax.set_title("第二问调度方案的能耗—完成时间权衡", pad=12, fontweight="bold")
-    ax.grid(color="#dfe7ee", lw=0.8); ax.spines[["top", "right"]].set_visible(False)
-    ax.set_xlim(df["总能耗（kWh）"].min()-1.5, df["总能耗（kWh）"].max()+1.5)
-    save(fig, "图6_方案目标权衡.png")
+def plot_tradeoff(candidates):
+    """对比各轮反馈迭代给出的候选方案在四个目标上的取值。
+
+    统一求解器不再成批枚举组批方案，而是逐轮反馈迭代各产生一个通过审计的候选解，
+    因此这里按轮次并列比较，深色标出最终选定的那一轮。
+    """
+    df = candidates.copy()
+    df["方案"] = df["run"] + " · 第 " + df["iteration"].astype(str) + " 轮"
+    selected = df["selected"].astype(str).str.lower().isin(["true", "1", "是"])
+    panels = [
+        ("makespan_s", "全部任务完成时间 / s", "#1769aa"),
+        ("weighted_lateness", "加权迟到量 /（优先级×s）", "#c44536"),
+        ("energy_kwh", "总运输能耗 / kWh", "#e08e0b"),
+        ("sortie_count", "运输架次 / 架", "#35a7a0"),
+    ]
+    fig, axes = plt.subplots(2, 2, figsize=(11.4, 7.4))
+    for ax, (column, label, color) in zip(axes.ravel(), panels):
+        colors = [color if flag else "#c3ccd4" for flag in selected]
+        bars = ax.bar(df["方案"], df[column], width=0.5, color=colors, alpha=0.92)
+        for bar, value in zip(bars, df[column]):
+            ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height(),
+                    f"{value:g}", ha="center", va="bottom", fontsize=10)
+        ax.set_ylabel(label)
+        ax.grid(axis="y", color="#dfe7ee", lw=0.8)
+        ax.spines[["top", "right"]].set_visible(False)
+        ax.margins(y=0.20)
+    fig.suptitle("反馈迭代候选方案的指标对比（深色为最终选定方案）",
+                 y=1.0, fontsize=14, fontweight="bold")
+    fig.tight_layout()
+    save(fig, "图6_方案指标对比.png")
 
 
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
-    sorties, segments, deliveries, batteries, tradeoff = load_data()
+    sorties, segments, deliveries, batteries, candidates = load_data()
     plot_routes(sorties); plot_drone_gantt(sorties); plot_battery_gantt(batteries)
-    plot_delivery(deliveries); plot_energy(sorties); plot_tradeoff(tradeoff)
+    plot_delivery(deliveries); plot_energy(sorties)
+    if candidates is None:
+        print("跳过 图6_方案指标对比.png：缺少 time_priority_candidates.csv（需先运行 publish）")
+    else:
+        plot_tradeoff(candidates)
+    rows = [
+        ("图1_调度路线网络.png", "展示 O01 到服务区的实际访问路线"),
+        ("图2_无人机资源时间轴.png", "展示实体无人机任务串行与并行关系"),
+        ("图3_电池周转时间轴.png", "展示共享电池任务占用和充电周转"),
+        ("图4_逐箱配送时效.png", "比较期望送达时间和实际交付时间"),
+        ("图5_架次能耗与机型.png", "比较各架次能耗及机型差异"),
+    ]
+    if candidates is not None:
+        rows.append(("图6_方案指标对比.png", "对比反馈迭代候选方案的完成时间、迟到量、能耗与架次"))
+    table = "\n".join(f"| {name} | {use} |" for name, use in rows)
     (OUT / "图表索引.md").write_text(
-        "# 问题2图表\n\n| 文件 | 论文用途 |\n|---|---|\n"
-        "| 图1_调度路线网络.png | 展示 O01 到服务区的实际访问路线 |\n"
-        "| 图2_无人机资源时间轴.png | 展示实体无人机任务串行与并行关系 |\n"
-        "| 图3_电池周转时间轴.png | 展示共享电池任务占用和充电周转 |\n"
-        "| 图4_逐箱配送时效.png | 比较期望送达时间和实际交付时间 |\n"
-        "| 图5_架次能耗与机型.png | 比较各架次能耗及机型差异 |\n"
-        "| 图6_方案目标权衡.png | 比较候选调度方案的能耗与完成时间 |\n\n"
-        "数据来源：outputs/problem23；图中最终方案为完成时间 7983.810858 s 的 constructive_merged/cp_sat 方案。\n",
+        "# 问题2图表\n\n| 文件 | 论文用途 |\n|---|---|\n" + table + "\n\n"
+        "数据来源：outputs/problem2（统一求解器 q2 输出）；候选方案指标见 time_priority_candidates.csv。\n",
         encoding="utf-8")
 
 

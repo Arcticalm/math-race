@@ -3,8 +3,8 @@
 从仓库根目录运行（Python 3.10 或更新版本）：
 
 ```bash
-.venv/bin/python -m pip install -r scripts/unified/requirements.txt
-.venv/bin/python -m scripts.unified.solver \
+.venv/bin/python -m pip install -r final_code/unified/requirements.txt
+.venv/bin/python -m final_code.unified.solver \
   --output outputs/unified/example --rounds 2 --time-limit 120 --max-relays 10
 .venv/bin/python -m unittest tests.test_unified tests.test_problem4 -v
 ```
@@ -87,7 +87,7 @@ Q4 反馈偏好阶段；不包含物理评估、通信认证和分区枚举时�
 可复用一次运行保存的通信缓存：
 
 ```bash
-.venv/bin/python -m scripts.unified.solver --output outputs/unified/next \
+.venv/bin/python -m final_code.unified.solver --output outputs/unified/next \
   --profile-cache outputs/unified/example/communication_cache.json
 ```
 
@@ -98,7 +98,7 @@ Q4 反馈偏好阶段；不包含物理评估、通信认证和分区枚举时�
 多个独立运行可按相同指标选择已认证的最好结果（先核对原始数据哈希）：
 
 ```bash
-.venv/bin/python -m scripts.unified.compare_runs outputs/unified/example outputs/unified/next \
+.venv/bin/python -m final_code.unified.compare_runs outputs/unified/example outputs/unified/next \
   --output outputs/unified/final
 ```
 
@@ -110,7 +110,7 @@ Q4 反馈偏好阶段；不包含物理评估、通信认证和分区枚举时�
 统一求解与多次运行筛选完成后，将已选结果发布到 `outputs/unified/` 根目录：
 
 ```bash
-.venv/bin/python -m scripts.unified.publish \
+.venv/bin/python -m final_code.unified.publish \
   --source outputs/unified/final --output outputs/unified
 ```
 

@@ -14,7 +14,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from scripts.unified.solver import digest
+from final_code.unified.solver import digest
 from src.problem1.solver import ROOT, load_nodes
 from src.problem21.solver import load_task_boxes
 from src.problem23.terrain_audit import write_clearance_outputs

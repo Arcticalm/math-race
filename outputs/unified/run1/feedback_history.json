@@ -1,0 +1,69 @@
+[
+  {
+    "iteration": 1,
+    "pattern_count": 337,
+    "q2_score": [
+      6369.810858112425,
+      4391.980344932146,
+      70.22737382625738,
+      27
+    ],
+    "q3_eligible_patterns": 337,
+    "q3_feasible": true,
+    "q3_makespan_s": 7621.916489609874,
+    "joint_score": [
+      7621.916489609874,
+      40496.34135057384,
+      73.59978362789653,
+      31,
+      6,
+      60,
+      1.414213562373095
+    ],
+    "q4_feedback": {
+      "2": {
+        "score": [
+          2,
+          29,
+          1.0
+        ],
+        "groups": [
+          "S001,S002,S003,S004,S005,S006,S007,S008,S009,S010,S012,S013,S014,S015",
+          "S011"
+        ]
+      },
+      "3": {
+        "score": [
+          4,
+          31,
+          1.414213562373095
+        ],
+        "groups": [
+          "S001,S002,S003,S004,S005,S007,S008,S009,S010,S012,S013,S014,S015",
+          "S006",
+          "S011"
+        ]
+      }
+    },
+    "pool_expansion": {
+      "new_patterns": 120,
+      "proposals": 3570,
+      "accepted_proposal_limit": 80,
+      "attempted_proposals": 221,
+      "accepted_proposals": 80,
+      "method": "split and one-box transfer neighborhood"
+    }
+  },
+  {
+    "iteration": 2,
+    "pattern_count": 457,
+    "q2_score": [
+      6347.185491467791,
+      0.0,
+      71.97018954398865,
+      28
+    ],
+    "q3_eligible_patterns": 457,
+    "q3_status": "UNKNOWN"
+  }
+]

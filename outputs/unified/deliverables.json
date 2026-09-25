@@ -1,0 +1,29 @@
+{
+  "selected_source": "/home/cc/-/outputs/unified/final",
+  "output": "/home/cc/-/outputs/unified",
+  "q2_candidate_count": 2,
+  "q3_candidate_count": 1,
+  "files": {
+    "problem2_submission.xlsx": "9127a3e3585efbdda9af42a25b9d6d5dca3bd64c5cb96060a01fe4404e8d78b9",
+    "problem3_submission.xlsx": "0778f108a124298fc3750786e4a635125bf32284f0c41f88f5080408bca3bc1d",
+    "problem4_submission.xlsx": "261acf9df0d49c428f0fdbb0355fed647703405dde3f1264d0ea4754a11d62bc",
+    "unified_program.zip": "ecb27ba514718898c5deade295764afb5246e6f244e0741613bc09ee6870cfd7",
+    "routes.png": "b668a5b98a1a611263fe882c2e3cff6714a2693d8bb753c70e3c0f5808ede6a0",
+    "resource_gantt.png": "4b162538a1bf726fe21c8b33b853587157d9ecf2a2ae61e08c440cab70d3ac9c",
+    "delivery_times.png": "7f4bb2d72aca996d6c8c33927d009e5c34e83538d3ee3d322ac793e7f72b8cc4",
+    "q3_routes_relays.png": "db8b5f6ff4d3ca7db778bf3d0069f0655841af9532565be4253394d7a4de0bf8",
+    "terrain_clearance.png": "50893dc906622489adc3471d1a13aa571eb33380e1db10cbf17f0ebd910a1241",
+    "terrain_clearance_audit.csv": "f7529297ad34e2cb62a2cbe08c12ae5a3c98a1256a946a403df8ccfe6f225e73",
+    "q3_terrain_clearance.png": "79cb18bb7a861d1eafe1559ed5f5ae0d7d4da3499c1a14a57fdfba72634b68cb",
+    "q3_terrain_clearance_audit.csv": "acdf6b3db01621366ed34bf4e96bb8b5508ee4e9b90665afbc0ce7369e480076",
+    "time_priority_tradeoff.png": "2072a95f898919a6b54588facb5f89649b7c58b2016dbd503be4efba0bd4836d",
+    "time_priority_candidates.csv": "9fe665bcafca58140e46c54242bbe9ae5ce85003dcbd219e1b848aeba1183086",
+    "q3_tradeoff.png": "de5a8e050cd4defbeeef19659977b5bb8dd370ecc35d75b2f838432fec4a9c21",
+    "q3_resource_gantt.png": "1e033d9460b7f536fabe3e9f4be98e857eae18864b769a3639b9e32b9307641d",
+    "q3_delivery_times.png": "caf3cdc92d2d50225bf831e006449427017802c9c917d99bb4d94169bea2d8b6",
+    "q3_communication_timeline.png": "6c80a7ea2032b7662125b4846fb3998fb1a9fd6d1e702783b0193e7ad99f8645",
+    "q4_partitions.png": "c6474638450a7c50249bbd88364a9c60b17c23bb6ad89162ce17a53608404e94",
+    "q4_inventory.png": "7fd29892b5bcc746725eced1320a1a3d67e00a2a2dd2c63460e8294eb7d8d12e",
+    "unified_results.zip": "be0c27a04ed6318ed793e384e25ad5a69765833561573b0a646de3be235b5d6f"
+  }
+}

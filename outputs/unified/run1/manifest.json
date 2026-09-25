@@ -1,0 +1,54 @@
+{
+  "python": "3.13.11",
+  "packages": {
+    "ortools": "9.15.6755",
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "rasterio": "1.5.1",
+    "openpyxl": "3.1.5",
+    "matplotlib": "3.11.2"
+  },
+  "input_sha256": {
+    "data/无人机应急物资运输基础数据/中继无人机数据.xlsx": "be52643ff29419233e6a141dca03a04160a8af551cab36d8c49b51bb836bea04",
+    "data/无人机应急物资运输基础数据/物资需求与配送时限.xlsx": "5a3346159ceddcf585859d270b8f62114b388a1f737fbe64ffde0ee1fdc8170a",
+    "data/无人机应急物资运输基础数据/调度中心与服务区.xlsx": "541a7af1ded08c9a3ff448480332cb5f6a54902f0afa6e9bcd50c1d2b2b34e38",
+    "data/无人机应急物资运输基础数据/运输无人机数据.xlsx": "9296a657c07e042afba6aeea7999665d9cd24e00b592fd6c269de6e338480dcb",
+    "data/无人机应急物资运输基础数据/通信链路参数.xlsx": "1860d153199e7ae460ba36e83b673374e640e19de91ea167f2877271001f5f81",
+    "data/镇龙乡地理空间数据/镇龙乡及周边地理数据/数字高程模型数据（DEM）/镇龙乡及周边30米DEM.tif": "741fe6de0b2bcaffd0f4007f574ee698d46197094f52cc954b532c4f90fc7c03"
+  },
+  "parameters": {
+    "rounds": 2,
+    "time_limit": 120.0,
+    "max_relays": 10,
+    "expansion_limit": 80,
+    "profile_cache": null
+  },
+  "source_sha256": {
+    "final_code/unified/communication.py": "30c35fe22284969adc56ea47c6383fe3ebd3c9c4cfd86315f3ef906ff2ce0f18",
+    "final_code/unified/__init__.py": "58cc9145c9024bb66aeb44d5517e29236110c9921358ff2290dff4efe1283cf3",
+    "final_code/unified/solver.py": "12b87e2547741c4419af634aca26f4e3fa446ff1a7e27e349ccfb731cc55caa8",
+    "final_code/unified/compare_runs.py": "6196376954d9f0e0caaca68a0015e7eae09d498b8227ada824bf760c1fd4d485",
+    "final_code/unified/publish.py": "db6cda1458dfd24a2e7d2deb5b5609a82114b28d7e6eeea15253f23c3bd68868",
+    "final_code/unified/master.py": "7ad54eced56d8443906ccdcfe036ca611649c5079c1eb429ccb2fadca44d0145",
+    "final_code/unified/patterns.py": "c75a47f36c1e5a5829141855b70468439e5780495569f18484307c4c348c3790",
+    "src/problem1/__init__.py": "e1001c04067dc6008eb5c8ad374dd7fc0c50fcd33fa3bdd476a161d8b129099e",
+    "src/problem1/solver.py": "8c22e48002fbf75abe0ab3aeb032a4b13fc2dc2d72b4e5e89de54e16dcc74c96",
+    "src/problem21/__init__.py": "6a7c493db673c658906cb2def96857759ed53449468f428588f5a8fa704e9c40",
+    "src/problem21/solver.py": "bde0d4e0f7605dd5117bdbff4594491051dd2b9d59af8d08c7be115d3dbc7fd8",
+    "src/problem21/render_candidates.py": "6f3b6bbea44f3b5af3e1da857c907eb9047ef030bffea608de47e59392febf2a",
+    "src/problem23/__init__.py": "f1d7c4970fe6c07d2a6a40d20d7c0da187de7d20588e232888b5ee974c6ec03f",
+    "src/problem23/groups.py": "7afb3768b7618a319db56ae6fdd5a9091030fb50d14be4434adc4c00900361d8",
+    "src/problem23/solver.py": "2e8d3c2f2f816489ebd75643766e2898d4f9dddc8994e134bbd7362f15b2f1dd",
+    "src/problem23/cp_sat.py": "ba633c7aba542bd5c78f11e33cd1d22fb8cad95e18637c6f1181a0b5d46b8922",
+    "src/problem23/terrain_audit.py": "e134dca54d18ff2aa50f7e07532345d55ac9e54fb7fe531020e7ec5d68022314",
+    "src/problem3/__init__.py": "fba57840cb06cca49cd7bddef797ceb31276d6ca1e98312395ddef7c0b717566",
+    "src/problem3/joint.py": "9f43259cdf20c3208d4e53ed1532379edf2fadf0dc7ead64ff7c9a3443555953",
+    "src/problem3/solver.py": "886b80f101bca4ed3d2b323c4f751d18b3335ace477c5827162d95f206d49d83",
+    "src/problem3/audit.py": "14287cf22d7162869450f61580c8032d7e574f5c3a612399ec8d8873481a05a7",
+    "src/problem3/timeline.py": "858b15994e8faf0d1b682d4d0ceec74889e21a6c9ca25eefa9784c51f66aad1b",
+    "src/problem3/physics.py": "2a9970218fb4223839272478c52e9a8d8b56e16bc0528eefb12ae2b8968272f3",
+    "src/problem3/independent.py": "4b50b072abec21ad9417bcdf2b7ce5ec78dc05cc2fefd2dc819d9fbbdc380827",
+    "src/problem4/__init__.py": "e4da509a517b13e06bbdcc8fde17a9f4f7592759b803336ec7731fd29ae403fb",
+    "src/problem4/solver.py": "f268f3907e12358721445213087ab455a626a80739fd9c1b89e47fe9b728b8e7"
+  }
+}

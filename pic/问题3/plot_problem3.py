@@ -1,8 +1,11 @@
 """论文图表：问题3（通信保障下的运输与中继联合调度）。"""
 from pathlib import Path
+import ast
 import base64
 from io import BytesIO
+import math
 import re
+import sys
 
 import matplotlib
 matplotlib.use("Agg")
@@ -14,9 +17,10 @@ from openpyxl import load_workbook
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[2]
-DATA = ROOT / "outputs" / "problem3" / "refactored" / "final"
+DATA = ROOT / "outputs" / "problem3"
 OUT = Path(__file__).resolve().parent
 BASE = ROOT / "data" / "无人机应急物资运输基础数据"
+SAMPLE_STEP_S = 15.0
 COLORS = {"直连": "#287a8c", "中继": "#d3b532", "中断": "#b45b3c"}
 AIRCRAFT = {"A": "#1769aa", "B": "#e08e0b", "C": "#c44536"}
 plt.rcParams.update({
@@ -54,11 +58,74 @@ def load():
     communication = pd.read_csv(DATA / "communication_audit.csv")
     relay = pd.read_csv(DATA / "relay_resource_audit.csv")
     schedule = pd.read_csv(DATA / "relay_schedule.csv")
-    link = pd.read_csv(DATA / "link_samples.csv")
-    twohop = pd.read_csv(DATA / "two_hop_link_audit.csv")
-    history = pd.read_csv(DATA / "iteration_history.csv")
     transport = pd.read_csv(DATA / "transport_inherited_audit.csv")
-    return communication, relay, schedule, link, twohop, history, transport
+    return communication, relay, schedule, transport
+
+
+def collect_link_samples(schedule: pd.DataFrame) -> pd.DataFrame:
+    """用附件物理模型对本次第三问方案逐点重算三类链路裕量。
+
+    统一求解器只写运输轨迹与中继排程，不写逐点链路采样表，因此这里按同一套
+    DEM/自由空间损耗模型重新采样：直连为运输机→G01，中继接入为运输机→悬停点，
+    中继回传为悬停点→G01。裕量定义为「接收门限 − 路径损耗」，正值即可用。
+    """
+    sys.path.insert(0, str(ROOT))
+    from src.problem1.solver import Node
+    from src.problem3.physics import LinkEvaluator, link_limits
+    from src.problem3.solver import TrackPhase, _position
+
+    phases = []
+    for row in pd.read_csv(DATA / "trajectory_phases.csv").to_dict("records"):
+        phases.append(TrackPhase(
+            sortie=row["sortie"], name=row["name"],
+            start_s=float(row["start_s"]), end_s=float(row["end_s"]),
+            start_node=Node(**ast.literal_eval(row["start_node"])),
+            end_node=Node(**ast.literal_eval(row["end_node"])),
+            start_altitude_m=float(row["start_altitude_m"]),
+            end_altitude_m=float(row["end_altitude_m"])))
+
+    evaluator = LinkEvaluator()
+    limits = link_limits(evaluator.params)
+    base = evaluator.base
+    gateway = Node("G01", base.longitude, base.latitude, base.elevation_m + 20)
+    missions = schedule.to_dict("records")
+    records = []
+    try:
+        for phase in phases:
+            duration = phase.end_s - phase.start_s
+            if duration <= 0:
+                continue
+            count = max(1, math.ceil(duration / SAMPLE_STEP_S))
+            for index in range(count + 1):
+                time_s = phase.start_s + duration * index / count
+                node, altitude = _position(phase, time_s)
+                direct = evaluator.evaluate(node, altitude, gateway, gateway.elevation_m,
+                                            limits["transport_gateway_db"])
+                access = backhaul = None
+                mission = next((m for m in missions
+                                if phase.sortie in str(m["covered_sorties"]).split(",")
+                                and float(m["service_start_s"]) - 1e-7 <= time_s
+                                <= float(m["service_end_s"]) + 1e-7), None)
+                if mission is not None:
+                    hover = Node("relay", mission["longitude"], mission["latitude"],
+                                 mission["ground_dsm_m"])
+                    a = evaluator.evaluate(node, altitude, hover, mission["hover_altitude_m"],
+                                           limits["transport_relay_db"])
+                    b = evaluator.evaluate(hover, mission["hover_altitude_m"], gateway,
+                                           gateway.elevation_m, limits["relay_gateway_db"])
+                    if a.path_loss_db is not None:
+                        access = a.threshold_db - a.path_loss_db
+                    if b.path_loss_db is not None:
+                        backhaul = b.threshold_db - b.path_loss_db
+                records.append({
+                    "sortie": phase.sortie, "time_s": time_s,
+                    "direct_available": bool(direct.available),
+                    "direct_margin_db": None if direct.path_loss_db is None
+                                        else direct.threshold_db - direct.path_loss_db,
+                    "access_margin_db": access, "backhaul_margin_db": backhaul})
+    finally:
+        evaluator.close()
+    return pd.DataFrame(records)
 
 
 def plot_joint_gantt(relay, transport):
@@ -151,42 +218,98 @@ def plot_relay_resources(relay):
     save(fig, "图4_中继资源周转.png")
 
 
-def plot_link_margin(link, twohop):
-    direct = link[link["available"] == True].copy()
-    relay = twohop[twohop["both_available"] == True].copy()
-    vals = [direct["threshold_db"] - direct["path_loss_db"], relay["access_limit_db"] - relay["access_loss_db"], relay["backhaul_limit_db"] - relay["backhaul_loss_db"]]
+def plot_link_margin(samples: pd.DataFrame) -> None:
+    series = [samples["direct_margin_db"].dropna(),
+              samples["access_margin_db"].dropna(),
+              samples["backhaul_margin_db"].dropna()]
     labels = ["直连链路", "中继接入", "中继回传"]
     fig, ax = plt.subplots(figsize=(8.8, 5.5))
-    ax.boxplot(vals, tick_labels=labels, patch_artist=True, boxprops={"facecolor": "#dce9ed"}, medianprops={"color": "#b45b3c", "lw": 2})
+    ax.boxplot(series, tick_labels=labels, patch_artist=True,
+               boxprops={"facecolor": "#dce9ed", "edgecolor": "#52606d"},
+               medianprops={"color": "#b45b3c", "lw": 2},
+               whiskerprops={"color": "#52606d"}, capprops={"color": "#52606d"},
+               flierprops={"marker": "o", "markersize": 2.5, "alpha": 0.35,
+                           "markerfacecolor": "#9aa7b2", "markeredgecolor": "none"})
     ax.axhline(0, color="#52606d", ls="--", lw=1)
-    ax.set_ylabel("链路裕量 / dB（门限 − 路径损耗）"); ax.set_title("通信链路可用性裕量分布", pad=12, fontweight="bold")
-    ax.grid(axis="y", color="#dfe7ee", lw=0.8); ax.spines[["top", "right"]].set_visible(False)
+    for index, values in enumerate(series, start=1):
+        ax.annotate(f"中位 {values.median():.1f} dB\nn={len(values)}",
+                    (index, values.median()), xytext=(0, 12), textcoords="offset points",
+                    ha="center", fontsize=8.5, color="#39434d")
+    ax.set_ylabel("链路裕量 / dB（接收门限 − 路径损耗）")
+    ax.set_title("通信链路可用性裕量分布", pad=12, fontweight="bold")
+    ax.grid(axis="y", color="#dfe7ee", lw=0.8)
+    ax.spines[["top", "right"]].set_visible(False)
     save(fig, "图5_链路裕量分布.png")
 
 
-def plot_iterations(history):
-    fig, ax = plt.subplots(figsize=(7.8, 4.8))
-    ax.plot(history["iteration"], history["gap_count"], marker="o", lw=2.2, color="#b45b3c")
-    ax.set_xlabel("协调迭代轮次"); ax.set_ylabel("待覆盖通信缺口数")
-    ax.set_title("通信缺口协调过程", pad=12, fontweight="bold")
-    ax.grid(color="#dfe7ee", lw=0.8); ax.spines[["top", "right"]].set_visible(False)
-    save(fig, "图6_通信缺口迭代.png")
+def plot_relay_demand(samples: pd.DataFrame, schedule: pd.DataFrame, bucket_s: float = 120.0) -> None:
+    """中继通信的需求与供给随时间的匹配情况。
+
+    需求按时间分桶统计「该时段内直连不可用、因而需要中继的运输架次数」；
+    供给统计「服务窗口与该时段有交集的中继架次数」。两者用同一分桶口径，
+    因此需求不为零的时段供给必然不为零，对应连续通信认证通过。
+    注意模型沿用附件的无限并发假设，一架中继可同时服务多架运输机，
+    所以需求高于供给不代表容量冲突，本图用于核对中继服务窗口的时段覆盖。
+    """
+    needing = samples[~samples["direct_available"]].copy()
+    needing["bucket"] = (needing["time_s"] // bucket_s) * bucket_s
+    demand = needing.groupby("bucket")["sortie"].nunique()
+    windows = [(float(row["service_start_s"]), float(row["service_end_s"]))
+               for _, row in schedule.iterrows()]
+    horizon = float(max(samples["time_s"].max(), max(end for _, end in windows)))
+    grid = np.arange(0.0, horizon + bucket_s, bucket_s)
+    demand_values = [int(demand.get(t, 0)) for t in grid]
+    supply = [sum(1 for start, end in windows if start < t + bucket_s and end > t)
+              for t in grid]
+    fig, ax = plt.subplots(figsize=(11.2, 5.0))
+    ax.fill_between(grid, demand_values, step="post", color="#b45b3c", alpha=0.12)
+    ax.step(grid, demand_values, where="post", lw=2.0, color="#b45b3c",
+            label="需要中继保障的运输架次")
+    ax.step(grid, supply, where="post", lw=2.0, color="#d3b532", label="在服中继无人机")
+    uncovered = [t for t, need, have in zip(grid, demand_values, supply) if need and not have]
+    if uncovered:
+        ax.scatter(uncovered, [0] * len(uncovered), marker="v", s=45,
+                   color="#b45b3c", zorder=5, label="需求时段无中继在服")
+    ax.set_xlabel("时间 / s")
+    ax.set_ylabel("并发架次数 / 架")
+    ax.set_title(f"中继通信需求与供给的时序匹配（{bucket_s:.0f} s 分桶）", pad=12, fontweight="bold")
+    ax.grid(color="#dfe7ee", lw=0.8)
+    ax.spines[["top", "right"]].set_visible(False)
+    ax.margins(y=0.18)
+    ax.legend(frameon=False, loc="upper left")
+    ax.annotate("沿用附件无限并发假设：一架中继可同时服务多架运输机，\n"
+                "故需求高于供给不构成冲突，本图核对的是服务窗口的时段覆盖。",
+                xy=(0.985, 0.035), xycoords="axes fraction", ha="right", va="bottom",
+                fontsize=8, color="#52606d")
+    save(fig, "图6_中继通信供需时序.png")
+    if uncovered:
+        print(f"警告：{len(uncovered)} 个分桶内需求非零但无中继在服")
 
 
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
-    communication, relay, schedule, link, twohop, history, transport = load()
+    communication, relay, schedule, transport = load()
     plot_joint_gantt(relay, transport); plot_communication(communication); plot_relay_map(schedule)
-    plot_relay_resources(relay); plot_link_margin(link, twohop); plot_iterations(history)
+    plot_relay_resources(relay)
+    # 图5、图6 需要逐点链路裕量：统一求解器不写该表，这里用附件物理模型重算。
+    print("按附件物理模型重算逐点链路裕量 ...")
+    samples = collect_link_samples(schedule)
+    samples.to_csv(OUT / "链路裕量采样.csv", index=False, encoding="utf-8-sig")
+    plot_link_margin(samples)
+    plot_relay_demand(samples, schedule)
+    rows = [
+        ("图1_联合任务时间轴.png", "展示运输与中继架次的联合完成过程"),
+        ("图2_通信保障构成.png", "比较各运输架次直连与中继保障时长"),
+        ("图3_中继空间部署.png", "展示中继悬停点、服务区和地形背景"),
+        ("图4_中继资源周转.png", "展示两架中继无人机的任务衔接"),
+        ("图5_链路裕量分布.png", "展示直连、接入、回传三类链路的安全裕量分布"),
+        ("图6_中继通信供需时序.png", "比较需中继保障的运输架次与在服中继数的时序匹配"),
+    ]
+    table = "\n".join(f"| {name} | {use} |" for name, use in rows)
     (OUT / "图表索引.md").write_text(
-        "# 问题3图表\n\n| 文件 | 论文用途 |\n|---|---|\n"
-        "| 图1_联合任务时间轴.png | 展示运输与中继架次的联合完成过程 |\n"
-        "| 图2_通信保障构成.png | 比较各运输架次直连与中继保障时长 |\n"
-        "| 图3_中继空间部署.png | 展示中继悬停点、服务区和地形背景 |\n"
-        "| 图4_中继资源周转.png | 展示两架中继无人机的任务衔接 |\n"
-        "| 图5_链路裕量分布.png | 展示直连、接入、回传链路安全裕量 |\n"
-        "| 图6_通信缺口迭代.png | 展示协调迭代中待覆盖缺口的变化 |\n\n"
-        "数据来源：outputs/problem3/refactored/final；方案状态与连续通信认证结果见 screening.json。\n",
+        "# 问题3图表\n\n| 文件 | 论文用途 |\n|---|---|\n" + table + "\n\n"
+        "数据来源：outputs/problem3；图5、图6 的链路裕量由附件 DEM/LOS 物理模型对本次方案"
+        "逐点重算得到（采样步长见脚本 SAMPLE_STEP_S）。\n",
         encoding="utf-8")
 
 

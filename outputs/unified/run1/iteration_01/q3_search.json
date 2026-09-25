@@ -1,0 +1,57 @@
+{
+  "time_grid_s": 1,
+  "energy_grid_kwh": 1e-06,
+  "scope": "finite pattern/location library, conservative integer model",
+  "joint": true,
+  "pattern_count": 337,
+  "horizon_s": 36000,
+  "max_relay_missions": 10,
+  "three_group_compatibility_required": true,
+  "stages": [
+    {
+      "objective": "makespan_s",
+      "status": "FEASIBLE",
+      "lower_bound": 5941.0,
+      "incumbent": 7631.0
+    },
+    {
+      "objective": "weighted_lateness_x100",
+      "status": "FEASIBLE",
+      "lower_bound": 0.0,
+      "incumbent": 4741200.0
+    },
+    {
+      "objective": "energy_micro_kwh",
+      "status": "FEASIBLE",
+      "lower_bound": 62094640.0,
+      "incumbent": 73602664.0
+    },
+    {
+      "objective": "sorties",
+      "status": "UNKNOWN",
+      "lower_bound": 17.0,
+      "incumbent": null
+    }
+  ],
+  "status": "FEASIBLE",
+  "restricted_lexicographic_optimal": false,
+  "global_optimal": false,
+  "integer_makespan_s": 7631,
+  "three_group_witness": {
+    "S001": 0,
+    "S002": 0,
+    "S003": 2,
+    "S004": 2,
+    "S005": 2,
+    "S006": 2,
+    "S007": 2,
+    "S008": 2,
+    "S009": 2,
+    "S010": 0,
+    "S011": 1,
+    "S012": 0,
+    "S013": 0,
+    "S014": 0,
+    "S015": 2
+  }
+}
