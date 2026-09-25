@@ -1,4 +1,4 @@
-"""Publish the selected Q2–Q4 workbooks and comparable figures at one location."""
+"""Publish the selected Q1–Q4 workbooks and comparable figures at one location."""
 
 from __future__ import annotations
 
@@ -204,9 +204,13 @@ def communication_chart(source: Path, output: Path):
 def partition_map(source: Path, output: Path):
     data = json.loads((source / "q4/result.json").read_text(encoding="utf-8"))
     base, sites = load_nodes()
-    figure, axes = plt.subplots(1, 2, figsize=(14, 6), layout="constrained", sharex=True, sharey=True)
+    # A K that the frozen Q3 schedule cannot realise is reported in the tables but
+    # has no partition to draw.
+    keys = [k for k in ("2", "3") if data["solutions"][k].get("feasible")]
+    figure, axes = plt.subplots(1, len(keys), figsize=(7 * len(keys), 6), layout="constrained",
+                                sharex=True, sharey=True, squeeze=False)
     palette = ("#2878b5", "#e07a24", "#37966f")
-    for axis, k in zip(axes, ("2", "3")):
+    for axis, k in zip(axes[0], keys):
         groups = data["solutions"][k]["groups"]
         mapping = {site: index for index, row in enumerate(groups)
                    for site in row["sites"].split(",")}
@@ -232,11 +236,16 @@ def partition_map(source: Path, output: Path):
 
 def inventory_chart(source: Path, output: Path):
     rows = read_csv(source / "q4/inventory_comparison.csv")
-    keys = [row["resource"] for row in rows if row["K"] == "2"]
+    present = [k for k in ("2", "3") if any(row["K"] == k for row in rows)]
+    if not present:
+        raise ValueError("Q4 inventory comparison has no partition rows")
+    keys = [row["resource"] for row in rows if row["K"] == present[0]]
     if len(keys) != 8:
         raise ValueError("Q4 inventory chart expects eight named resource types")
-    figure, axes = plt.subplots(2, 1, figsize=(11, 8), layout="constrained", sharex=True)
-    for axis, k in zip(axes, ("2", "3")):
+    figure, axes = plt.subplots(len(present), 1, figsize=(11, 4 * len(present)),
+                                layout="constrained", sharex=True, squeeze=False)
+    axes = axes[:, 0]
+    for axis, k in zip(axes, present):
         values = {row["resource"]: row for row in rows if row["K"] == k}
         for index, key in enumerate(keys):
             row = values[key]
@@ -249,7 +258,7 @@ def inventory_chart(source: Path, output: Path):
                           ha="center", fontsize=8, color="#a52a2a")
         axis.set(ylabel="Units", title=f"K={k}: inventory and independent group demand")
         axis.grid(axis="y", alpha=.25)
-    axes[1].set_xticks(range(len(keys)), keys, rotation=30, ha="right", fontsize=8)
+    axes[-1].set_xticks(range(len(keys)), keys, rotation=30, ha="right", fontsize=8)
     axes[0].bar([], [], color="#2878b5", label="Inventory")
     axes[0].bar([], [], color="#37966f", label="Demand within stock")
     axes[0].bar([], [], color="#c0392b", label="Demand exceeding stock")
@@ -257,9 +266,19 @@ def inventory_chart(source: Path, output: Path):
     save(figure, output)
 
 
-def publish(source: Path, output: Path) -> dict:
+Q1_ARTIFACTS = ("problem1_submission.xlsx", "safe_payloads.csv", "batches.csv",
+                "sensitivity_summary.csv", "safe_payloads_sensitivity.csv",
+                "reserve_sensitivity.png", "energy_model_sensitivity.png",
+                "problem1_results.json")
+
+
+def publish(source: Path, output: Path, q1_source: Path | None = None) -> dict:
     if not (source / "summary.json").exists():
         raise ValueError("Selected unified solution is missing")
+    q1_source = ROOT / "outputs/problem1" if q1_source is None else q1_source
+    missing = [name for name in Q1_ARTIFACTS if not (q1_source / name).exists()]
+    if missing:
+        raise ValueError(f"Question 1 artifacts are missing from {q1_source}: {missing}")
     summary = json.loads((source / "summary.json").read_text(encoding="utf-8"))
     q2 = json.loads((source / "q2/validation.json").read_text(encoding="utf-8"))
     if not (summary.get("feasible") and q2.get("feasible")
@@ -267,11 +286,16 @@ def publish(source: Path, output: Path) -> dict:
             and q2.get("audit_version") == "physical_replay_v2"
             and q3_gate(source / "q3")["ready"]):
         raise ValueError("Selected Q2/Q3 solution has not passed the required audits")
-    if not all(json.loads((source / "q4/result.json").read_text(encoding="utf-8"))
-               ["solutions"][str(k)]["feasible"] for k in (2, 3)):
-        raise ValueError("Both frozen Q4 partitions are required")
+    q4 = json.loads((source / "q4/result.json").read_text(encoding="utf-8"))
+    feasible_k = [k for k in (2, 3) if q4["solutions"][str(k)].get("feasible")]
+    # An infeasible K is a legitimate outcome of an independently solved Q3 and is
+    # published as such; only a Q4 that answers nothing at all blocks publication.
+    if not feasible_k:
+        raise ValueError("No frozen Q4 partition is feasible: " + "; ".join(
+            f"K={k}: {q4['solutions'][str(k)].get('reason')}" for k in (2, 3)))
     output.mkdir(parents=True, exist_ok=True)
-    names = {"problem2_submission.xlsx": "q2/problem2_submission.xlsx",
+    names = {"problem1_submission.xlsx": "problem1_submission.xlsx",
+             "problem2_submission.xlsx": "q2/problem2_submission.xlsx",
              "problem3_submission.xlsx": "q3/problem3_submission.xlsx",
              "problem4_submission.xlsx": "q4/problem4_submission.xlsx",
              "unified_program.zip": "unified_program.zip",
@@ -280,7 +304,11 @@ def publish(source: Path, output: Path) -> dict:
              "delivery_times.png": "q2/delivery_times.png",
              "q3_routes_relays.png": "q3/routes_relays.png"}
     for name, relative in names.items():
-        shutil.copy2(source / relative, output / name)
+        origin = (q1_source if relative == "problem1_submission.xlsx" else source) / relative
+        shutil.copy2(origin, output / name)
+    for name in Q1_ARTIFACTS:
+        if name != "problem1_submission.xlsx":
+            shutil.copy2(q1_source / name, output / name)
     write_clearance_outputs(output, q2["terrain_clearance"])
     q3 = json.loads((source / "q3/screening.json").read_text(encoding="utf-8"))
     (output / "_q3_clearance_tmp").mkdir(exist_ok=True)
@@ -312,14 +340,17 @@ def publish(source: Path, output: Path) -> dict:
                           "selected": row["run"] == q2_source
                           and abs(row["q2_score"][0] - summary["q2"]["score"][0]) < 1e-6}
                          for row in q2_candidates)
-    assets = [*names, "terrain_clearance.png", "terrain_clearance_audit.csv",
+    assets = [*names, *[name for name in Q1_ARTIFACTS if name != "problem1_submission.xlsx"],
+              "terrain_clearance.png", "terrain_clearance_audit.csv",
               "q3_terrain_clearance.png", "q3_terrain_clearance_audit.csv",
               "time_priority_tradeoff.png", "time_priority_candidates.csv",
               "q3_tradeoff.png", "q3_resource_gantt.png", "q3_delivery_times.png",
               "q3_communication_timeline.png", "q4_partitions.png", "q4_inventory.png"]
     with zipfile.ZipFile(output / "unified_results.zip", "w", zipfile.ZIP_DEFLATED) as archive:
-        for name in ("problem2_submission.xlsx", "problem3_submission.xlsx",
-                     "problem4_submission.xlsx", "unified_program.zip",
+        for name in ("problem1_submission.xlsx", "problem2_submission.xlsx",
+                     "problem3_submission.xlsx", "problem4_submission.xlsx",
+                     "unified_program.zip", "safe_payloads.csv", "batches.csv",
+                     "sensitivity_summary.csv", "safe_payloads_sensitivity.csv",
                      "terrain_clearance_audit.csv", "q3_terrain_clearance_audit.csv"):
             archive.write(output / name, name)
         for name in assets:
@@ -329,17 +360,25 @@ def publish(source: Path, output: Path) -> dict:
                          "q3/communication_audit.csv", "q3/relay_resource_audit.csv",
                          "q4/result.json", "q4/inventory_comparison.csv"):
             archive.write(source / relative, relative)
-    index = ["# 第二至第四问统一结果", "",
-             "三份工作簿分别记录第二问独立运输方案、第三问运输与中继联合方案、第四问冻结后的分区资源配置。",
+    infeasible = [k for k in (2, 3) if not q4["solutions"][str(k)].get("feasible")]
+    index = ["# 第一至第四问统一结果", "",
+             "四份工作簿分别记录第一问单点往返能力与组批、第二问独立运输方案、第三问运输与中继联合方案、第四问冻结后的分区资源配置。",
+             "问题一默认已包含返航安全余量 0.10–0.50 的敏感性分析；第三问按独立范围求解（不预留第四问分区）。",
              "计算指标、适用范围和资源缺口详见 [完整报告](final/REPORT.md)。", "",
              "## 提交与审计", "",
+             "- [第一问提交表](problem1_submission.xlsx)",
              "- [第二问提交表](problem2_submission.xlsx)",
              "- [第三问提交表](problem3_submission.xlsx)",
              "- [第四问提交表](problem4_submission.xlsx)",
              "- [提交包](unified_results.zip) · [可运行程序](unified_program.zip)",
              "- [文件清单与 SHA-256](deliverables.json)", "",
+             "## 第一问数据", "",
+             "- [最大安全载荷](safe_payloads.csv) · [货箱组批](batches.csv)",
+             "- [余量敏感性汇总](sensitivity_summary.csv) · [各机型安全载荷](safe_payloads_sensitivity.csv)",
+             "- [余量敏感性图](reserve_sensitivity.png) · [能耗模型敏感性图](energy_model_sensitivity.png)",
+             "- [原始结果](problem1_results.json)", "",
              "## 图表", "",
-             "与 `outputs/problem23` 对应的第二问图：", "",
+             "第二问图：", "",
              "- [运输路线](routes.png) · [资源甘特图](resource_gantt.png) · [逐箱送达](delivery_times.png)",
              "- [完成时间权衡](time_priority_tradeoff.png) · [巡航净空](terrain_clearance.png)", "",
              "第三、四问扩展图：", "",
@@ -348,7 +387,16 @@ def publish(source: Path, output: Path) -> dict:
              "- [第三问巡航净空](q3_terrain_clearance.png) · [分区地图](q4_partitions.png)",
              "- [分区资源需求与库存](q4_inventory.png) · [联合方案权衡](q3_tradeoff.png)", "",
              "图中候选点只代表已认证或已审计的搜索结果；红点是当前选中方案。",
-             "第二问和第三问分别来自不同运行，原始方案及审计表保存在 `final/`。", ""]
+             "第二问和第三问分别来自不同运行，原始方案及审计表保存在 `final/`。"]
+    if infeasible:
+        index.append("第四问中 " + "、".join(f"K={k}" for k in infeasible)
+                     + " 在冻结的第三问排程下不可行，原因见 `q4/result.json`，未在结果表中虚构方案。")
+    index.append("")
+    (output / "README.md").write_text("\n".join(index), encoding="utf-8")
+    result = {"selected_source": str(source.resolve()), "q1_source": str(q1_source.resolve()),
+              "infeasible_partitions": infeasible,
+              "q2_candidate_count": len(q2_candidates), "q3_candidate_count": len(q3_candidates),
+              "files": {name: digest(output / name) for name in assets + ["unified_results.zip"]}}
     (output / "README.md").write_text("\n".join(index), encoding="utf-8")
     result = {"selected_source": str(source.resolve()), "output": str(output.resolve()),
               "q2_candidate_count": len(q2_candidates), "q3_candidate_count": len(q3_candidates),
@@ -361,8 +409,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source", type=Path, default=ROOT / "outputs/unified/final")
     parser.add_argument("--output", type=Path, default=ROOT / "outputs/unified")
+    parser.add_argument("--q1-source", type=Path, default=ROOT / "outputs/problem1",
+                        help="Directory holding the Question 1 deliverables")
     args = parser.parse_args()
-    result = publish(args.source, args.output)
+    result = publish(args.source, args.output, args.q1_source)
     print(json.dumps({key: value for key, value in result.items() if key != "files"}, ensure_ascii=False))
 
 
