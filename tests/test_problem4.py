@@ -4,6 +4,8 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
+from openpyxl import load_workbook
+
 from src.problem4.solver import _peak, atomic_units, evaluate_partition, partitions, q3_gate, run
 
 
@@ -72,6 +74,13 @@ class Problem4Tests(unittest.TestCase):
             self.assertTrue(result["solutions"]["3"]["feasible"])
             self.assertTrue((output / "problem4_configuration.csv").exists())
             self.assertTrue((output / "inventory_comparison.csv").exists())
+            self.assertTrue((output / "problem4_submission.xlsx").exists())
+            workbook = load_workbook(output / "problem4_submission.xlsx", read_only=True, data_only=True)
+            sheet = workbook["Q4_分区配置"]
+            self.assertEqual(sheet.cell(1, 1).value, "K（2或3）")
+            self.assertEqual(sum(1 for row in sheet.iter_rows(min_row=2, values_only=True)
+                                 if row[0] is not None), 5)
+            workbook.close()
             with (output / "problem4_configuration.csv").open(encoding="utf-8-sig") as stream:
                 self.assertEqual(len(list(csv.DictReader(stream))), 5)
 
