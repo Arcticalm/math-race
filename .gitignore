@@ -7,8 +7,5 @@
 __pycache__/
 *.py[cod]
 
-# Generated validation outputs for the refactored Problem 3 scheduler
-outputs/problem3/refactored/
 
-# Shared pattern / joint optimization runs
-outputs/unified/
+
