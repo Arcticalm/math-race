@@ -15,32 +15,62 @@
       "S001"
     ],
     [
-      "S002",
-      "S003",
-      "S004",
-      "S005",
-      "S007",
-      "S008",
-      "S009",
-      "S015"
+      "S002"
+    ],
+    [
+      "S003"
+    ],
+    [
+      "S004"
+    ],
+    [
+      "S005"
     ],
     [
       "S006"
     ],
     [
+      "S007"
+    ],
+    [
+      "S008"
+    ],
+    [
+      "S009"
+    ],
+    [
       "S010",
-      "S012",
-      "S013",
-      "S014"
+      "S013"
     ],
     [
       "S011"
+    ],
+    [
+      "S012"
+    ],
+    [
+      "S014"
+    ],
+    [
+      "S015"
     ]
   ],
+  "frozen_input_sha256": {
+    "screening.json": "f700cd647a72bd7d44b28f39d15d3b2801a8c6ce66377d0a6614b36fc6ae46a2",
+    "transport_inherited_audit.csv": "801718122732af2a23ce9ad48d33f1005625bb4882fdeca39ef35c4d8d50100b",
+    "relay_schedule.csv": "c6462ffeec414c8821c68309c500c2e3070c2f6b7e72853b5079782aeb190b14",
+    "relay_resource_audit.csv": "eb7cdfcb06eeb4ba7c38cffecbffe48fcda96ccc37eec392094c8e890b860dba",
+    "communication_audit.csv": "c2ad8c4698330dbb56ac8ad8308198d084dc5b1ce71d0cd04b18e4886e591ecd",
+    "box_delivery_audit.csv": "79664e352ef7c5761fad5260ee05c554f34901d324e5ae3caee1ec19af2ab82d"
+  },
   "solutions": {
     "2": {
       "feasible": true,
-      "candidate_count": 15,
+      "candidate_count": 8191,
+      "inventory_feasible": false,
+      "partition_search_complete": true,
+      "shared_relay_missions": [],
+      "optimality_scope": "all partitions of the frozen Q3 task graph under the stated lexicographic objective, fielding one relay asset per group that a shared relay mission serves",
       "selection_rule": "minimize total inventory deficit, then total resource demand, then max workload CV",
       "score": [
         2,
@@ -59,15 +89,17 @@
           "C_battery": 4,
           "relay_airframe": 2,
           "relay_energy": 3,
-          "transport_sorties": "P00001,P00002,P00003,P00005,P00009,P00010,P00011,P00014,P00020,P00024,P00026,P00028,P00030,P00041,P00044,P00057,P00071,P00089,P00107,P00272,P00275,P00278",
-          "relay_sorties": "RU-001,RU-002,RU-003,RU-004,RU-005",
+          "transport_sorties": "P00002,P00009,P00010,P00011,P00014,P00020,P00024,P00026,P00028,P00030,P00032,P00037,P00040,P00041,P00044,P00057,P00071,P00089,P00107,P00128,P00131,P00134,P00137,P00272,P00275,P00278",
+          "relay_sorties": "RU-001,RU-002,RU-003,RU-004",
+          "shared_relay_missions": 0,
           "site_count": 14,
-          "sortie_count": 22,
-          "transport_flight_time_s": 31647.61622387784,
+          "sortie_count": 26,
+          "transport_flight_time_s": 35222.39001215245,
           "box_count": 77,
-          "relay_time_s": 4034.0,
-          "transport_energy_kwh": 65.15458382980141,
-          "relay_energy_kwh": 2.731707116162023
+          "relay_time_s": 5790.0,
+          "transport_energy_kwh": 68.98142050744123,
+          "relay_energy_kwh": 2.9130403934863183,
+          "cargo_mass_kg": 733.0
         },
         {
           "group": 2,
@@ -82,28 +114,33 @@
           "relay_energy": 0,
           "transport_sorties": "P00018",
           "relay_sorties": "",
+          "shared_relay_missions": 0,
           "site_count": 1,
           "sortie_count": 1,
           "transport_flight_time_s": 799.6308045644855,
           "box_count": 3,
           "relay_time_s": 0,
           "transport_energy_kwh": 1.0771461381899774,
-          "relay_energy_kwh": 0
+          "relay_energy_kwh": 0,
+          "cargo_mass_kg": 25.0
         }
       ]
     },
     "3": {
       "feasible": true,
-      "candidate_count": 25,
+      "candidate_count": 788970,
+      "inventory_feasible": false,
+      "partition_search_complete": true,
+      "shared_relay_missions": [],
+      "optimality_scope": "all partitions of the frozen Q3 task graph under the stated lexicographic objective, fielding one relay asset per group that a shared relay mission serves",
       "selection_rule": "minimize total inventory deficit, then total resource demand, then max workload CV",
       "score": [
         4,
         31,
-        1.414213562373095
+        1.4142135623730951
       ],
       "groups": [
         {
-          "group": 1,
           "sites": "S001,S002,S003,S004,S005,S007,S008,S009,S010,S012,S013,S014,S015",
           "A_airframe": 4,
           "B_airframe": 2,
@@ -113,18 +150,20 @@
           "C_battery": 4,
           "relay_airframe": 2,
           "relay_energy": 3,
-          "transport_sorties": "P00001,P00002,P00003,P00005,P00009,P00010,P00014,P00020,P00024,P00026,P00028,P00030,P00041,P00044,P00057,P00071,P00089,P00107,P00272,P00275,P00278",
-          "relay_sorties": "RU-001,RU-002,RU-003,RU-004,RU-005",
+          "transport_sorties": "P00002,P00009,P00010,P00014,P00020,P00024,P00026,P00028,P00030,P00032,P00037,P00040,P00041,P00044,P00057,P00071,P00089,P00107,P00128,P00131,P00134,P00137,P00272,P00275,P00278",
+          "relay_sorties": "RU-001,RU-002,RU-003,RU-004",
+          "shared_relay_missions": 0,
           "site_count": 13,
-          "sortie_count": 21,
-          "transport_flight_time_s": 30566.75233860388,
+          "sortie_count": 25,
+          "transport_flight_time_s": 34141.52612687848,
           "box_count": 71,
-          "relay_time_s": 4034.0,
-          "transport_energy_kwh": 62.56064889547643,
-          "relay_energy_kwh": 2.731707116162023
+          "relay_time_s": 5790.0,
+          "transport_energy_kwh": 66.38748557311627,
+          "relay_energy_kwh": 2.9130403934863183,
+          "cargo_mass_kg": 674.0,
+          "group": 1
         },
         {
-          "group": 2,
           "sites": "S006",
           "A_airframe": 0,
           "B_airframe": 0,
@@ -136,16 +175,18 @@
           "relay_energy": 0,
           "transport_sorties": "P00011",
           "relay_sorties": "",
+          "shared_relay_missions": 0,
           "site_count": 1,
           "sortie_count": 1,
           "transport_flight_time_s": 1080.8638852739632,
           "box_count": 6,
           "relay_time_s": 0,
           "transport_energy_kwh": 2.593934934324972,
-          "relay_energy_kwh": 0
+          "relay_energy_kwh": 0,
+          "cargo_mass_kg": 59.0,
+          "group": 2
         },
         {
-          "group": 3,
           "sites": "S011",
           "A_airframe": 0,
           "B_airframe": 1,
@@ -157,13 +198,16 @@
           "relay_energy": 0,
           "transport_sorties": "P00018",
           "relay_sorties": "",
+          "shared_relay_missions": 0,
           "site_count": 1,
           "sortie_count": 1,
           "transport_flight_time_s": 799.6308045644855,
           "box_count": 3,
           "relay_time_s": 0,
           "transport_energy_kwh": 1.0771461381899774,
-          "relay_energy_kwh": 0
+          "relay_energy_kwh": 0,
+          "cargo_mass_kg": 25.0,
+          "group": 3
         }
       ]
     }
