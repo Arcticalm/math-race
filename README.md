@@ -22,14 +22,18 @@ data/镇龙乡地理空间数据/镇龙乡地理空间详情地图.html
 
 贡献和提交规范请参阅 [AGENTS.md](AGENTS.md) 与 [commit-conventions.md](commit-conventions.md)。
 
-## 第二至第四问统一求解
+## 求解代码
 
-[统一模式库与联合优化入口](scripts/unified/README.md)支持第二问独立选择组批和排程、
-第三问运输与中继联合重选，以及冻结第三问后的两组/三组资源配置和反馈迭代。
+四问的最终代码在 [`final_code/`](final_code/README.md)，按问题分目录。第
+二至第四问共用一套模式库，支持第二问独立选择组批和排程、第三问运输与中继联合
+重选，以及冻结第三问后的两组/三组资源配置和反馈迭代。
 
 ```bash
-.venv/bin/python -m scripts.unified.solver --output outputs/unified/example --rounds 2
+.venv/bin/python -m final_code.run_all --output outputs/unified/example --rounds 2
 ```
+
+逐问运行、多轮选解与结果发布见 [`final_code/README.md`](final_code/README.md)；
+各问结果写入 `outputs/`，成图脚本在 `pic/`。
 
 原始数据不修改。结果包含连续时间与通信审计、各阶段求解界和冻结输入哈希；
 有限模式库的求解结果不声明原题全局最优。

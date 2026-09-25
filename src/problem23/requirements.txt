@@ -1,2 +1,0 @@
--r ../problem21/requirements.txt
-ortools>=9.10

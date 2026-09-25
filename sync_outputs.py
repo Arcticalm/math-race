@@ -11,7 +11,7 @@
     outputs/unified/final/q4/*  ->  outputs/problem4/
 
 第三、四问的结果固定继承同一次第三问求解，因此 q3 与 q4 必须成套同步，
-本脚本一次复制、不做选择。问题一由 final_code/problem1_final/solver.py
+本脚本一次复制、不做选择。问题一由 final_code/problem1/solver.py
 直接写入 outputs/problem1/，不经过这里。
 
 同步完成后即可运行 pic/问题N/plot_problemN.py 出图。
@@ -33,9 +33,9 @@ TARGETS = {
 def main() -> None:
     if not SOURCE.exists():
         raise SystemExit(
-            f"未找到 {SOURCE.relative_to(ROOT)}；请先运行统一求解器并执行 compare_runs：\n"
-            "  python -m final_code.unified.solver --output outputs/unified/run1\n"
-            "  python -m final_code.unified.compare_runs outputs/unified/run1 "
+            f"未找到 {SOURCE.relative_to(ROOT)}；请先运行统一求解器并执行选解：\n"
+            "  python -m final_code.run_all --output outputs/unified/run1\n"
+            "  python -m final_code.compare_runs outputs/unified/run1 "
             "--output outputs/unified/final"
         )
     for source, target in TARGETS.items():

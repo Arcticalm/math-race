@@ -70,9 +70,9 @@ def collect_link_samples(schedule: pd.DataFrame) -> pd.DataFrame:
     中继回传为悬停点→G01。裕量定义为「接收门限 − 路径损耗」，正值即可用。
     """
     sys.path.insert(0, str(ROOT))
-    from src.problem1.solver import Node
-    from src.problem3.physics import LinkEvaluator, link_limits
-    from src.problem3.solver import TrackPhase, _position
+    from final_code.problem1.solver import Node
+    from final_code.problem3.physics import LinkEvaluator, link_limits
+    from final_code.problem3.transport_relay import TrackPhase, _position
 
     phases = []
     for row in pd.read_csv(DATA / "trajectory_phases.csv").to_dict("records"):
