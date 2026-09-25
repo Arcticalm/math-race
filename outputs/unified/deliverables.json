@@ -1,0 +1,29 @@
+{
+  "selected_source": "/home/naya/math-race/outputs/unified/final",
+  "output": "/home/naya/math-race/outputs/unified",
+  "q2_candidate_count": 4,
+  "q3_candidate_count": 4,
+  "files": {
+    "problem2_submission.xlsx": "3103bdc48cfab083d888f75ce5d55489791ca6452789839a6fede42cfde8d6b3",
+    "problem3_submission.xlsx": "171feadd6826d6f4070fb477473ba65d90630511a99ed9c4b7ebda2cd9f9c64b",
+    "problem4_submission.xlsx": "36b206ee778ce9c9f662bee12961df033322ee01484618842f89770fa6c8b3df",
+    "unified_program.zip": "f9c33ef7fe1160710355fa1d8a5a67eda8feb1fc56fc3f88ab885ad77b15423c",
+    "routes.png": "b51dcbed34b418ce9e892766a8f5ccb8b19c6649a984c3e24a85de4247d9fcc0",
+    "resource_gantt.png": "377b969aaec2eba2c129d065c8661b965f698338d2ed37b3ae012cc7318782ce",
+    "delivery_times.png": "215a9d46a1e513fb4ced07351c253f9060ef8e11fb7f28030050d48d6b3c861c",
+    "q3_routes_relays.png": "c7939fcd99c619c099519b56f0a028aaa94b784fdf4c2a5dbefd55df517d64c2",
+    "terrain_clearance.png": "2f0c1689a41ea06480e44117e05cd6f4ae40c09938b9a73fddf15d8aa8cbcdde",
+    "terrain_clearance_audit.csv": "89fd8737e3944aac400941d4177bb8f3bf35021ad35dfe66f1db1f5e7d4290af",
+    "q3_terrain_clearance.png": "1471e2269fda503b739c724d290bbdb63f0b9e7eb8e613bd325b43fdfd3d5fb0",
+    "q3_terrain_clearance_audit.csv": "cec229c4f8ec1b1dedfc02e8bb9d3bf60df09b3d8782eeeb0fa91ea379210e5a",
+    "time_priority_tradeoff.png": "d80d22c0ee8f362cf735fe5068dacf2826c8d07a4223922104467a49d258597d",
+    "time_priority_candidates.csv": "c6108cd78d5ad73ee9c6779ea02f525f1311cae4255978f8da23bebac78839ae",
+    "q3_tradeoff.png": "c8ace7032e5b72178bbb346246aa30f92f5f608334fd4b8afb2248bf7036821f",
+    "q3_resource_gantt.png": "7843665fb042bf3ddfa38da640378f6dee364598d558a1d0a9c0a8b59a50b41c",
+    "q3_delivery_times.png": "518da603de3402b6bb99ccdbc99dedd45d0e23ae971f91f25cdc12bd82442200",
+    "q3_communication_timeline.png": "0e4f12e5d7a37d2e98eda90b51f79265b31acc34d1232a956d452757cc8ff105",
+    "q4_partitions.png": "b6a0eb060d7e3fb7b5855dc4ae3f218e4d0c796b45fba845e8ec2a5b02391ec9",
+    "q4_inventory.png": "d4775a3b470de353ff178a2b4ac7de5d17ccab265009f20a860d8e449af3821e",
+    "unified_results.zip": "4773a45b62c0ec90c8a31d8c2fa95c488b14dff497da04b8305d8fc027036421"
+  }
+}

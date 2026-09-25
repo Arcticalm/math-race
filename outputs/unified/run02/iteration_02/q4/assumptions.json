@@ -1,0 +1,9 @@
+{
+  "q3_fixed_schedule": true,
+  "partition_selection": "lexicographic: total inventory deficit, total resource demand, maximum CV of transport time/relay service time/sortie count",
+  "workload_statistics": "population CV (standard deviation divided by mean); undefined at zero mean",
+  "resource_intervals": "half-open; batteries and relay energy components held through full recharge; relay airframe includes audited turnaround",
+  "mass_by_group": "not reported because Q3 transport audit does not map box identities or mass to sorties; no inferred allocation is made",
+  "partition_search_limit": 200000,
+  "inventory_source": "transport and relay source workbooks"
+}

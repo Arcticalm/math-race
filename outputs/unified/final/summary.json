@@ -1,0 +1,108 @@
+{
+  "feasible": true,
+  "global_optimal": false,
+  "q2": {
+    "source": "/home/naya/math-race/outputs/unified/run03",
+    "score": [
+      6298.759325243764,
+      0.0,
+      71.65434106261525,
+      26
+    ]
+  },
+  "q3_q4": {
+    "source": "/home/naya/math-race/outputs/unified/run02",
+    "score": [
+      6562.6308045644855,
+      80081.21832586903,
+      72.04261881149483,
+      30,
+      9,
+      64,
+      1.2063532695882344
+    ]
+  },
+  "q2_candidates": [
+    {
+      "source": "/home/naya/math-race/outputs/unified/run02",
+      "score": [
+        6347.185491467791,
+        664.3094952342217,
+        70.23273800988476,
+        27
+      ]
+    },
+    {
+      "source": "/home/naya/math-race/outputs/unified/run03",
+      "score": [
+        6298.759325243764,
+        0.0,
+        71.65434106261525,
+        26
+      ]
+    }
+  ],
+  "joint_candidates": [
+    {
+      "source": "/home/naya/math-race/outputs/unified/run02",
+      "score": [
+        6562.6308045644855,
+        80081.21832586903,
+        72.04261881149483,
+        30,
+        9,
+        64,
+        1.2063532695882344
+      ]
+    },
+    {
+      "source": "/home/naya/math-race/outputs/unified/run03",
+      "score": [
+        6980.6308045644855,
+        13988.618990468443,
+        69.7942496722353,
+        28,
+        14,
+        68,
+        1.4142135623730951
+      ]
+    }
+  ],
+  "selection_rule": "independent time-first Q2; joint time, lateness, energy, sorties, K2+K3 deficit, resource sum, worst CV",
+  "source_pattern_ids": "local to the recorded source run; no route, box, time or resource assignment changed",
+  "packages": {
+    "ortools": "9.15.6755",
+    "numpy": "2.2.6",
+    "scipy": null,
+    "rasterio": "1.4.4",
+    "openpyxl": "3.1.5",
+    "matplotlib": "3.10.9"
+  },
+  "artifact_sha256": {
+    "q2/box_delivery_audit.csv": "340ba622df10510e5608402dc3b6a97e8befba08478939d8b87485b0277b1de4",
+    "q2/sorties_audit.csv": "7c8df25e5eea68089ac346d6061c0edf1b804e681edf749accdb25ef15cf6a6c",
+    "q2/battery_audit.csv": "4287248f16db4d569e01e87dd3fa7b15689dd8def64c7e308e1aa666573b6681",
+    "q2/model_assumptions.json": "ec88392e63ff548debba6b32e70c5135db3899e5f26490811946f63aa4c17273",
+    "q2/problem2_submission.xlsx": "3103bdc48cfab083d888f75ce5d55489791ca6452789839a6fede42cfde8d6b3",
+    "q2/route_segments.csv": "18a80c4c329037385d96268418e2af293100b52bdd211e11c597ecbfab2e34ef",
+    "q2/validation.json": "7a96ea4251ae31277c5e1e9caf78153133667d9cbeea2e601fcec127da65739e",
+    "q3/box_delivery_audit.csv": "98db3b3662584cee8fc0bbeaa7bae6252df8e17fd10a3b221214cbce02f0a82f",
+    "q3/transport_inherited_audit.csv": "815a5120bbc715c5e9dfe24bad0b86de5ca59ae439b6988396520902ce7c3d6c",
+    "q3/relay_schedule.csv": "edeeb75c0328dba8650a699f88f6ec780da0e02b30e65e04fdd626ceee838660",
+    "q3/problem3_submission.xlsx": "171feadd6826d6f4070fb477473ba65d90630511a99ed9c4b7ebda2cd9f9c64b",
+    "q3/relay_resource_audit.csv": "7c208791a760c4650c5c8850248d54087d78f1a1bae4859324ec465e40f8916c",
+    "q3/communication_audit.csv": "7f4820e22ad3dda4e3570f6388af712a6c514ce7fa28635c948d0a55076bed06",
+    "q3/trajectory_phases.csv": "cda5cff96baf4244b880d8e096d190fd81e81935850e01c1377c082c4f664612",
+    "q3/screening.json": "b51be70cb336f70981cac687c2795e7799b1070ce03808fb5d56e020edfd73c6",
+    "q4/site_mapping_audit.csv": "549cebe0278783264584541af5e2e893a37a36d82cb770772e1f361b637e341e",
+    "q4/result.json": "23da554a0ef9f9af862598e869a1776898c901fecf58a8a1d9505e2f30ae9193",
+    "q4/assumptions.json": "3d02f3e569b47ca44d0d7c7e2d7258feb6333de8f486137e1bfdb7cd89b6f8f4",
+    "q4/inventory_comparison.csv": "07275ef4eef621c900a10982a98177567b2e50102bcfe566d8ca8190bb391a32",
+    "q4/resource_interval_audit.csv": "54032ccaf35dda20ab5d8413f57500380ea4e6c725838d235dd43d106bd356e0",
+    "q4/task_mapping_audit.csv": "f10d1a6da4433b10ca46922735f2ea3704332a53b9169cca4e61183070d4655c",
+    "q4/frozen_q3_sha256.json": "ce2c18390fe55c8dbe819147e65b53f7231cdb70274a26ef7d3e952d29eed612",
+    "q4/workload_comparison.csv": "c16aa1cc77fc60019b1e4c1e7cbe34a55e9c2ce4a0752b6e8f721937a357d370",
+    "q4/problem4_configuration.csv": "1dae0e6b6fcfe9bcbd16370923bc099ab88a3434c6f026f541413374384bd38f",
+    "q4/problem4_submission.xlsx": "36b206ee778ce9c9f662bee12961df033322ee01484618842f89770fa6c8b3df"
+  }
+}
