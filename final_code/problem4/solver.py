@@ -14,8 +14,8 @@ from openpyxl import load_workbook
 
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "data" / "无人机应急物资运输基础数据"
-DEFAULT_INPUT = ROOT / "outputs" / "unified" / "final" / "q3"
-DEFAULT_OUTPUT = ROOT / "outputs" / "problem4"
+DEFAULT_INPUT = ROOT / "outputs" / "q3"
+DEFAULT_OUTPUT = ROOT / "outputs" / "q4"
 SITES = tuple(f"S{i:03d}" for i in range(1, 16))
 AIR_TYPES = ("A", "B", "C")
 RESOURCE_KEYS = ("A_airframe", "B_airframe", "C_airframe", "A_battery", "B_battery", "C_battery", "relay_airframe", "relay_energy")
@@ -117,6 +117,21 @@ def q3_gate(input_dir: Path) -> dict:
     return {"ready": True, "screening": screening}
 
 
+def validate_frozen_partition(input_dir: Path, result: dict) -> None:
+    """Reject stale policy or changed source records before comparing/publishing."""
+    if result.get("partition_policy") != PARTITION_POLICY:
+        raise ValueError("Q4 must be recomputed with the frozen relay closure policy")
+    hashes = result.get("frozen_input_sha256", {})
+    required = {"screening.json", "transport_inherited_audit.csv", "relay_schedule.csv",
+                "relay_resource_audit.csv", "communication_audit.csv"}
+    if not required.issubset(hashes):
+        raise ValueError("Incomplete frozen Q3 fingerprints")
+    for name, expected in hashes.items():
+        path = input_dir / name
+        if Path(name).name != name or not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != expected:
+            raise ValueError(f"Frozen Q3 input changed: {name}")
+
+
 def read_q3(input_dir: Path) -> tuple[list[dict], list[dict]]:
     transport = _csv(input_dir / "transport_inherited_audit.csv")
     relay = _csv(input_dir / "relay_schedule.csv")
@@ -197,14 +212,14 @@ def read_q3(input_dir: Path) -> tuple[list[dict], list[dict]]:
     return transport, relay
 
 
-def atomic_units(transport: list[dict]) -> list[frozenset[str]]:
-    """Merge sites that cannot be separated by any legal partition.
+PARTITION_POLICY = "frozen_transport_and_relay_closure_v1"
 
-    The task statement requires sites sharing one transport sortie to be in the
-    same group, so those are merged here. Sites that merely share a relay sortie
-    are not merged: a relay mission is neither split nor duplicated, which is
-    checked per candidate by ``relay_spans_groups`` instead of being folded into
-    the unit definition.
+
+def atomic_units(transport: list[dict], relay=()) -> list[frozenset[str]]:
+    """Merge the frozen transport/relay task graph into indivisible components.
+
+    A relay mission cannot be duplicated, split or assigned across task groups.
+    All sites of its covered transport sorties must therefore share one owner.
     """
     parent = {site: site for site in SITES}
     def find(x):
@@ -217,6 +232,13 @@ def atomic_units(transport: list[dict]) -> list[frozenset[str]]:
         if a != b: parent[b] = a
     for row in transport:
         sites = _sites(row["访问服务区顺序"])
+        for site in sites[1:]: union(sites[0], site)
+    by_sortie = {row["架次编号"]: _sites(row["访问服务区顺序"]) for row in transport}
+    for row in relay:
+        covered = _covered_sorties(row)
+        if not covered or set(covered) - by_sortie.keys():
+            raise ValueError(f"中继架次运输映射缺失或未知: {_relay_id(row)}")
+        sites = [site for task in covered for site in by_sortie[task]]
         for site in sites[1:]: union(sites[0], site)
     groups = defaultdict(set)
     for site in SITES: groups[find(site)].add(site)
@@ -233,18 +255,7 @@ def _covered_sorties(row: dict) -> list[str]:
 
 
 def group_attribution(group, transport: list[dict], relay: list[dict]) -> tuple[set[str], int]:
-    """Tasks one task group must field on its own, and its shared relay count.
-
-    Sites sharing a transport sortie are already merged by ``atomic_units``, so a
-    sortie is either wholly inside this group or wholly outside it. A relay
-    mission is not merged: when its covered transport sorties fall in several
-    groups, every one of those groups has to field its own relay aircraft and
-    energy component for the frozen hover point and service window, because
-    resources may not be moved between groups. Its flight and charging profile is
-    inherited from Question 3 unchanged; only the ownership of the asset is
-    duplicated. The count of such missions is reported as
-    ``shared_relay_missions`` so the overhead stays visible.
-    """
+    """Assign frozen missions to one group; reject any cross-group relay."""
     members = set(group)
     known = {row["架次编号"] for row in transport}
     own: set[str] = set()
@@ -266,9 +277,9 @@ def group_attribution(group, transport: list[dict], relay: list[dict]) -> tuple[
         inside = [item for item in covered if item in own]
         if not inside:
             continue
-        own.add(task)
         if len(inside) != len(covered):
-            shared += 1
+            raise ValueError(f"中继架次跨组，不能复制或拆分冻结任务: {task}")
+        own.add(task)
     return own, shared
 
 
@@ -439,10 +450,10 @@ def run(input_dir: Path = DEFAULT_INPUT, output_dir: Path = DEFAULT_OUTPUT) -> d
         return result
     transport, relay = read_q3(input_dir)
     inventory = load_inventory()
-    units = atomic_units(transport)
+    units = atomic_units(transport, relay)
     frozen_files = ("screening.json", "transport_inherited_audit.csv", "relay_schedule.csv",
                     "relay_resource_audit.csv", "communication_audit.csv", "box_delivery_audit.csv")
-    result = {"status": "ready", "inventory": inventory, "atomic_units": [sorted(x) for x in units],
+    result = {"status": "ready", "partition_policy": PARTITION_POLICY, "inventory": inventory, "atomic_units": [sorted(x) for x in units],
               "frozen_input_sha256": {name: hashlib.sha256((input_dir / name).read_bytes()).hexdigest()
                                       for name in frozen_files if (input_dir / name).exists()},
               "solutions": {}}
@@ -474,7 +485,7 @@ def run(input_dir: Path = DEFAULT_INPUT, output_dir: Path = DEFAULT_OUTPUT) -> d
                                           "inventory_feasible": score[0] == 0,
                                           "partition_search_complete": True,
                                           "shared_relay_missions": duplicated,
-                                          "optimality_scope": "all partitions of the frozen Q3 task graph under the stated lexicographic objective, fielding one relay asset per group that a shared relay mission serves",
+                                          "optimality_scope": "all partitions of the frozen Q3 transport-and-relay task graph under the stated lexicographic objective; every mission has exactly one owner",
                                           "selection_rule": "minimize total inventory deficit, then total resource demand, then max workload CV",
                                           "score": score, "groups": rows}
         for row in rows:
@@ -535,7 +546,8 @@ def run(input_dir: Path = DEFAULT_INPUT, output_dir: Path = DEFAULT_OUTPUT) -> d
     (output_dir / "assumptions.json").write_text(json.dumps({
         "q3_fixed_schedule": True,
         "partition_selection": "lexicographic: total inventory deficit, total resource demand, maximum CV of transport time/relay service time/sortie count/box count",
-        "relay_partition_rule": "atomic units merge only sites sharing a transport sortie, as the task statement requires; a relay mission is never split or re-timed, but when the transport sorties it covers fall in several groups each of those groups fields its own relay aircraft and energy component for the same frozen hover point and window (资源不得跨组调配), so no partition is lost and the duplication is reported per group as shared_relay_missions",
+        "relay_partition_rule": "merge sites sharing a transport sortie or a relay mission transitively; preserve every Q3 mission and its full communication mapping exactly once; no duplication, splitting, re-timing or cross-group resource sharing",
+        "partition_policy": PARTITION_POLICY,
         "inventory_comparison": "resource counts are kept separately by type; aggregate deficit and scale are unweighted modeling objectives, not procurement costs",
         "resource_reassignment": "task start/end times remain fixed; identical units may be recolored within each group; no resource is reused across groups",
         "optimality_scope": "complete partition enumeration for this frozen Q3 schedule and the stated objective only",

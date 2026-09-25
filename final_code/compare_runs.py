@@ -11,14 +11,19 @@ from final_code.run_all import (
     digest, joint_score, package_versions, save_json, snapshot, transport_score,
     write_program_bundle,
 )
-from final_code.problem4.solver import q3_gate, read_q3
+from final_code.problem4.solver import PARTITION_POLICY, q3_gate, read_q3, validate_frozen_partition
 
 
 def collect(runs):
     q2, joint = [], []
     expected_inputs = None
+    expected_groups = None
     for root in runs:
         manifest = root / "manifest.json"
+        if not manifest.exists() and (root / "summary.json").exists():
+            origin = json.loads((root / "summary.json").read_text()).get("q3_q4", {}).get("provenance")
+            if origin:
+                manifest = root / origin / "manifest.json"
         cache = root / "communication_cache.json"
         groups = 0
         if manifest.exists():
@@ -36,6 +41,9 @@ def collect(runs):
         if not inputs or (expected_inputs is not None and inputs != expected_inputs):
             raise ValueError("Cannot compare runs with different source inputs")
         expected_inputs = inputs
+        if expected_groups is not None and groups != expected_groups:
+            raise ValueError("Cannot compare independent and coupled Q3 scopes or different partition group constraints")
+        expected_groups = groups
         q2_path = root / "q2/validation.json"
         if q2_path.exists():
             metrics = json.loads(q2_path.read_text())
@@ -49,7 +57,10 @@ def collect(runs):
         if not frozen_path.exists() or json.loads(frozen_path.read_text()) != snapshot(root / "q3"):
             raise ValueError(f"Frozen Q3 hashes do not match: {root}")
         metrics = json.loads((root / "q3/screening.json").read_text())
+        if metrics.get("search", {}).get("required_partition_groups") != groups:
+            raise ValueError(f"Q3 manifest and solver scopes disagree: {root}")
         partition = json.loads((root / "q4/result.json").read_text())
+        validate_frozen_partition(root / "q3", partition)
         joint.append((joint_score(metrics, partition, groups > 0), root))
     if not q2 or not joint:
         raise ValueError("Need at least one audited Q2 and one certified Q3 whose task graph is frozen")
@@ -68,17 +79,33 @@ def run(runs, output):
     shutil.copytree(q3_root / "q4", output / "q4")
     # Pattern IDs are local to a run; preserve source namespaces when combining
     # independent Q2 and Q3 incumbents from different search restarts.
-    for index, root in enumerate(dict.fromkeys((q2_root, q3_root)), 1):
-        provenance = output / "sources" / str(index)
-        provenance.mkdir(parents=True, exist_ok=True)
-        for name in ("patterns.json", "manifest.json", "feedback_history.json", "relay_locations.json"):
-            if (root / name).exists():
-                shutil.copy2(root / name, provenance / name)
-        save_json(provenance / "origin.json", {"run": str(root.resolve())})
+    provenance_paths = {}
+    copied = {}
+    for question, root in (("q2", q2_root), ("q3_q4", q3_root)):
+        origin = root
+        if (root / "summary.json").exists():
+            previous = json.loads((root / "summary.json").read_text())
+            relative = (previous.get(question) or {}).get("provenance")
+            if relative:
+                origin = root / relative
+        if origin not in copied:
+            relative = f"provenance/{len(copied) + 1}"
+            provenance = output / relative
+            provenance.mkdir(parents=True, exist_ok=True)
+            for name in ("patterns.json", "manifest.json", "feedback_history.json", "relay_locations.json"):
+                if (origin / name).exists():
+                    shutil.copy2(origin / name, provenance / name)
+            save_json(provenance / "origin.json", {"run": str(root.resolve()), "records": str(origin.resolve())})
+            copied[origin] = relative
+        provenance_paths[question] = copied[origin]
+    partition = json.loads((output / "q4/result.json").read_text())
     result = {
-        "feasible": True, "global_optimal": False,
-        "q2": {"source": str(q2_root.resolve()), "score": q2_score},
-        "q3_q4": {"source": str(q3_root.resolve()), "score": q3_score},
+        "feasible": True,
+        "all_partitions_available": all(partition["solutions"][str(k)].get("feasible") for k in (2, 3)),
+        "partition_policy": PARTITION_POLICY,
+        "q3_partition_groups": json.loads((output / "q3/screening.json").read_text())["search"]["required_partition_groups"], "global_optimal": False,
+        "q2": {"source": str(q2_root.resolve()), "provenance": provenance_paths["q2"], "score": q2_score},
+        "q3_q4": {"source": str(q3_root.resolve()), "provenance": provenance_paths["q3_q4"], "score": q3_score},
         "q2_candidates": [{"source": str(root.resolve()), "score": score} for score, root in q2_candidates],
         "joint_candidates": [{"source": str(root.resolve()), "score": score} for score, root in joint_candidates],
         "selection_rule": "independent time-first Q2; joint time, lateness, energy and sorties, extended by the K=2/K=3 frozen-partition deficit, resource sum and worst CV only for coupled runs",

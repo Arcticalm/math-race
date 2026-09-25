@@ -150,7 +150,7 @@ def communication_sheets(workbook: Workbook, screening: dict, source: Path) -> N
         ("认证方法", certificate["method"], f"{path}.method"),
         ("认证区间总数", certificate["interval_count"], f"{path}.interval_count"),
         ("未覆盖区间数", certificate["uncovered_interval_count"], f"{path}.uncovered_interval_count"),
-        ("连续通信中断时长（s）", certificate["communication_outage_s"], f"{path}.communication_outage_s"),
+        ("未认证通信时长上界（s）", certificate["communication_outage_s"], f"{path}.communication_outage_s"),
         ("未获证书时长（s）", certificate["uncertified_interval_s"], f"{path}.uncertified_interval_s"),
         ("中断时长是否为上界", certificate["communication_outage_is_upper_bound"], f"{path}.communication_outage_is_upper_bound"),
         ("连续通信是否认证通过", certificate["certified"], f"{path}.certified"),
@@ -179,8 +179,9 @@ def relay_sheet(workbook: Workbook, source: Path) -> None:
 def build(problem1: Path, final: Path, output: Path) -> dict:
     workbook = Workbook()
     workbook.remove(workbook.active)
-    q1_rel = problem1.resolve().relative_to(ROOT.resolve()).as_posix()
-    final_rel = final.resolve().relative_to(ROOT.resolve()).as_posix()
+    from os.path import relpath
+    q1_rel = relpath(problem1.resolve(), ROOT.resolve())
+    final_rel = relpath(final.resolve(), ROOT.resolve())
 
     q1_sensitivity = read_csv(problem1 / "sensitivity_summary.csv")
     q1_payloads = read_csv(problem1 / "safe_payloads.csv")
@@ -194,7 +195,9 @@ def build(problem1: Path, final: Path, output: Path) -> dict:
     summary = read_json(final / "summary.json")
     assumptions = read_json(final / "q4/assumptions.json")
 
-    manifest = final.parent / "run01/manifest.json"
+    origin = summary.get("q3_q4", {})
+    manifest = (final / origin["provenance"] if origin.get("provenance")
+                else Path(origin.get("source", ""))) / "manifest.json"
     parameters = read_json(manifest)["parameters"] if manifest.exists() else {}
     baseline = next(row for row in q1_sensitivity
                     if row["reserve_fraction"] == "0.2" and row["horizontal_energy_scale"] == "1.0")
@@ -219,21 +222,20 @@ def build(problem1: Path, final: Path, output: Path) -> dict:
         ("列名口径", "直接搬运源文件的表格沿用源文件列名（第一、四问部分文件为英文字段），"
                      "便于与源 CSV 逐列对照；本工作簿自行汇总的表格（总览、各指标表、"
                      "Q1_安全载荷敏感性、Q3_通信保障）使用中文指标名并在末列标注来源字段。"),
-        ("第三问范围", f"独立第三问，不施加第四问分区约束：required_partition_groups="
+        ("第三问范围", f"第三问预留分区组数（0 表示独立范围）：required_partition_groups="
                        f"{q3_search['required_partition_groups']}，"
                        f"three_group_compatibility_required="
                        f"{q3_search['three_group_compatibility_required']}。"),
-        ("第四问口径", "原子任务单元只按运输架次合并；中继任务的悬停位置与服务时段沿用第三问冻结值，"
-                       "不拆分也不重新定时，服务多组时各组各配一套，按组记为 shared_relay_missions。"),
+        ("第四问口径", "按运输架次和中继保障关系共同合并为原子单元；每个冻结任务恰好归属一个组，不复制、不拆分、不改时刻。"),
         ("第四问枚举", "K=2 与 K=3 均不设候选上限，完整枚举，详见「Q4_口径与最优性」。"),
         ("最优性", f"global_optimal={summary['global_optimal']}；结果为通过审计与回代的最好已知候选，"
                    f"未证明原题全局最优。"),
         ("读表提示", "「Q1_余量敏感性」的 box_count 是题目货箱总数（80），不是该场景的交付箱数；"
-                     "feasible 为 False 的场景没有任何服务区能完成完整交付，架次、能耗、时间列为空，"
+                     "feasible 为 False 表示至少一个服务区不可行，因而无法完成全体 80 箱交付，架次、能耗、时间列为空，"
                      "不做部分交付。"),
-        ("字典序目标", "第二至四问按「完成时间 → 加权迟到 → 总能耗 → 架次数」逐级求解。"),
+        ("字典序目标", "第二、三问按「完成时间 → 加权迟到 → 总能耗 → 架次数」；第四问按「库存缺口 → 资源总数 → 最大工作量 CV」。"),
         ("运行参数", "；".join(f"{key}={value}" for key, value in parameters.items())
-                     or "见 run01/manifest.json。"),
+                     or "见 provenance/ 中的运行记录。"),
         ("权威副本", f"各问结果以其自身目录为准：第一问 {q1_rel}/，第二至四问 {final_rel}/。"),
         ("完整报告", f"{final_rel}/REPORT.md。"),
     ], 1):
@@ -273,7 +275,7 @@ def build(problem1: Path, final: Path, output: Path) -> dict:
         ["三", "硬时限通过",
          f"{transport['hard_deadline_compliant_count']}/{transport['hard_deadline_check_count']}",
          "q3/screening.json"],
-        ["三", "连续通信中断时长（s）",
+        ["三", "未认证通信时长上界（s）",
          cell(q3["continuous_communication_validation"]["communication_outage_s"]),
          "q3/screening.json"],
         ["三", "中继资源冲突数", q3["relay_validation"]["resource_conflict_count"], "q3/screening.json"],
@@ -282,13 +284,13 @@ def build(problem1: Path, final: Path, output: Path) -> dict:
         ["四", "K=2 是否可行", q4_k2["feasible"], "q4/result.json"],
         ["四", "K=2 候选分区数", q4_k2["candidate_count"], "q4/result.json"],
         ["四", "K=2 库存缺口合计", deficits["2"], "q4/inventory_comparison.csv"],
-        ["四", "K=2 资源需求总量", cell(q4_k2["score"][1]), "q4/result.json"],
-        ["四", "K=2 最大工作量 CV", cell(q4_k2["score"][2]), "q4/result.json"],
+        ["四", "K=2 资源需求总量", cell(q4_k2.get("score", [None, None, None])[1]), "q4/result.json"],
+        ["四", "K=2 最大工作量 CV", cell(q4_k2.get("score", [None, None, None])[2]), "q4/result.json"],
         ["四", "K=3 是否可行", q4_k3["feasible"], "q4/result.json"],
         ["四", "K=3 候选分区数", q4_k3["candidate_count"], "q4/result.json"],
         ["四", "K=3 库存缺口合计", deficits["3"], "q4/inventory_comparison.csv"],
-        ["四", "K=3 资源需求总量", cell(q4_k3["score"][1]), "q4/result.json"],
-        ["四", "K=3 最大工作量 CV", cell(q4_k3["score"][2]), "q4/result.json"],
+        ["四", "K=3 资源需求总量", cell(q4_k3.get("score", [None, None, None])[1]), "q4/result.json"],
+        ["四", "K=3 最大工作量 CV", cell(q4_k3.get("score", [None, None, None])[2]), "q4/result.json"],
     ])
 
     write_table(workbook.create_sheet("Q1_最大安全载荷"), list(q1_payloads[0]),
@@ -393,7 +395,7 @@ def build(problem1: Path, final: Path, output: Path) -> dict:
     communication_sheets(workbook, q3, final / "q3")
 
     configuration = read_csv(final / "q4/problem4_configuration.csv")
-    write_table(workbook.create_sheet("Q4_分区配置"), list(configuration[0]),
+    write_table(workbook.create_sheet("Q4_分区配置"), list(configuration[0]) if configuration else ["K", "状态"],
                 [[cell(row[h]) for h in configuration[0]] for row in configuration])
     write_table(workbook.create_sheet("Q4_库存对照"),
                 ["K", "资源", "资源名称", "现有库存", "各组需求", "需求合计", "未分区全局峰值",
@@ -404,11 +406,11 @@ def build(problem1: Path, final: Path, output: Path) -> dict:
                   cell(row["inventory_deficit"]), cell(row["inventory_surplus"]),
                   row["deficit_reason"], row["inventory_scope"]] for row in inventory])
     workload = read_csv(final / "q4/workload_comparison.csv")
-    write_table(workbook.create_sheet("Q4_工作量对照"), list(workload[0]),
+    write_table(workbook.create_sheet("Q4_工作量对照"), list(workload[0]) if workload else ["K", "状态"],
                 [[cell(row[h]) for h in workload[0]] for row in workload])
     write_csv_sheet(workbook, "Q4_任务映射", final / "q4/task_mapping_audit.csv")
     site_map = read_csv(final / "q4/site_mapping_audit.csv")
-    write_table(workbook.create_sheet("Q4_服务区归属"), list(site_map[0]),
+    write_table(workbook.create_sheet("Q4_服务区归属"), list(site_map[0]) if site_map else ["K", "状态"],
                 [[cell(row[h]) for h in site_map[0]] for row in site_map])
 
     pairs = [("原子任务单元数", len(q4["atomic_units"]), "result.json: atomic_units"),
@@ -447,9 +449,9 @@ def build(problem1: Path, final: Path, output: Path) -> dict:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--problem1", type=Path, default=ROOT / "outputs/problem1")
-    parser.add_argument("--final", type=Path, default=ROOT / "outputs/unified/final")
-    parser.add_argument("--output", type=Path, default=ROOT / "outputs/four_problem_summary.xlsx")
+    parser.add_argument("--problem1", type=Path, default=ROOT / "outputs/q1")
+    parser.add_argument("--final", type=Path, default=ROOT / "outputs")
+    parser.add_argument("--output", type=Path, default=ROOT / "outputs/四问指标汇总.xlsx")
     args = parser.parse_args()
     result = build(args.problem1, args.final, args.output)
     print(json.dumps({"output": result["output"], "sheet_count": len(result["sheets"])},

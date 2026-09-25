@@ -7,7 +7,6 @@ import hashlib
 import json
 import platform
 import shutil
-import zipfile
 import math
 from dataclasses import asdict
 from importlib.metadata import PackageNotFoundError, version
@@ -24,7 +23,8 @@ from final_code.problem2.transport import (
 from final_code.problem2.terrain_audit import audit_clearance
 from final_code.problem3.audit import audit_communication, audit_relay_resources
 from final_code.problem3.physics import LinkEvaluator, load_relay_parameters
-from final_code.problem3.transport_relay import (
+from final_code.problem3.refine import refine_joint
+from final_code.problem3.trajectory import (
     _hard_deadline_audit, _plot_problem3_overview, _write_csv,
     _write_q3_submission, build_trajectory,
 )
@@ -61,7 +61,7 @@ def joint_score(metrics, partition, use_partition_terms=False):
     under the Q4 partitionability constraints. In the independent mode the
     delivered Q3 is ranked on its own makespan/lateness/energy/sortie criteria
     alone, so a Q4 outcome can never silently re-rank two Q3 schedules. Both
-    branches return the same arity so scores stay comparable across rounds.
+    branches have different scopes and must never be compared across modes.
     """
     base = (metrics["joint_makespan_s"],
             metrics["transport_validation"]["weighted_all_expected_tardiness"],
@@ -141,14 +141,14 @@ def audit_and_export_joint(directory, result, search, profiles, boxes, drones, b
     } for s in sorties for b in s.boxes])
     _write_csv(directory / "trajectory_phases.csv", [asdict(p) for p in phases])
     if feasible:
-        _write_q3_submission(directory, sorties, [], relays, communication)
+        _write_q3_submission(directory, sorties, relays, communication)
     save_json(directory / "screening.json", metrics)
     return metrics
 
 
 def package_versions():
     result = {}
-    for name in ("ortools", "numpy", "scipy", "rasterio", "openpyxl", "matplotlib"):
+    for name in ("ortools", "numpy", "rasterio", "openpyxl", "matplotlib"):
         try:
             result[name] = version(name)
         except PackageNotFoundError:
@@ -160,15 +160,12 @@ def write_program_bundle(output):
     from final_code.package import write_program_bundle as bundle
 
     bundle(output / "unified_program.zip")
-    for folder, name in (("q2", "problem2_program.zip"), ("q3", "problem3_program.zip")):
-        if (output / folder).exists():
-            shutil.copy2(output / "unified_program.zip", output / folder / name)
 
 
 def profile_signature():
     sources = list((ROOT / "data/无人机应急物资运输基础数据").glob("*.xlsx")) + [DEM_PATH]
     sources += [ROOT / name for name in ("final_code/problem3/communication.py",
-                 "final_code/problem3/physics.py", "final_code/problem3/transport_relay.py",
+                 "final_code/problem3/physics.py", "final_code/problem3/trajectory.py",
                  "final_code/problem2/transport.py", "final_code/problem1/solver.py")]
     return {str(p.relative_to(ROOT)): digest(p) for p in sorted(sources)}
 
@@ -187,6 +184,7 @@ def run(output, rounds=2, time_limit=120., max_relays=10, expansion_limit=80, pr
     drones, batteries = load_resources()
     evaluator = RouteEvaluator(.2, 1.)
     history, cache = [], {}
+    source_hashes = {str(p.relative_to(ROOT)): digest(p) for p in (ROOT / "final_code").rglob("*.py")}
     signature = profile_signature()
     if profile_cache is not None:
         previous = json.loads(profile_cache.read_text())
@@ -258,6 +256,8 @@ def run(output, rounds=2, time_limit=120., max_relays=10, expansion_limit=80, pr
                                   partition_groups=partition_groups, random_seed=random_seed + iteration - 1)
             save_json(directory / "q3_search.json", search)
             if joint is not None:
+                joint, refinement = refine_joint(joint, profiles, evaluator, boxes, drones, batteries)
+                search["continuous_refinement"] = refinement
                 q3_dir = directory / "q3"
                 metrics = audit_and_export_joint(q3_dir, joint, search, profiles,
                                                  boxes, drones, batteries, evaluator)
@@ -325,7 +325,9 @@ def run(output, rounds=2, time_limit=120., max_relays=10, expansion_limit=80, pr
             save_json(output / "q4/frozen_q3_sha256.json", snapshot(output / "q3"))
         summary = {
             "feasible": best_q2 is not None and best_joint is not None,
-            "status": "certified joint incumbent with frozen K=2/K=3 partitions" if best_joint else "no certified joint incumbent within search limits",
+            "status": "certified Q3 incumbent; see each frozen partition's feasibility" if best_joint else "no certified joint incumbent within search limits",
+            "all_partitions_available": bool(best_joint and all(
+                best_joint["partition"]["solutions"][str(k)].get("feasible") for k in (2, 3))),
             "global_optimal": False, "pattern_count": len(pool), "history": history,
             "q2": {"iteration": best_q2[2], "score": transport_score(best_q2[1])} if best_q2 else None,
             "q3_q4": {"iteration": best_joint["iteration"], "score": best_joint["score"],
@@ -345,8 +347,9 @@ def run(output, rounds=2, time_limit=120., max_relays=10, expansion_limit=80, pr
                                seed_source=str(seed_source) if seed_source else None,
                                complete_single_site=complete_single_site, expanded_locations=expanded_locations,
                                random_seed=random_seed, q3_partition_groups=partition_groups),
-            "source_sha256": {str(p.relative_to(ROOT)): digest(p)
-                              for p in (ROOT / "final_code").rglob("*.py")},
+            "source_sha256": source_hashes,
+            "source_changed_during_run": source_hashes != {
+                str(p.relative_to(ROOT)): digest(p) for p in (ROOT / "final_code").rglob("*.py")},
         })
         write_program_bundle(output)
         return summary
@@ -356,7 +359,7 @@ def run(output, rounds=2, time_limit=120., max_relays=10, expansion_limit=80, pr
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output", type=Path, default=ROOT / "outputs/unified")
+    parser.add_argument("--output", type=Path, required=True, help="Empty directory for an intermediate search run")
     parser.add_argument("--profile-cache", type=Path)
     parser.add_argument("--rounds", type=int, default=2)
     parser.add_argument("--time-limit", type=float, default=120.)

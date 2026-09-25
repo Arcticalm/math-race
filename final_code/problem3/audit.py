@@ -8,23 +8,12 @@ from final_code.problem1.solver import Node
 from final_code.problem3.physics import LinkEvaluator, certify_moving_link, link_limits
 
 
-def _relay_at(selected, time_s):
-    for mission in selected:
-        if mission["service_start_s"] - 1e-7 <= time_s <= mission["service_end_s"] + 1e-7:
-            return mission
-    return None
-
-
 def _missions_for_interval(selected, start_s, end_s, sortie=None):
     """All assigned relay options covering a complete closed time cell."""
     return [mission for mission in selected
             if (sortie is None or sortie in mission.get("covered_sorties", "").split(","))
             and mission["service_start_s"] - 1e-7 <= start_s
             and end_s <= mission["service_end_s"] + 1e-7]
-
-
-def _mission_for_interval(selected, start_s, end_s, sortie=None):
-    return next(iter(_missions_for_interval(selected, start_s, end_s, sortie)), None)
 
 
 def _merge_rows(rows):
@@ -64,7 +53,7 @@ def audit_communication(phases, selected, step_s=30.0, minimum_step_s=1.0):
         for phase in phases:
             if phase.end_s <= phase.start_s:
                 continue
-            from final_code.problem3.transport_relay import _position
+            from final_code.problem3.trajectory import _position
 
             # Relay service boundaries are event points and must never be
             # hidden inside a cell. The remaining cells are bounded by step_s.
@@ -210,7 +199,7 @@ def rebuild_relay_mission(mission, evaluator):
     """
     import rasterio
     from final_code.problem3.physics import load_relay_parameters, estimate_relay_mission, sampled_flight_leg
-    from final_code.problem3.transport_relay import _charge_duration
+    from final_code.problem2.transport import _charge_duration
     params = load_relay_parameters()
     longitude, latitude = mission["longitude"], mission["latitude"]
     row, col = rasterio.transform.rowcol(evaluator.dem.transform, longitude, latitude)
@@ -255,7 +244,7 @@ def load_saved_q3(directory):
     import ast
     import csv
     from pathlib import Path
-    from final_code.problem3.transport_relay import TrackPhase
+    from final_code.problem3.trajectory import TrackPhase
     directory = Path(directory)
     with (directory / "trajectory_phases.csv").open(encoding="utf-8-sig") as source:
         phases = []
@@ -326,58 +315,3 @@ def audit_relay_resources(selected):
         evaluator.close()
     return {"audit_version": "exact_dem_interval_v2", "mission_count": len(selected),
             "resource_conflict_count": len(conflicts), "feasible": not conflicts, "conflicts": conflicts}
-
-
-def audit_checkpoints(samples, intervals, selected):
-    """Independently re-evaluate both hops at every covered trajectory checkpoint."""
-    from final_code.problem3.transport_relay import _communication_rows
-    evaluator = LinkEvaluator()
-    limits = link_limits(evaluator.params)
-    base = evaluator.base
-    gateway = Node("G01", base.longitude, base.latitude, base.elevation_m + evaluator.params.gateway_agl_m)
-    records, failures = [], []
-    try:
-        for point in samples:
-            node = Node("transport", point["longitude"], point["latitude"], 0)
-            altitude, time_s = point["altitude_m"], point["time_s"]
-            direct = evaluator.evaluate(node, altitude, gateway, gateway.elevation_m,
-                                        limits["transport_gateway_db"])
-            covered = direct.available
-            for mission in selected:
-                if (point["sortie"] not in mission["covered_sorties"].split(",")
-                        or not mission["service_start_s"] - 1e-7 <= time_s <= mission["service_end_s"] + 1e-7):
-                    continue
-                if not any(interval["sortie"] == point["sortie"]
-                           and interval.get("gap_id") in mission["covered_gap_ids"]
-                           and interval["start_s"] - 1e-7 <= time_s <= interval["end_s"] + 1e-7
-                           for interval in intervals):
-                    continue
-                hover = Node("relay", mission["longitude"], mission["latitude"], mission["ground_dsm_m"])
-                access = evaluator.evaluate(node, altitude, hover, mission["hover_altitude_m"],
-                                            limits["transport_relay_db"])
-                backhaul = evaluator.evaluate(hover, mission["hover_altitude_m"], gateway,
-                                               gateway.elevation_m, limits["relay_gateway_db"])
-                ok = access.available and backhaul.available
-                covered |= ok
-                records.append({"sortie": point["sortie"], "phase": point["phase"], "time_s": time_s,
-                    "relay_sortie": mission["relay_sortie"], "access_loss_db": access.path_loss_db,
-                    "access_limit_db": access.threshold_db, "access_available": access.available,
-                    "backhaul_loss_db": backhaul.path_loss_db, "backhaul_limit_db": backhaul.threshold_db,
-                    "backhaul_available": backhaul.available, "both_available": ok})
-            if not covered:
-                failures.append({"sortie": point["sortie"], "phase": point["phase"], "time_s": time_s})
-    finally:
-        evaluator.close()
-    rows = _communication_rows([], intervals, selected)
-    for row in rows:
-        if row["保障方式"] == "中继候选":
-            row["保障方式"] = "中继"
-        if any(p["sortie"] == row["运输架次编号"] and p["phase"] == row["通信阶段"]
-               and row["开始时刻（s）"] - 1e-7 <= p["time_s"] <= row["结束时刻（s）"] + 1e-7
-               for p in failures):
-            row["保障方式"] = "中断"
-    return rows, {"certified": not failures and all(r["both_available"] for r in records),
-                  "checkpoint_count": len(samples), "two_hop_check_count": len(records),
-                  "two_hop_failure_count": sum(not r["both_available"] for r in records),
-                  "uncovered_checkpoint_count": len(failures), "failures": failures,
-                  "method": "independent checkpoint replay; not continuous interval certification"}, records

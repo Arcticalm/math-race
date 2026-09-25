@@ -1,0 +1,1168 @@
+{
+  "feasible": true,
+  "continuity_certified": true,
+  "transport_validation": {
+    "feasible": true,
+    "audit_version": "physical_replay_v2",
+    "violations": [],
+    "hard_deadlines_feasible": true,
+    "resource_schedule_feasible": true,
+    "physics_and_timeline_feasible": true,
+    "box_count": 80,
+    "assigned_box_count": 80,
+    "sortie_count": 27,
+    "total_energy_kwh": 70.0585666456312,
+    "makespan_s": 6480.604199674681,
+    "hard_deadline_check_count": 46,
+    "hard_deadline_compliant_count": 46,
+    "hard_deadline_compliance_rate": 1.0,
+    "all_due_box_count": 80,
+    "all_expected_on_time_count": 77,
+    "all_expected_on_time_rate": 0.9625,
+    "all_expected_tardiness_s": 2749.931059724082,
+    "weighted_all_expected_tardiness": 32999.17271668898,
+    "expected_time_by_item_type": {
+      "医疗物资": {
+        "count": 16,
+        "on_time_count": 16,
+        "on_time_rate": 1.0
+      },
+      "应急食品": {
+        "count": 19,
+        "on_time_count": 19,
+        "on_time_rate": 1.0
+      },
+      "生活卫生用品": {
+        "count": 9,
+        "on_time_count": 9,
+        "on_time_rate": 1.0
+      },
+      "饮用水": {
+        "count": 36,
+        "on_time_count": 33,
+        "on_time_rate": 0.9166666666666666
+      }
+    },
+    "hard_deadline_by_item_type": {
+      "医疗物资": {
+        "constraint_count": 31,
+        "compliant_count": 31,
+        "compliance_rate": 1.0
+      },
+      "应急食品": {
+        "constraint_count": 0,
+        "compliant_count": 0,
+        "compliance_rate": 1.0
+      },
+      "生活卫生用品": {
+        "constraint_count": 0,
+        "compliant_count": 0,
+        "compliance_rate": 1.0
+      },
+      "饮用水": {
+        "constraint_count": 15,
+        "compliant_count": 15,
+        "compliance_rate": 1.0
+      }
+    },
+    "soft_tardiness_s": 2749.931059724082,
+    "weighted_soft_tardiness_s": 32999.17271668898,
+    "soft_on_time_rate": 0.953125,
+    "resource_checks": {
+      "airframe_count": 8,
+      "battery_count": 14,
+      "all_conflicts_clear": true
+    }
+  },
+  "terrain_clearance": {
+    "method": "independent segment/closed-cell rectangle intersection",
+    "scope": "horizontal cruise; departure/arrival work heights follow the task statement",
+    "required_clearance_m": 50.0,
+    "minimum_clearance_m": 50.0,
+    "unique_directed_leg_count": 31,
+    "leg_count": 55,
+    "feasible": true,
+    "violation_count": 0,
+    "legs": [
+      {
+        "sortie": "P00009",
+        "leg": 1,
+        "from": "O01",
+        "to": "S004",
+        "intersected_cell_count": 276,
+        "maximum_ground_m": 348.2391662597656,
+        "cruise_altitude_m": 398.2391662597656,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00009",
+        "leg": 2,
+        "from": "S004",
+        "to": "O01",
+        "intersected_cell_count": 276,
+        "maximum_ground_m": 348.2391662597656,
+        "cruise_altitude_m": 398.2391662597656,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00010",
+        "leg": 1,
+        "from": "O01",
+        "to": "S005",
+        "intersected_cell_count": 181,
+        "maximum_ground_m": 276.410888671875,
+        "cruise_altitude_m": 326.410888671875,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00010",
+        "leg": 2,
+        "from": "S005",
+        "to": "O01",
+        "intersected_cell_count": 181,
+        "maximum_ground_m": 276.410888671875,
+        "cruise_altitude_m": 326.410888671875,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00011",
+        "leg": 1,
+        "from": "O01",
+        "to": "S006",
+        "intersected_cell_count": 116,
+        "maximum_ground_m": 316.09783935546875,
+        "cruise_altitude_m": 366.09783935546875,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00011",
+        "leg": 2,
+        "from": "S006",
+        "to": "O01",
+        "intersected_cell_count": 116,
+        "maximum_ground_m": 316.09783935546875,
+        "cruise_altitude_m": 366.09783935546875,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00014",
+        "leg": 1,
+        "from": "O01",
+        "to": "S009",
+        "intersected_cell_count": 253,
+        "maximum_ground_m": 243.22891235351562,
+        "cruise_altitude_m": 293.2289123535156,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00014",
+        "leg": 2,
+        "from": "S009",
+        "to": "O01",
+        "intersected_cell_count": 253,
+        "maximum_ground_m": 243.22891235351562,
+        "cruise_altitude_m": 293.2289123535156,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00018",
+        "leg": 1,
+        "from": "O01",
+        "to": "S011",
+        "intersected_cell_count": 123,
+        "maximum_ground_m": 245.36175537109375,
+        "cruise_altitude_m": 295.36175537109375,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00018",
+        "leg": 2,
+        "from": "S011",
+        "to": "O01",
+        "intersected_cell_count": 123,
+        "maximum_ground_m": 245.36175537109375,
+        "cruise_altitude_m": 295.36175537109375,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00020",
+        "leg": 1,
+        "from": "O01",
+        "to": "S012",
+        "intersected_cell_count": 354,
+        "maximum_ground_m": 363.3009948730469,
+        "cruise_altitude_m": 413.3009948730469,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00020",
+        "leg": 2,
+        "from": "S012",
+        "to": "O01",
+        "intersected_cell_count": 354,
+        "maximum_ground_m": 363.3009948730469,
+        "cruise_altitude_m": 413.3009948730469,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00024",
+        "leg": 1,
+        "from": "O01",
+        "to": "S014",
+        "intersected_cell_count": 203,
+        "maximum_ground_m": 541.9473876953125,
+        "cruise_altitude_m": 591.9473876953125,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00024",
+        "leg": 2,
+        "from": "S014",
+        "to": "O01",
+        "intersected_cell_count": 203,
+        "maximum_ground_m": 541.9473876953125,
+        "cruise_altitude_m": 591.9473876953125,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00026",
+        "leg": 1,
+        "from": "O01",
+        "to": "S015",
+        "intersected_cell_count": 286,
+        "maximum_ground_m": 521.7992553710938,
+        "cruise_altitude_m": 571.7992553710938,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00026",
+        "leg": 2,
+        "from": "S015",
+        "to": "O01",
+        "intersected_cell_count": 286,
+        "maximum_ground_m": 521.7992553710938,
+        "cruise_altitude_m": 571.7992553710938,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00028",
+        "leg": 1,
+        "from": "O01",
+        "to": "S008",
+        "intersected_cell_count": 321,
+        "maximum_ground_m": 322.9093322753906,
+        "cruise_altitude_m": 372.9093322753906,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00028",
+        "leg": 2,
+        "from": "S008",
+        "to": "O01",
+        "intersected_cell_count": 321,
+        "maximum_ground_m": 322.9093322753906,
+        "cruise_altitude_m": 372.9093322753906,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00030",
+        "leg": 1,
+        "from": "O01",
+        "to": "S008",
+        "intersected_cell_count": 321,
+        "maximum_ground_m": 322.9093322753906,
+        "cruise_altitude_m": 372.9093322753906,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00030",
+        "leg": 2,
+        "from": "S008",
+        "to": "O01",
+        "intersected_cell_count": 321,
+        "maximum_ground_m": 322.9093322753906,
+        "cruise_altitude_m": 372.9093322753906,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00032",
+        "leg": 1,
+        "from": "O01",
+        "to": "S001",
+        "intersected_cell_count": 136,
+        "maximum_ground_m": 223.05661010742188,
+        "cruise_altitude_m": 273.0566101074219,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00032",
+        "leg": 2,
+        "from": "S001",
+        "to": "O01",
+        "intersected_cell_count": 136,
+        "maximum_ground_m": 223.05661010742188,
+        "cruise_altitude_m": 273.0566101074219,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00035",
+        "leg": 1,
+        "from": "O01",
+        "to": "S001",
+        "intersected_cell_count": 136,
+        "maximum_ground_m": 223.05661010742188,
+        "cruise_altitude_m": 273.0566101074219,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00035",
+        "leg": 2,
+        "from": "S001",
+        "to": "O01",
+        "intersected_cell_count": 136,
+        "maximum_ground_m": 223.05661010742188,
+        "cruise_altitude_m": 273.0566101074219,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00037",
+        "leg": 1,
+        "from": "O01",
+        "to": "S002",
+        "intersected_cell_count": 323,
+        "maximum_ground_m": 258.9542541503906,
+        "cruise_altitude_m": 308.9542541503906,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00037",
+        "leg": 2,
+        "from": "S002",
+        "to": "O01",
+        "intersected_cell_count": 323,
+        "maximum_ground_m": 258.9542541503906,
+        "cruise_altitude_m": 308.9542541503906,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00040",
+        "leg": 1,
+        "from": "O01",
+        "to": "S002",
+        "intersected_cell_count": 323,
+        "maximum_ground_m": 258.9542541503906,
+        "cruise_altitude_m": 308.9542541503906,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00040",
+        "leg": 2,
+        "from": "S002",
+        "to": "O01",
+        "intersected_cell_count": 323,
+        "maximum_ground_m": 258.9542541503906,
+        "cruise_altitude_m": 308.9542541503906,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00041",
+        "leg": 1,
+        "from": "O01",
+        "to": "S003",
+        "intersected_cell_count": 338,
+        "maximum_ground_m": 511.80413818359375,
+        "cruise_altitude_m": 561.8041381835938,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00041",
+        "leg": 2,
+        "from": "S003",
+        "to": "O01",
+        "intersected_cell_count": 338,
+        "maximum_ground_m": 511.80413818359375,
+        "cruise_altitude_m": 561.8041381835938,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00044",
+        "leg": 1,
+        "from": "O01",
+        "to": "S003",
+        "intersected_cell_count": 338,
+        "maximum_ground_m": 511.80413818359375,
+        "cruise_altitude_m": 561.8041381835938,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00044",
+        "leg": 2,
+        "from": "S003",
+        "to": "O01",
+        "intersected_cell_count": 338,
+        "maximum_ground_m": 511.80413818359375,
+        "cruise_altitude_m": 561.8041381835938,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00057",
+        "leg": 1,
+        "from": "O01",
+        "to": "S007",
+        "intersected_cell_count": 213,
+        "maximum_ground_m": 461.9731750488281,
+        "cruise_altitude_m": 511.9731750488281,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00057",
+        "leg": 2,
+        "from": "S007",
+        "to": "O01",
+        "intersected_cell_count": 213,
+        "maximum_ground_m": 461.9731750488281,
+        "cruise_altitude_m": 511.9731750488281,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00071",
+        "leg": 1,
+        "from": "O01",
+        "to": "S010",
+        "intersected_cell_count": 203,
+        "maximum_ground_m": 385.63653564453125,
+        "cruise_altitude_m": 435.63653564453125,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00071",
+        "leg": 2,
+        "from": "S010",
+        "to": "O01",
+        "intersected_cell_count": 203,
+        "maximum_ground_m": 385.63653564453125,
+        "cruise_altitude_m": 435.63653564453125,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00089",
+        "leg": 1,
+        "from": "O01",
+        "to": "S013",
+        "intersected_cell_count": 228,
+        "maximum_ground_m": 349.18182373046875,
+        "cruise_altitude_m": 399.18182373046875,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00089",
+        "leg": 2,
+        "from": "S013",
+        "to": "O01",
+        "intersected_cell_count": 228,
+        "maximum_ground_m": 349.18182373046875,
+        "cruise_altitude_m": 399.18182373046875,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00107",
+        "leg": 1,
+        "from": "O01",
+        "to": "S013",
+        "intersected_cell_count": 228,
+        "maximum_ground_m": 349.18182373046875,
+        "cruise_altitude_m": 399.18182373046875,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00107",
+        "leg": 2,
+        "from": "S013",
+        "to": "S010",
+        "intersected_cell_count": 60,
+        "maximum_ground_m": 454.07037353515625,
+        "cruise_altitude_m": 504.07037353515625,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00107",
+        "leg": 3,
+        "from": "S010",
+        "to": "O01",
+        "intersected_cell_count": 203,
+        "maximum_ground_m": 385.63653564453125,
+        "cruise_altitude_m": 435.63653564453125,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00137",
+        "leg": 1,
+        "from": "O01",
+        "to": "S001",
+        "intersected_cell_count": 136,
+        "maximum_ground_m": 223.05661010742188,
+        "cruise_altitude_m": 273.0566101074219,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00137",
+        "leg": 2,
+        "from": "S001",
+        "to": "O01",
+        "intersected_cell_count": 136,
+        "maximum_ground_m": 223.05661010742188,
+        "cruise_altitude_m": 273.0566101074219,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00140",
+        "leg": 1,
+        "from": "O01",
+        "to": "S001",
+        "intersected_cell_count": 136,
+        "maximum_ground_m": 223.05661010742188,
+        "cruise_altitude_m": 273.0566101074219,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00140",
+        "leg": 2,
+        "from": "S001",
+        "to": "O01",
+        "intersected_cell_count": 136,
+        "maximum_ground_m": 223.05661010742188,
+        "cruise_altitude_m": 273.0566101074219,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00143",
+        "leg": 1,
+        "from": "O01",
+        "to": "S001",
+        "intersected_cell_count": 136,
+        "maximum_ground_m": 223.05661010742188,
+        "cruise_altitude_m": 273.0566101074219,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00143",
+        "leg": 2,
+        "from": "S001",
+        "to": "O01",
+        "intersected_cell_count": 136,
+        "maximum_ground_m": 223.05661010742188,
+        "cruise_altitude_m": 273.0566101074219,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00146",
+        "leg": 1,
+        "from": "O01",
+        "to": "S001",
+        "intersected_cell_count": 136,
+        "maximum_ground_m": 223.05661010742188,
+        "cruise_altitude_m": 273.0566101074219,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00146",
+        "leg": 2,
+        "from": "S001",
+        "to": "O01",
+        "intersected_cell_count": 136,
+        "maximum_ground_m": 223.05661010742188,
+        "cruise_altitude_m": 273.0566101074219,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00272",
+        "leg": 1,
+        "from": "O01",
+        "to": "S007",
+        "intersected_cell_count": 213,
+        "maximum_ground_m": 461.9731750488281,
+        "cruise_altitude_m": 511.9731750488281,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00272",
+        "leg": 2,
+        "from": "S007",
+        "to": "O01",
+        "intersected_cell_count": 213,
+        "maximum_ground_m": 461.9731750488281,
+        "cruise_altitude_m": 511.9731750488281,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00275",
+        "leg": 1,
+        "from": "O01",
+        "to": "S007",
+        "intersected_cell_count": 213,
+        "maximum_ground_m": 461.9731750488281,
+        "cruise_altitude_m": 511.9731750488281,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00275",
+        "leg": 2,
+        "from": "S007",
+        "to": "O01",
+        "intersected_cell_count": 213,
+        "maximum_ground_m": 461.9731750488281,
+        "cruise_altitude_m": 511.9731750488281,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00278",
+        "leg": 1,
+        "from": "O01",
+        "to": "S007",
+        "intersected_cell_count": 213,
+        "maximum_ground_m": 461.9731750488281,
+        "cruise_altitude_m": 511.9731750488281,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      },
+      {
+        "sortie": "P00278",
+        "leg": 2,
+        "from": "S007",
+        "to": "O01",
+        "intersected_cell_count": 213,
+        "maximum_ground_m": 461.9731750488281,
+        "cruise_altitude_m": 511.9731750488281,
+        "minimum_clearance_m": 50.0,
+        "compliant": true
+      }
+    ]
+  },
+  "continuous_communication_validation": {
+    "audit_version": "exact_dem_interval_v2",
+    "sample_step_s": 10.0,
+    "minimum_certification_step_s": 0.25,
+    "interval_count": 5589,
+    "uncovered_interval_count": 0,
+    "communication_outage_s": 0.0,
+    "uncertified_interval_s": 0.0,
+    "communication_outage_is_upper_bound": true,
+    "certified": true,
+    "method": "recursive continuous interval certificate over complete swept LOS slabs and every touched DEM pixel"
+  },
+  "relay_validation": {
+    "audit_version": "exact_dem_interval_v2",
+    "mission_count": 3,
+    "resource_conflict_count": 0,
+    "feasible": true,
+    "conflicts": []
+  },
+  "hard_deadline_audit": {
+    "check_count": 46,
+    "passed_count": 46,
+    "failed_count": 0,
+    "passed": true,
+    "checks": [
+      {
+        "sortie": "P00009",
+        "box": "S004-MED-01",
+        "kind": "医疗期望送达",
+        "delivery_s": 5624.824072394104,
+        "deadline_s": 7200.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00009",
+        "box": "S004-MED-01",
+        "kind": "首批截止",
+        "delivery_s": 5624.824072394104,
+        "deadline_s": 7200.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00009",
+        "box": "S004-WAT-01",
+        "kind": "首批截止",
+        "delivery_s": 5624.824072394104,
+        "deadline_s": 7200.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00010",
+        "box": "S005-MED-01",
+        "kind": "医疗期望送达",
+        "delivery_s": 3533.8735171121825,
+        "deadline_s": 10800.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00010",
+        "box": "S005-MED-01",
+        "kind": "首批截止",
+        "delivery_s": 3533.8735171121825,
+        "deadline_s": 10800.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00010",
+        "box": "S005-WAT-01",
+        "kind": "首批截止",
+        "delivery_s": 3533.8735171121825,
+        "deadline_s": 10800.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00011",
+        "box": "S006-MED-01",
+        "kind": "医疗期望送达",
+        "delivery_s": 1209.0769426369816,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00011",
+        "box": "S006-MED-01",
+        "kind": "首批截止",
+        "delivery_s": 1209.0769426369816,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00011",
+        "box": "S006-WAT-01",
+        "kind": "首批截止",
+        "delivery_s": 1209.0769426369816,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00014",
+        "box": "S009-MED-01",
+        "kind": "医疗期望送达",
+        "delivery_s": 2992.599396820631,
+        "deadline_s": 10800.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00014",
+        "box": "S009-MED-01",
+        "kind": "首批截止",
+        "delivery_s": 2992.599396820631,
+        "deadline_s": 10800.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00014",
+        "box": "S009-WAT-01",
+        "kind": "首批截止",
+        "delivery_s": 2992.599396820631,
+        "deadline_s": 10800.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00018",
+        "box": "S011-MED-01",
+        "kind": "医疗期望送达",
+        "delivery_s": 6197.9754640591045,
+        "deadline_s": 10800.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00018",
+        "box": "S011-MED-01",
+        "kind": "首批截止",
+        "delivery_s": 6197.9754640591045,
+        "deadline_s": 10800.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00018",
+        "box": "S011-WAT-01",
+        "kind": "首批截止",
+        "delivery_s": 6197.9754640591045,
+        "deadline_s": 10800.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00020",
+        "box": "S012-MED-01",
+        "kind": "医疗期望送达",
+        "delivery_s": 1328.384317563094,
+        "deadline_s": 7200.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00020",
+        "box": "S012-MED-01",
+        "kind": "首批截止",
+        "delivery_s": 1328.384317563094,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00020",
+        "box": "S012-WAT-01",
+        "kind": "首批截止",
+        "delivery_s": 1328.384317563094,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00024",
+        "box": "S014-MED-01",
+        "kind": "医疗期望送达",
+        "delivery_s": 1241.8558906011892,
+        "deadline_s": 7200.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00024",
+        "box": "S014-MED-01",
+        "kind": "首批截止",
+        "delivery_s": 1241.8558906011892,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00024",
+        "box": "S014-WAT-01",
+        "kind": "首批截止",
+        "delivery_s": 1241.8558906011892,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00026",
+        "box": "S015-MED-01",
+        "kind": "医疗期望送达",
+        "delivery_s": 4679.626343602191,
+        "deadline_s": 7200.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00026",
+        "box": "S015-MED-01",
+        "kind": "首批截止",
+        "delivery_s": 4679.626343602191,
+        "deadline_s": 7200.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00026",
+        "box": "S015-WAT-01",
+        "kind": "首批截止",
+        "delivery_s": 4679.626343602191,
+        "deadline_s": 10800.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00028",
+        "box": "S008-MED-01",
+        "kind": "医疗期望送达",
+        "delivery_s": 3646.290285966142,
+        "deadline_s": 7200.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00028",
+        "box": "S008-MED-01",
+        "kind": "首批截止",
+        "delivery_s": 3646.290285966142,
+        "deadline_s": 7200.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00028",
+        "box": "S008-WAT-01",
+        "kind": "首批截止",
+        "delivery_s": 3646.290285966142,
+        "deadline_s": 7200.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00032",
+        "box": "S001-MED-01",
+        "kind": "医疗期望送达",
+        "delivery_s": 3336.966762287485,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00032",
+        "box": "S001-MED-01",
+        "kind": "首批截止",
+        "delivery_s": 3336.966762287485,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00032",
+        "box": "S001-MED-02",
+        "kind": "医疗期望送达",
+        "delivery_s": 3336.966762287485,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00032",
+        "box": "S001-WAT-01",
+        "kind": "首批截止",
+        "delivery_s": 3336.966762287485,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00037",
+        "box": "S002-MED-01",
+        "kind": "医疗期望送达",
+        "delivery_s": 2478.277913110887,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00037",
+        "box": "S002-MED-01",
+        "kind": "首批截止",
+        "delivery_s": 2478.277913110887,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00037",
+        "box": "S002-WAT-01",
+        "kind": "首批截止",
+        "delivery_s": 2478.277913110887,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00041",
+        "box": "S003-MED-01",
+        "kind": "医疗期望送达",
+        "delivery_s": 5379.712951568368,
+        "deadline_s": 7200.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00041",
+        "box": "S003-MED-01",
+        "kind": "首批截止",
+        "delivery_s": 5379.712951568368,
+        "deadline_s": 7200.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00041",
+        "box": "S003-WAT-01",
+        "kind": "首批截止",
+        "delivery_s": 5379.712951568368,
+        "deadline_s": 7200.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00057",
+        "box": "S007-MED-01",
+        "kind": "医疗期望送达",
+        "delivery_s": 1209.9601163655109,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00057",
+        "box": "S007-MED-01",
+        "kind": "首批截止",
+        "delivery_s": 1209.9601163655109,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00057",
+        "box": "S007-WAT-01",
+        "kind": "首批截止",
+        "delivery_s": 1209.9601163655109,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00071",
+        "box": "S010-MED-01",
+        "kind": "医疗期望送达",
+        "delivery_s": 2296.9350348134403,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00071",
+        "box": "S010-MED-01",
+        "kind": "首批截止",
+        "delivery_s": 2296.9350348134403,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00071",
+        "box": "S010-WAT-01",
+        "kind": "首批截止",
+        "delivery_s": 2296.9350348134403,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00089",
+        "box": "S013-MED-01",
+        "kind": "医疗期望送达",
+        "delivery_s": 3129.343568027357,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00089",
+        "box": "S013-MED-01",
+        "kind": "首批截止",
+        "delivery_s": 3129.343568027357,
+        "deadline_s": 3600.0,
+        "passed": true
+      },
+      {
+        "sortie": "P00089",
+        "box": "S013-WAT-01",
+        "kind": "首批截止",
+        "delivery_s": 3129.343568027357,
+        "deadline_s": 3600.0,
+        "passed": true
+      }
+    ]
+  },
+  "search": {
+    "time_grid_s": 1,
+    "energy_grid_kwh": 1e-06,
+    "scope": "finite pattern/location library, conservative integer model",
+    "joint": true,
+    "pattern_count": 465,
+    "horizon_s": 36000,
+    "max_relay_missions": 10,
+    "three_group_compatibility_required": false,
+    "required_partition_groups": 0,
+    "random_seed": 18,
+    "workers": 8,
+    "stages": [
+      {
+        "objective": "makespan_s",
+        "status": "FEASIBLE",
+        "lower_bound": 5936.0,
+        "incumbent": 6482.0
+      },
+      {
+        "objective": "weighted_lateness_x100",
+        "status": "FEASIBLE",
+        "lower_bound": 0.0,
+        "incumbent": 3307200.0
+      },
+      {
+        "objective": "energy_micro_kwh",
+        "status": "FEASIBLE",
+        "lower_bound": 68079371.0,
+        "incumbent": 73528705.0
+      },
+      {
+        "objective": "sorties",
+        "status": "FEASIBLE",
+        "lower_bound": 26.0,
+        "incumbent": 30.0
+      }
+    ],
+    "status": "FEASIBLE",
+    "restricted_lexicographic_optimal": false,
+    "global_optimal": false,
+    "integer_makespan_s": 6482,
+    "three_group_witness": {},
+    "continuous_refinement": {
+      "accepted": true,
+      "scope": "fixed routes, hover points, gap assignments, resource orders and charge branches",
+      "solver": "GLOP",
+      "stages": [
+        {
+          "objective": "makespan_s",
+          "optimum": 6480.604199664681
+        },
+        {
+          "objective": "weighted_lateness",
+          "optimum": 32999.17271667899
+        },
+        {
+          "objective": "relay_energy_kwh",
+          "optimum": 3.4645781403975033
+        }
+      ],
+      "before": [
+        6481.6308045644855,
+        33048.21082888558,
+        73.5250791604941
+      ],
+      "after": [
+        6480.604199674681,
+        32999.17271668898,
+        73.52314478602871
+      ]
+    }
+  },
+  "transport_sortie_count": 27,
+  "relay_sortie_count": 3,
+  "total_sortie_count": 30,
+  "joint_makespan_s": 6480.604199674681,
+  "joint_energy_kwh": 73.52314478602871,
+  "global_optimal": false
+}

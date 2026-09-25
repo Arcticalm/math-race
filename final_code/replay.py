@@ -20,7 +20,11 @@ def load_transport(directory: Path, evaluator):
     boxes = {box.code: box for box in load_task_boxes()}
     delivery_rows = read_csv(directory / "box_delivery_audit.csv")
     groups, delivered = {}, {}
+    seen = set()
     for row in delivery_rows:
+        if row["货箱编号"] in seen:
+            raise ValueError(f"Duplicate published box: {row['货箱编号']}")
+        seen.add(row["货箱编号"])
         box = boxes[row["货箱编号"]]
         if row["服务区编号"] != box.site:
             raise ValueError(f"Published box site differs from source: {box.code}")
@@ -33,8 +37,13 @@ def load_transport(directory: Path, evaluator):
     if not path.exists():
         path = directory / "transport_inherited_audit.csv"
     result = []
-    for row in read_csv(path):
+    task_rows = read_csv(path)
+    if set(groups) != {row["架次编号"] for row in task_rows}:
+        raise ValueError("Published deliveries contain missing or unknown sorties")
+    for row in task_rows:
         code = row["架次编号"]
+        if row.get("逐箱交付数") and int(row["逐箱交付数"]) != len(groups[code]):
+            raise ValueError(f"Published box count mismatch: {code}")
         route = [site for site in re.split(r"[,，→]", row["访问服务区顺序"]) if site]
         physical = evaluator.evaluate(groups[code], route, row["机型编号"])
         if physical is None:

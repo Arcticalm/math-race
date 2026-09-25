@@ -245,7 +245,6 @@ def _segment_elevations(dem, first: Node, second: Node,
     return heights - minimum_los
 
 
-
 class LinkEvaluator:
     def __init__(self, params: LinkParameters | None = None, dem_path: Path = DEM_PATH):
         self.params = params or load_link_parameters()

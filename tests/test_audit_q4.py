@@ -67,45 +67,24 @@ class QuestionFourAuditTests(unittest.TestCase):
         self.assertIn(frozenset({'S001', 'S002'}), units)
         self.assertIn(frozenset({'S003', 'S004'}), units)
 
-    def test_shared_relay_is_fielded_once_per_group_it_serves(self):
+    def test_shared_relay_closure_is_transitive_and_cannot_be_split(self):
         transport = [{'架次编号': 'T1', '访问服务区顺序': 'S001,S002'},
-                     {'架次编号': 'T2', '访问服务区顺序': 'S003'}]
-        relay = [{'relay_sortie': 'R1', 'covered_sorties': 'T1→T2'}]
-        first = frozenset({'S001', 'S002'})
-        second = frozenset({'S003'})
-        # A partition that splits T1 and T2 stays admissible: no relay mission is
-        # split or re-timed, each group simply owns its own aircraft for it.
-        own_first, shared_first = group_attribution(first, transport, relay)
-        own_second, shared_second = group_attribution(second, transport, relay)
-        self.assertEqual(own_first, {'T1', 'R1'})
-        self.assertEqual(own_second, {'T2', 'R1'})
-        self.assertEqual((shared_first, shared_second), (1, 1))
-        # A partition that keeps both sorties together fields R1 only once.
-        merged, shared = group_attribution(first | second, transport, relay)
-        self.assertEqual(merged, {'T1', 'T2', 'R1'})
+                     {'架次编号': 'T2', '访问服务区顺序': 'S003'},
+                     {'架次编号': 'T3', '访问服务区顺序': 'S004'}]
+        relay = [{'relay_sortie': 'R1', 'covered_sorties': 'T1→T2'},
+                 {'relay_sortie': 'R2', 'covered_sorties': 'T2→T3'}]
+        component = frozenset({'S001', 'S002', 'S003', 'S004'})
+        self.assertIn(component, atomic_units(transport, relay))
+        with self.assertRaisesRegex(ValueError, '中继架次跨组'):
+            group_attribution(frozenset({'S001', 'S002'}), transport, relay)
+        own, shared = group_attribution(component, transport, relay)
+        self.assertEqual(own, {'T1', 'T2', 'T3', 'R1', 'R2'})
         self.assertEqual(shared, 0)
 
-    def test_shared_relay_counts_once_per_group_in_resource_demand(self):
-        transport = [{'架次编号': 'T1', '机型编号': 'A', '准备开始时刻（s）': 0,
-                      '返回O01时刻（s）': 100, '返航SOC（%）': 100,
-                      '访问服务区顺序': 'S001,S002', '架次能耗（kWh）': 0.1},
-                     {'架次编号': 'T2', '机型编号': 'A', '准备开始时刻（s）': 0,
-                      '返回O01时刻（s）': 100, '返航SOC（%）': 100,
-                      '访问服务区顺序': 'S003', '架次能耗（kWh）': 0.1}]
-        relay = [{'relay_sortie': 'R1', 'covered_sorties': 'T1→T2',
-                  '中继架次编号': 'R1', '准备开始时刻（s）': 0,
-                  '建链完成/服务开始（s）': 10, '服务结束时刻（s）': 50,
-                  '返回O01时刻（s）': 60, '机体再次可用（s）': 70,
-                  '能源组件再次可用（s）': 80, '返航SOC（%）': 100,
-                  '架次能耗（kWh）': 0.05}]
-        groups = (frozenset({'S001', 'S002'}), frozenset(set(SITES) - {'S001', 'S002'}))
-        intervals = resource_intervals(transport, relay)
-        with patch('final_code.problem4.solver._battery_full_charge_s', return_value={'A': 100}):
-            rows = evaluate_partition(groups, transport, relay, {}, intervals)
-        # The overlapping single relay mission forces one airframe in each group,
-        # so the partition-level total exceeds the global peak of 1.
-        self.assertEqual([row['relay_airframe'] for row in rows], [1, 1])
-        self.assertEqual([row['shared_relay_missions'] for row in rows], [1, 1])
+    def test_rejects_unknown_relay_mapping(self):
+        transport = [{'架次编号': 'T1', '访问服务区顺序': 'S001'}]
+        with self.assertRaisesRegex(ValueError, '映射缺失或未知'):
+            atomic_units(transport, [{'relay_sortie': 'R1', 'covered_sorties': 'T9'}])
 
     def test_battery_recharge_is_counted_and_frozen_timestamp_checked(self):
         row = {'架次编号': 'T1', '机型编号': 'A', '准备开始时刻（s）': 0,

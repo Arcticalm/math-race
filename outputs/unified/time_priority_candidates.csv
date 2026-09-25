@@ -1,3 +1,0 @@
-﻿run,iteration,sortie_count,makespan_s,weighted_lateness,energy_kwh,selected
-run01,1,27,6351.238110210071,0.0,70.22737382625735,False
-run01,2,27,6294.864601791016,646.262583178559,70.22735307817169,True

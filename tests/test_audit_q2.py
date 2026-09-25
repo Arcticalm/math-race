@@ -102,6 +102,14 @@ class TransportAuditTests(unittest.TestCase):
         sortie = replay(self.sortie, self.evaluator, -1., "T")
         self.assertFalse(self.check(sortie)["feasible"])
 
+    def test_continuous_joint_refinement_removes_idle_time(self):
+        from final_code.problem3.refine import refine_joint
+        result, report = refine_joint({'sorties': [self.sortie], 'relays': []}, {},
+                                     self.evaluator, [self.box], self.drones, self.batteries)
+        self.assertTrue(report['accepted'])
+        self.assertAlmostEqual(result['sorties'][0].prep_start_s, 0, places=6)
+        self.assertTrue(self.check(result['sorties'][0])['feasible'])
+
     def test_continuous_compaction_preserves_feasibility(self):
         shifted = left_shift_transport([self.sortie], self.evaluator, self.batteries)[0]
         self.assertEqual(shifted.prep_start_s, 0.)

@@ -1,0 +1,107 @@
+[
+  {
+    "iteration": 1,
+    "pattern_count": 341,
+    "q2_score": [
+      6294.864601791016,
+      0.0,
+      70.87631669985592,
+      27
+    ],
+    "q3_eligible_patterns": 339,
+    "q3_feasible": true,
+    "q3_makespan_s": 7676.436866917964,
+    "joint_score": [
+      7676.436866917964,
+      109361.02786458662,
+      75.42617086757214,
+      31
+    ],
+    "q4_feedback": {
+      "2": {
+        "feasible": true,
+        "score": [
+          2,
+          29,
+          1.0
+        ],
+        "groups": [
+          "S001,S002,S003,S004,S005,S006,S007,S008,S009,S010,S012,S013,S014,S015",
+          "S011"
+        ],
+        "reason": null
+      },
+      "3": {
+        "feasible": true,
+        "score": [
+          4,
+          31,
+          1.4142135623730951
+        ],
+        "groups": [
+          "S001,S002,S003,S004,S005,S007,S008,S009,S010,S012,S013,S014,S015",
+          "S006",
+          "S011"
+        ],
+        "reason": null
+      }
+    },
+    "pool_expansion": {
+      "new_patterns": 260,
+      "proposals": 4086,
+      "accepted_proposal_limit": 160,
+      "attempted_proposals": 350,
+      "accepted_proposals": 160,
+      "max_stops": 3,
+      "method": "split, merge and one-box transfer neighborhood"
+    }
+  },
+  {
+    "iteration": 2,
+    "pattern_count": 601,
+    "q2_score": [
+      6294.864601791016,
+      0.0,
+      70.8763166998559,
+      27
+    ],
+    "q3_eligible_patterns": 599,
+    "q3_feasible": true,
+    "q3_makespan_s": 10527.03527270832,
+    "joint_score": [
+      10527.03527270832,
+      21251.717226638157,
+      68.934818464864,
+      30
+    ],
+    "q4_feedback": {
+      "2": {
+        "feasible": true,
+        "score": [
+          2,
+          26,
+          1.0
+        ],
+        "groups": [
+          "S001,S002,S003,S004,S005,S006,S007,S008,S009,S010,S012,S013,S014,S015",
+          "S011"
+        ],
+        "reason": null
+      },
+      "3": {
+        "feasible": true,
+        "score": [
+          5,
+          29,
+          1.2615938771261497
+        ],
+        "groups": [
+          "S001,S002,S003,S004,S006,S007,S008,S009,S010,S012,S013,S014,S015",
+          "S005",
+          "S011"
+        ],
+        "reason": null
+      }
+    }
+  }
+]

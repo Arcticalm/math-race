@@ -854,7 +854,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Solve Problem 1 single-site round-trip batches")
     parser.add_argument("--reserve", nargs="+", type=float, help="Append reserve scenarios to the workbook baseline (default: 0.10 0.15 0.25 0.30 0.40 0.50)")
     parser.add_argument("--energy-scale", nargs="+", type=float, help="Append horizontal energy-rate sensitivity scenarios (default: 0.8 1.2)")
-    parser.add_argument("--output", type=Path, default=ROOT / "outputs/problem1")
+    parser.add_argument("--output", type=Path, default=ROOT / "outputs/q1")
     arguments = parser.parse_args()
     result = run(arguments.reserve, arguments.energy_scale)
     write_outputs(result, arguments.output)

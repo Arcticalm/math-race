@@ -1,43 +1,69 @@
-# 四问最终代码
+# 四问代码与复现
 
-从仓库根目录执行，Python 环境安装 `final_code/requirements.txt`。数据仍从 `data/` 读取，提交模板仍从 `docs/结果提交模板.xlsx` 读取。
+只保留正式求解、物理模型、审计和结果发布流程。原始数据从 `data/` 读取，表头和格式以 `docs/结果提交模板.xlsx` 为准。
 
-| 问题 | 代码入口 | 主要方法 | 已有结果 |
-| --- | --- | --- | --- |
-| 一 | `final_code.problem1.solver` | 单服务区组批、地形与能耗核算，默认含返航余量与能耗率敏感性 | `outputs/problem1/` |
-| 二 | `final_code.problem2.run` | 共同路线模式库、CP-SAT 独立选择组批与排程、连续时间审计 | `outputs/unified/final/q2/` |
-| 三 | `final_code.problem3.run` | 同一模式库重新选择运输方案，并联合选中继任务、连续通信审计 | `outputs/unified/final/q3/` |
-| 四 | `final_code.problem4.solver` | 冻结第三问方案，完整枚举 K=2、K=3 分区与资源配置 | `outputs/unified/final/q4/` |
-
-底层物理与审计模块由已有 `outputs/unified/final/unified_program.zip` 中的最终程序恢复，整理时仅调整了模块路径和程序打包路径。
-
-问题二的 `patterns.py` 是第二、三问共用的模式库；`master.py` 在无中继参数时求第二问，传入通信需求后联合求第三问。各问的底层物理与审计实现随所属目录保存，模块通过 `final_code` 内部路径互相引用。`package.py` 负责把完整可运行程序和题目提交模板打包。
-
-逐问运行示例：
-
-```bash
-.venv/bin/python -m final_code.problem1.solver --output outputs/problem1
-.venv/bin/python -m final_code.problem2.run --output outputs/problem2/final_code --time-limit 120
-.venv/bin/python -m final_code.problem3.run --output outputs/problem3/final_code --time-limit 120 --max-relays 10
-.venv/bin/python -m final_code.problem4.solver --input outputs/unified/final/q3 --output outputs/problem4/final_code
+```text
+final_code/
+├── problem1/solver.py       单点能力、精确组批、敏感性
+├── problem2/
+│   ├── run.py              第二问独立入口
+│   ├── patterns.py         二、三问共享模式库
+│   ├── master.py           CP-SAT 联合选择与排程
+│   ├── transport.py        运输物理、资源、导出及热启动
+│   ├── groups.py           初始精确组批
+│   └── terrain_audit.py    全像元巡航净空检查
+├── problem3/
+│   ├── run.py              第三问联合重选入口
+│   ├── communication.py    通信需求与位置候选
+│   ├── physics.py          链路、中继物理与区间证明
+│   ├── trajectory.py       运输轨迹、时限及模板导出
+│   ├── refine.py           固定离散决策的连续 LP
+│   └── audit.py            连续通信与中继资源检查
+├── problem4/solver.py       严格冻结任务分区与资源核算
+├── run_all.py              共同库、多轮求解与分区反馈
+├── compare_runs.py         相同范围的候选比较
+├── replay.py               读取保存方案及连续回代
+├── review.py               从源数据重新审计最终结果
+├── submission.py           按题目模板分类并汇总
+├── summary_workbook.py     四问指标汇总
+├── publish.py              图表、结果树、文件清单
+├── package.py              一份完整可运行程序包
+├── requirements.txt        统一依赖
+└── 四问流程算法与题目审查.md
 ```
 
-第二问独立优化、第三问联合重选、第四问冻结分区及反馈迭代的**完整联动**用 `run_all` 一次完成。交付结果采用**独立第三问**（`--q3-partition-groups 0`，默认值，不预留第四问分区）：
+安装依赖与验证：
 
 ```bash
-.venv/bin/python -m final_code.run_all --output outputs/unified/run01 \
-  --rounds 2 --time-limit 120 --max-relays 10 --q3-partition-groups 0
-.venv/bin/python -m final_code.compare_runs outputs/unified/run01 --output outputs/unified/final
-.venv/bin/python -m final_code.publish --source outputs/unified/final --output outputs/unified \
-  --q1-source outputs/problem1
+.venv/bin/python -m pip install -r final_code/requirements.txt
+.venv/bin/python -m unittest discover -s tests -v
+.venv/bin/python -m final_code.review --source outputs --output /tmp/math-race-audit
 ```
 
-传入 `--q3-partition-groups 2` 或 `3` 则改为四问联动：第三问额外要求冻结后的排程可划分为对应数量的任务组。两种范围的得分不可互相比较，`compare_runs` 会按运行记录的范围重算。输出目录应为空。多次运行的筛选及统一图表发布分别由 `final_code.compare_runs` 和 `final_code.publish` 完成；参数与最优性范围见 [模型说明](MODEL.md)。第二、三问是有限模式库和候选位置集上的优化，代码会记录求解状态和下界，不能据此声称原始连续问题的全局最优。
-
-四问结果汇总为一份评审工作簿，由上述各问已产出的 CSV/JSON 生成，不重新求解：
+当前最终结果见 [outputs](../outputs/README.md)。重新分类和生成图表、提交表、指标汇总及程序包：
 
 ```bash
-.venv/bin/python -m final_code.summary_workbook --output outputs/four_problem_summary.xlsx
+.venv/bin/python -m final_code.publish
 ```
 
-工作簿含 26 张表：`说明`、`总览`，以及按问编排的明细表（第一问的安全载荷、组批、余量敏感性，第二、三问的指标、架次、逐箱交付、电池与航段明细，第三问的中继任务与通信认证，第四问的分区配置、库存与工作量对照、口径与最优性）。数值四舍五入到 6 位小数，完整精度仍以各问源文件为准。
+逐问重算时使用空的新目录，避免覆盖已选方案：
+
+```bash
+.venv/bin/python -m final_code.problem1.solver --output /tmp/math-race-q1
+.venv/bin/python -m final_code.problem2.run --output /tmp/math-race-q2 --time-limit 240
+.venv/bin/python -m final_code.problem3.run --output /tmp/math-race-q3 --time-limit 240
+.venv/bin/python -m final_code.problem4.solver --input outputs/q3 --output /tmp/math-race-q4
+```
+
+统一求解与选择示例：
+
+```bash
+.venv/bin/python -m final_code.run_all --output /tmp/math-race-run \
+  --rounds 2 --time-limit 240 --expanded-locations --q3-partition-groups 0
+.venv/bin/python -m final_code.compare_runs outputs /tmp/math-race-run \
+  --output /tmp/math-race-selected
+.venv/bin/python -m final_code.publish --source /tmp/math-race-selected \
+  --q1-source outputs/q1 --output /tmp/math-race-delivery
+```
+
+`0` 是独立第三问；`2/3` 是额外预留分区的联动范围，只有联动范围加入分区反馈。不同范围不可混比。第二、三问仍为有限模式/选址库上的最好已知解，不声称原题全局最优。详见 [四问流程、算法与审查](四问流程算法与题目审查.md)。

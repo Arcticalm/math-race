@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 
 from final_code.problem1.solver import ROOT
+from final_code.replay import left_shift_transport
 from final_code.problem2.master import solve
 from final_code.problem2.patterns import generate
 from final_code.problem2.terrain_audit import audit_clearance
@@ -27,6 +28,8 @@ def run(output: Path, time_limit: float = 120.0) -> dict:
                                time_limit=time_limit)
         if result is None:
             raise RuntimeError(f"No Question 2 incumbent within limits: {search['status']}")
+        result["sorties"] = left_shift_transport(result["sorties"], evaluator, batteries)
+        search["continuous_refinement"] = "earliest starts for fixed drone/battery orders"
         metrics = _validate(result["sorties"], boxes, drones, batteries, evaluator)
         metrics["terrain_clearance"] = audit_clearance(result["sorties"], evaluator)
         metrics.update(search=search, global_optimal=False,
@@ -46,7 +49,7 @@ def run(output: Path, time_limit: float = 120.0) -> dict:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output", type=Path, default=ROOT / "outputs/problem2/final_code")
+    parser.add_argument("--output", type=Path, default=ROOT / "outputs/q2")
     parser.add_argument("--time-limit", type=float, default=120.0)
     args = parser.parse_args()
     if args.time_limit <= 0:

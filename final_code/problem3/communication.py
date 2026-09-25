@@ -13,7 +13,7 @@ from final_code.problem3.physics import (
     LinkEvaluator, certify_moving_link, estimate_relay_mission, link_limits,
     load_relay_parameters, sampled_flight_leg,
 )
-from final_code.problem3.transport_relay import REFERENCE_RELAY_POSITIONS, _position, build_trajectory
+from final_code.problem3.trajectory import REFERENCE_RELAY_POSITIONS, _position, build_trajectory
 
 
 def locations(evaluator, expanded=False):
