@@ -97,9 +97,9 @@ def plot_resource_inventory(inventory):
     fig, ax = plt.subplots(figsize=(11.5, 5.8))
     for idx, k in enumerate([2, 3]):
         totals = inventory[inventory["K"] == k].set_index("resource").reindex(resources)["total_demand"]
-        ax.bar(x + (idx - 0.5) * width, totals, width, color=GROUP_COLORS[idx], label=f"K={k}总需求")
+        ax.bar(x + (idx - 1) * width, totals, width, color=GROUP_COLORS[idx], label=f"K={k}总需求")
     stock = inventory[inventory["K"] == 2].set_index("resource").reindex(resources)["inventory"]
-    ax.bar(x + 0.5 * width, stock, width, color="#59636d", alpha=0.45, label="现有库存")
+    ax.bar(x + width, stock, width, color="#59636d", alpha=0.45, label="现有库存")
     ax.set_xticks(x, [RESOURCE_NAMES[r] for r in resources], rotation=25, ha="right")
     ax.set_ylabel("资源数量 / 组或架"); ax.set_title("不同分区方案的资源需求与现有库存", pad=12, fontweight="bold")
     ax.grid(axis="y", color="#dfe7ee", lw=0.8); ax.spines[["top", "right"]].set_visible(False)
