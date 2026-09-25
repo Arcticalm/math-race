@@ -20,8 +20,14 @@ def collect(runs):
     for root in runs:
         manifest = root / "manifest.json"
         cache = root / "communication_cache.json"
+        groups = 0
         if manifest.exists():
-            inputs = json.loads(manifest.read_text())["input_sha256"]
+            document = json.loads(manifest.read_text())
+            inputs = document["input_sha256"]
+            # A run keeps the Q3 scope it was launched with; its joint score must be
+            # recomputed the same way, or coupled and independent runs would be
+            # ranked on two different objectives.
+            groups = int(document.get("parameters", {}).get("q3_partition_groups", 0))
         elif cache.exists():
             inputs = {key: value for key, value in json.loads(cache.read_text())["signature"].items()
                       if key.startswith("data/")}
@@ -44,11 +50,9 @@ def collect(runs):
             raise ValueError(f"Frozen Q3 hashes do not match: {root}")
         metrics = json.loads((root / "q3/screening.json").read_text())
         partition = json.loads((root / "q4/result.json").read_text())
-        score = joint_score(metrics, partition)
-        if score is not None:
-            joint.append((score, root))
+        joint.append((joint_score(metrics, partition, groups > 0), root))
     if not q2 or not joint:
-        raise ValueError("Need at least one audited Q2 and one certified Q3 with both frozen partitions")
+        raise ValueError("Need at least one audited Q2 and one certified Q3 whose task graph is frozen")
     return q2, joint
 
 
@@ -77,7 +81,7 @@ def run(runs, output):
         "q3_q4": {"source": str(q3_root.resolve()), "score": q3_score},
         "q2_candidates": [{"source": str(root.resolve()), "score": score} for score, root in q2_candidates],
         "joint_candidates": [{"source": str(root.resolve()), "score": score} for score, root in joint_candidates],
-        "selection_rule": "independent time-first Q2; joint time, lateness, energy, sorties, K2+K3 deficit, resource sum, worst CV",
+        "selection_rule": "independent time-first Q2; joint time, lateness, energy and sorties, extended by the K=2/K=3 frozen-partition deficit, resource sum and worst CV only for coupled runs",
         "source_pattern_ids": "local to the recorded source run; no route, box, time or resource assignment changed",
         "packages": package_versions(),
         "artifact_sha256": {str(p.relative_to(output)): digest(p)

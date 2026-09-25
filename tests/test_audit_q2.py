@@ -8,7 +8,20 @@ from final_code.problem2.master import solve
 from final_code.problem2.patterns import replay
 from final_code.problem2.transport import RouteEvaluator, _validate, load_resources, load_task_boxes
 from final_code.replay import left_shift_transport
+from final_code.run_all import joint_score
 from tests import test_final_code
+
+
+def _metrics(makespan=100.0):
+    return {"joint_makespan_s": makespan,
+            "transport_validation": {"weighted_all_expected_tardiness": 1.0},
+            "joint_energy_kwh": 5.0, "total_sortie_count": 4}
+
+
+def _partition(k3_feasible=True, score=(0, 10, 0.5)):
+    return {"solutions": {"2": {"feasible": True, "score": score},
+                          "3": {"feasible": k3_feasible, "score": score if k3_feasible else None,
+                                "reason": "no relay-safe partition"}}}
 
 
 class MasterAuditTests(unittest.TestCase):
@@ -25,6 +38,22 @@ class MasterAuditTests(unittest.TestCase):
         grouped, _ = solve(pool, self.boxes, self.drones, self.batteries, self.evaluator,
                            profiles=profiles, locations=[], time_limit=2, partition_groups=3)
         self.assertNotIn("all", {sortie.code for sortie in grouped["sorties"]})
+
+    def test_independent_q3_score_ignores_frozen_partition(self):
+        # In the independent scope a Q4 outcome must not re-rank two Q3 schedules.
+        better_q3, worse_q3 = _metrics(100.0), _metrics(200.0)
+        partition = _partition(score=(0, 10, 0.5))
+        self.assertEqual(joint_score(better_q3, partition), joint_score(better_q3, partition, False))
+        self.assertLess(joint_score(better_q3, partition), joint_score(worse_q3, partition))
+        self.assertEqual(len(joint_score(better_q3, partition)), 4)
+
+    def test_unrealisable_partition_never_ranks_as_feasible(self):
+        partition = _partition(k3_feasible=False)
+        # Fixed arity keeps rounds comparable, and a K that cannot be frozen is
+        # ordered after a schedule whose K=2 and K=3 both exist.
+        self.assertEqual(len(joint_score(_metrics(), partition, True)), 8)
+        self.assertLess(joint_score(_metrics(), _partition(), True),
+                        joint_score(_metrics(), partition, True))
 
     def test_missing_relay_locations_only_disable_patterns_needing_them(self):
         pool = [self.pattern("fast", [self.boxes[0]], 1)]

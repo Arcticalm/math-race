@@ -54,14 +54,28 @@ def transport_score(metrics):
             metrics["total_energy_kwh"], metrics["sortie_count"])
 
 
-def joint_score(metrics, partition):
-    if not all(partition.get("solutions", {}).get(str(k), {}).get("feasible") for k in (2, 3)):
-        return None
-    scores = [partition["solutions"][str(k)]["score"] for k in (2, 3)]
-    return (metrics["joint_makespan_s"],
+def joint_score(metrics, partition, use_partition_terms=False):
+    """Q3 lexicographic score, optionally extended by frozen-partition terms.
+
+    ``use_partition_terms`` is set only in the coupled mode, where Q3 is solved
+    under the Q4 partitionability constraints. In the independent mode the
+    delivered Q3 is ranked on its own makespan/lateness/energy/sortie criteria
+    alone, so a Q4 outcome can never silently re-rank two Q3 schedules. Both
+    branches return the same arity so scores stay comparable across rounds.
+    """
+    base = (metrics["joint_makespan_s"],
             metrics["transport_validation"]["weighted_all_expected_tardiness"],
-            metrics["joint_energy_kwh"], metrics["total_sortie_count"],
-            sum(s[0] for s in scores), sum(s[1] for s in scores), max(s[2] for s in scores))
+            metrics["joint_energy_kwh"], metrics["total_sortie_count"])
+    if not use_partition_terms:
+        return base
+    entries = [partition["solutions"][str(k)]["score"] for k in (2, 3)
+               if partition.get("solutions", {}).get(str(k), {}).get("feasible")]
+    if len(entries) != 2:
+        # A frozen partition that cannot be realised (usually K=3 after an
+        # independent Q3) is reported, never ranked as though it were feasible.
+        return base + (1, 0.0, 0.0, 0.0)
+    return base + (0, sum(s[0] for s in entries), sum(s[1] for s in entries),
+                   max(s[2] for s in entries))
 
 
 def audit_and_export_joint(directory, result, search, profiles, boxes, drones, batteries, evaluator):
@@ -160,9 +174,12 @@ def profile_signature():
 
 
 def run(output, rounds=2, time_limit=120., max_relays=10, expansion_limit=80, profile_cache=None,
-        seed_source=None, complete_single_site=False, expanded_locations=False, random_seed=17):
+        seed_source=None, complete_single_site=False, expanded_locations=False, random_seed=17,
+        partition_groups=0):
     if rounds < 1 or not math.isfinite(time_limit) or time_limit <= 0 or max_relays < 0 or expansion_limit < 1:
         raise ValueError("Invalid feedback or solver limits")
+    if partition_groups not in (0, 2, 3):
+        raise ValueError("Q3 partition groups must be 0 (independent), 2 or 3")
     if output.exists() and any(output.iterdir()):
         raise ValueError("Choose a new output directory; existing results are never overwritten")
     output.mkdir(parents=True, exist_ok=True)
@@ -238,7 +255,7 @@ def run(output, rounds=2, time_limit=120., max_relays=10, expansion_limit=80, pr
             joint, search = solve(pool, boxes, drones, batteries, evaluator,
                                   time_limit=time_limit, profiles=profiles, locations=candidate_locations,
                                   max_relays=max_relays, hint=joint_hint or hint, partition_feedback=feedback,
-                                  partition_groups=3, random_seed=random_seed + iteration - 1)
+                                  partition_groups=partition_groups, random_seed=random_seed + iteration - 1)
             save_json(directory / "q3_search.json", search)
             if joint is not None:
                 q3_dir = directory / "q3"
@@ -252,17 +269,21 @@ def run(output, rounds=2, time_limit=120., max_relays=10, expansion_limit=80, pr
                     partition = partition_frozen_schedule(q3_dir, directory / "q4")
                     if frozen != snapshot(q3_dir):
                         raise ValueError("Q4 modified the frozen Q3 input")
-                    score = joint_score(metrics, partition)
+                    score = joint_score(metrics, partition, use_partition_terms=partition_groups > 0)
                     record["joint_score"] = score
-                    if score is not None:
-                        if best_joint is None or score < best_joint["score"]:
-                            best_joint = dict(score=score, iteration=iteration, result=joint,
-                                              metrics=metrics, partition=partition)
-                        feedback = partition["solutions"]["3"]["groups"]
-                        record["q4_feedback"] = {
-                            k: {"score": v["score"], "groups": [r["sites"] for r in v["groups"]]}
-                            for k, v in partition["solutions"].items()
-                        }
+                    if best_joint is None or score < best_joint["score"]:
+                        best_joint = dict(score=score, iteration=iteration, result=joint,
+                                          metrics=metrics, partition=partition)
+                    if partition_groups > 0:
+                        three = partition["solutions"].get("3") or {}
+                        if three.get("feasible") and three.get("groups"):
+                            feedback = three["groups"]
+                    record["q4_feedback"] = {
+                        k: {"feasible": v.get("feasible"), "score": v.get("score"),
+                            "groups": [r["sites"] for r in v.get("groups", [])],
+                            "reason": v.get("reason")}
+                        for k, v in partition["solutions"].items()
+                    }
                     if iteration < rounds:
                         record["pool_expansion"] = expand(pool, joint["sorties"], evaluator,
                                                            batteries, expansion_limit)
@@ -323,7 +344,7 @@ def run(output, rounds=2, time_limit=120., max_relays=10, expansion_limit=80, pr
                                profile_cache=str(profile_cache) if profile_cache else None,
                                seed_source=str(seed_source) if seed_source else None,
                                complete_single_site=complete_single_site, expanded_locations=expanded_locations,
-                               random_seed=random_seed),
+                               random_seed=random_seed, q3_partition_groups=partition_groups),
             "source_sha256": {str(p.relative_to(ROOT)): digest(p)
                               for p in (ROOT / "final_code").rglob("*.py")},
         })
@@ -345,11 +366,15 @@ def main():
     parser.add_argument("--complete-single-site", action="store_true")
     parser.add_argument("--expanded-locations", action="store_true")
     parser.add_argument("--random-seed", type=int, default=17)
+    parser.add_argument("--q3-partition-groups", type=int, choices=(0, 2, 3), default=0,
+                        help="Q3 scope: 0 solves the independent Question 3; 2 or 3 additionally "
+                             "require the frozen schedule to admit that many task groups")
     args = parser.parse_args()
     if args.rounds < 1 or not math.isfinite(args.time_limit) or args.time_limit <= 0 or args.max_relays < 0 or args.expansion_limit < 1:
         parser.error("rounds, time-limit and expansion-limit must be positive; max-relays must be nonnegative")
     result = run(args.output, args.rounds, args.time_limit, args.max_relays, args.expansion_limit, args.profile_cache,
-                 args.seed_source, args.complete_single_site, args.expanded_locations, args.random_seed)
+                 args.seed_source, args.complete_single_site, args.expanded_locations, args.random_seed,
+                 args.q3_partition_groups)
     print(json.dumps({k: v for k, v in result.items() if k != "history"}, ensure_ascii=False, indent=2))
     if not result["feasible"]:
         raise SystemExit(2)
