@@ -138,26 +138,30 @@ def plot_routes(sorties):
 def plot_drone_gantt(sorties):
     df = sorties.sort_values(["无人机编号", "准备开始时刻（s）"])
     drones = list(dict.fromkeys(df["无人机编号"]))
-    fig, ax = plt.subplots(figsize=(11.5, 6.5))
+    fig, ax = plt.subplots(figsize=(12.6, 7.4))
     for yi, drone in enumerate(drones):
         sub = df[df["无人机编号"] == drone]
         for _, row in sub.iterrows():
             start = row["准备开始时刻（s）"]; width = row["返回O01时刻（s）"] - start
-            ax.barh(yi, width, left=start, height=0.58, color=COLORS.get(row["机型编号"], "#607080"), alpha=0.88)
-            ax.text(start + width / 2, yi, row["架次编号"], ha="center", va="center", fontsize=7, color="white")
-    ax.set_yticks(range(len(drones)), drones); ax.set_xlabel("时间 / s"); ax.set_ylabel("实体运输无人机")
-    ax.set_title("实体运输无人机任务占用时间轴", pad=12, fontweight="bold")
+            ax.barh(yi, width, left=start, height=0.62, color=COLORS.get(row["机型编号"], "#607080"), alpha=0.88)
+            ax.text(start + width / 2, yi, row["架次编号"], ha="center", va="center",
+                    fontsize=10, color="white")
+    ax.set_yticks(range(len(drones)), drones, fontsize=12)
+    ax.set_xlabel("时间 / s", fontsize=13); ax.set_ylabel("实体运输无人机", fontsize=13)
+    ax.tick_params(axis="x", labelsize=12)
+    ax.set_title("实体运输无人机任务占用时间轴", pad=12, fontsize=16, fontweight="bold")
     ax.grid(axis="x", color="#dfe7ee", lw=0.8); ax.spines[["top", "right"]].set_visible(False)
     ax.legend(handles=[Patch(facecolor=color, label=f"{code}型") for code, color in COLORS.items()],
-              frameon=False, ncol=1, loc="upper left", bbox_to_anchor=(1.01, 1), borderaxespad=0)
-    fig.subplots_adjust(right=0.82)
+              frameon=False, ncol=1, loc="upper left", bbox_to_anchor=(1.01, 1),
+              borderaxespad=0, fontsize=12)
+    fig.subplots_adjust(right=0.84)
     save(fig, "图2_无人机资源时间轴.png")
 
 
 def plot_battery_gantt(batteries):
     df = batteries.sort_values(["电池编号", "任务占用开始（s）"])
     batteries_order = list(dict.fromkeys(df["电池编号"]))
-    fig, ax = plt.subplots(figsize=(11.5, 7.0))
+    fig, ax = plt.subplots(figsize=(12.6, 8.0))
     for yi, battery in enumerate(batteries_order):
         sub = df[df["电池编号"] == battery]
         aircraft = str(sub.iloc[0]["机型编号"])
@@ -165,16 +169,20 @@ def plot_battery_gantt(batteries):
             use_start = row["任务占用开始（s)"] if "任务占用开始（s)" in row else row["任务占用开始（s）"]
             release = row["返航释放（s）"]
             charge_end = row["充电完成（s）"]
-            ax.barh(yi, release - use_start, left=use_start, height=0.54, color=COLORS.get(aircraft, "#607080"), alpha=0.9)
-            ax.barh(yi, charge_end - release, left=release, height=0.54, color="#b8c2cc", alpha=0.9)
-            ax.text(use_start + (release-use_start)/2, yi, row["架次编号"], ha="center", va="center", fontsize=7, color="white")
-    ax.set_yticks(range(len(batteries_order)), batteries_order); ax.set_xlabel("时间 / s"); ax.set_ylabel("共享电池")
-    ax.set_title("共享电池任务占用与充电周转", pad=12, fontweight="bold")
+            ax.barh(yi, release - use_start, left=use_start, height=0.60, color=COLORS.get(aircraft, "#607080"), alpha=0.9)
+            ax.barh(yi, charge_end - release, left=release, height=0.60, color="#b8c2cc", alpha=0.9)
+            ax.text(use_start + (release-use_start)/2, yi, row["架次编号"], ha="center", va="center",
+                    fontsize=10, color="white")
+    ax.set_yticks(range(len(batteries_order)), batteries_order, fontsize=12)
+    ax.set_xlabel("时间 / s", fontsize=13); ax.set_ylabel("共享电池", fontsize=13)
+    ax.tick_params(axis="x", labelsize=12)
+    ax.set_title("共享电池任务占用与充电周转", pad=12, fontsize=16, fontweight="bold")
     ax.grid(axis="x", color="#dfe7ee", lw=0.8); ax.spines[["top", "right"]].set_visible(False)
     ax.legend(handles=[Patch(facecolor="#52606d", label="任务占用"),
                        Patch(facecolor="#b8c2cc", label="充电")],
-              frameon=False, ncol=1, loc="upper left", bbox_to_anchor=(1.01, 1), borderaxespad=0)
-    fig.subplots_adjust(right=0.82)
+              frameon=False, ncol=1, loc="upper left", bbox_to_anchor=(1.01, 1),
+              borderaxespad=0, fontsize=12)
+    fig.subplots_adjust(right=0.84)
     save(fig, "图3_电池周转时间轴.png")
 
 
@@ -216,7 +224,11 @@ def plot_tradeoff(candidates):
     因此这里按轮次并列比较，深色标出最终选定的那一轮。
     """
     df = candidates.copy()
-    df["方案"] = df["run"] + " · 第 " + df["iteration"].astype(str) + " 轮"
+    # 只有一次运行时不显示 run 目录名，避免把复现用的目录名带进论文图。
+    if df["run"].nunique() == 1:
+        df["方案"] = "第 " + df["iteration"].astype(str) + " 轮"
+    else:
+        df["方案"] = df["run"] + " · 第 " + df["iteration"].astype(str) + " 轮"
     selected = df["selected"].astype(str).str.lower().isin(["true", "1", "是"])
     panels = [
         ("makespan_s", "全部任务完成时间 / s", "#1769aa"),
@@ -224,19 +236,20 @@ def plot_tradeoff(candidates):
         ("energy_kwh", "总运输能耗 / kWh", "#e08e0b"),
         ("sortie_count", "运输架次 / 架", "#35a7a0"),
     ]
-    fig, axes = plt.subplots(2, 2, figsize=(11.4, 7.4))
+    fig, axes = plt.subplots(2, 2, figsize=(12.4, 8.2))
     for ax, (column, label, color) in zip(axes.ravel(), panels):
         colors = [color if flag else "#c3ccd4" for flag in selected]
         bars = ax.bar(df["方案"], df[column], width=0.5, color=colors, alpha=0.92)
         for bar, value in zip(bars, df[column]):
             ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height(),
-                    f"{value:g}", ha="center", va="bottom", fontsize=10)
-        ax.set_ylabel(label)
+                    f"{value:g}", ha="center", va="bottom", fontsize=14)
+        ax.set_ylabel(label, fontsize=13)
+        ax.tick_params(axis="both", labelsize=12)
         ax.grid(axis="y", color="#dfe7ee", lw=0.8)
         ax.spines[["top", "right"]].set_visible(False)
         ax.margins(y=0.20)
     fig.suptitle("反馈迭代候选方案的指标对比（深色为最终选定方案）",
-                 y=1.0, fontsize=14, fontweight="bold")
+                 y=1.0, fontsize=17, fontweight="bold")
     fig.tight_layout()
     save(fig, "图6_方案指标对比.png")
 

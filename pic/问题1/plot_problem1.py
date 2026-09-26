@@ -68,25 +68,59 @@ def plot_payload_heatmap(safe: pd.DataFrame) -> None:
 
 
 def plot_distance_payload(safe: pd.DataFrame) -> None:
-    summary = safe.drop_duplicates("site").sort_values("route_distance_m")
-    fig, ax = plt.subplots(figsize=(8.4, 5.2))
+    summary = safe.drop_duplicates("site").sort_values("route_distance_m").reset_index(drop=True)
+    fig, ax = plt.subplots(figsize=(11.0, 6.8))
     for aircraft in ["A", "B", "C"]:
         sub = safe[safe.aircraft == aircraft].set_index("site").loc[summary.site].reset_index()
-        ax.plot(sub.route_distance_m / 1000, sub.max_safe_payload_kg, marker="o", lw=2.2,
-                ms=5.5, color=COLORS[aircraft], label=f"{aircraft}型")
-    for _, row in summary.iterrows():
-        ax.annotate(row.site, (row.route_distance_m / 1000, 0), xytext=(0, -15),
-                    textcoords="offset points", ha="right", va="top", rotation=45,
-                    rotation_mode="anchor", fontsize=8, color="#52606d")
-    ax.set_xlabel("O01—服务区往返航线距离 / km", labelpad=27)
-    ax.set_ylabel("最大安全载荷 / kg")
-    ax.set_title("航线距离与最大安全载荷的关系", pad=12, fontweight="bold")
-    ax.set_ylim(bottom=0)
+        ax.plot(sub.route_distance_m / 1000, sub.max_safe_payload_kg, marker="o", lw=2.4,
+                ms=6.5, color=COLORS[aircraft], label=f"{aircraft}型")
+    # 15 个服务区全部用引线标注：从该点的 C 型载荷处牵到标签。
+    # 排版的三个约束：引线要看得见（与数据点至少差 8 kg）、标签之间不重叠、
+    # 引线本身不互相压住。距离轴上有几对点几乎重合（S002 与 S012 只差 37 m、
+    # S010 与 S013 差 70 m、S005 与 S014 差 109 m），若标签都放在各自点正下方，
+    # 引线会近乎平行重合，因此对这些点额外做水平错位，让引线呈扇形散开。
+    c_type = safe[safe.aircraft == "C"].set_index("site")["max_safe_payload_kg"]
+    distance = safe.drop_duplicates("site").set_index("site")["route_distance_m"] / 1000
+    limited = [s for s in summary.site if c_type[s] < 80.0]      # C 型受电量约束的点
+    normal = [s for s in summary.site if s not in limited]
+
+    labels = {}
+    rows_y = (64.0, 48.0)
+    nudge = {"S010": -0.17, "S013": +0.24, "S005": -0.13, "S014": +0.21, "S007": -0.16}
+    placed = {0: [], 1: []}
+    for index, site in enumerate(normal):
+        level = index % 2
+        x = distance[site] + nudge.get(site, 0.0)
+        if placed[level] and x - placed[level][-1] < 0.40:
+            x = placed[level][-1] + 0.40
+        placed[level].append(x)
+        labels[site] = (x, rows_y[level])
+    # 受约束的 5 个点集中在 x>7.2 的右区，手工定位：除 S002 的标签置于其上方
+    # （否则引线只有 4.6 kg 高、几乎不可见）外，其余标签下移到 y=50 一带，
+    # 引线长度都在 8 kg 以上，且彼此错开。
+    labels.update({"S003": (6.98, 77.0), "S002": (7.72, 80.0), "S012": (7.36, 50.0),
+                   "S004": (7.86, 50.0), "S008": (8.34, 50.0)})
+
+    for site, (x, y) in labels.items():
+        ax.annotate(site, xy=(distance[site], c_type[site]), xytext=(x, y),
+                    textcoords="data", ha="center", va="center",
+                    fontsize=11.5, color="#39434d",
+                    bbox={"facecolor": "white", "edgecolor": "none", "pad": 1.6},
+                    arrowprops={"arrowstyle": "-", "color": "#9aa7b2",
+                                "lw": 0.9, "shrinkA": 1, "shrinkB": 2})
+    ax.axvline(7.2, color="#9aa7b2", ls="--", lw=1.2)
+    ax.annotate("C 型电量约束区间（距离 $\\geq$ 7.2 km）", xy=(7.12, 91),
+                fontsize=12.5, color="#52606d", ha="right", va="center")
+    ax.set_xlabel("O01—服务区往返航线距离 / km", fontsize=13)
+    ax.set_ylabel("最大安全载荷 / kg", fontsize=13)
+    ax.set_title("航线距离与最大安全载荷的关系", pad=12, fontsize=16, fontweight="bold")
+    ax.set_ylim(bottom=0, top=100)
+    ax.set_xlim(2.3, 8.6)
+    ax.tick_params(axis="both", labelsize=12)
     ax.grid(axis="y", color="#dfe7ee", lw=0.8)
-    # 将图例放到绘图区上方，避免遮挡 C 型高载荷曲线。
-    ax.legend(frameon=False, ncol=1, loc="upper left", bbox_to_anchor=(1.01, 1.0),
-              borderaxespad=0, handlelength=2.4, labelspacing=0.8)
-    fig.subplots_adjust(right=0.82, bottom=0.25)
+    # 图例放在左中部空白区：右侧留给 C 型下降段，上方留给区间注释。
+    ax.legend(frameon=False, ncol=1, loc="lower left", bbox_to_anchor=(0.015, 0.02),
+              borderaxespad=0, handlelength=2.4, labelspacing=0.9, fontsize=13)
     ax.spines[["top", "right"]].set_visible(False)
     save(fig, "图2_距离与安全载荷.png")
 
@@ -138,28 +172,35 @@ def plot_tradeoff(tradeoff: pd.DataFrame) -> None:
     df["时间h"] = df["累计作业时间（s）"] / 3600
     points = (df.groupby(["总能耗（kWh）", "时间h"], as_index=False)["目标优先策略"]
                 .agg(lambda values: "/".join(values)))
-    fig, ax = plt.subplots(figsize=(7.5, 5.5))
+    fig, ax = plt.subplots(figsize=(8.6, 6.2))
     styles = {"架次优先": ("#1769aa", "o"), "能耗优先": ("#c44536", "D"), "时间优先": ("#35a7a0", "s")}
-    offsets = {"架次优先/时间优先": (8, -18), "能耗优先": (8, 8)}
+    # 最右点贴近绘图区边界，标注改为向左排，避免溢出坐标区。
+    styles_ann = {"架次优先/时间优先": ((-24, 2), "right"), "能耗优先": ((10, 10), "left")}
     for _, row in points.iterrows():
         key = row["目标优先策略"]
         primary = "能耗优先" if "能耗优先" in key else "架次优先"
         color, marker = styles.get(primary, ("#555", "o"))
-        ax.scatter(row["总能耗（kWh）"], row["时间h"], s=95, color=color, marker=marker,
-                   edgecolor="white", linewidth=1.2, label=row["目标优先策略"])
+        ax.scatter(row["总能耗（kWh）"], row["时间h"], s=130, color=color, marker=marker,
+                   edgecolor="white", linewidth=1.3, label=row["目标优先策略"])
+        offset, align = styles_ann.get(key, ((10, 10), "left"))
         ax.annotate(key, (row["总能耗（kWh）"], row["时间h"]),
-                    xytext=offsets.get(key, (8, 8)), textcoords="offset points", fontsize=9)
-    ax.set_xlabel("总运输能耗 / kWh")
-    ax.set_ylabel("累计作业时间 / h")
-    ax.set_title("三种目标优先策略的指标权衡（基准余量20%）", pad=12, fontweight="bold")
+                    xytext=offset, textcoords="offset points", ha=align, va="center",
+                    fontsize=13, color="#26323c")
+    ax.set_xlabel("总运输能耗 / kWh", fontsize=12)
+    ax.set_ylabel("累计作业时间 / h", fontsize=12)
+    ax.set_title("三种目标优先策略的指标权衡（基准余量 20%）", pad=12,
+                 fontsize=15, fontweight="bold")
+    ax.tick_params(axis="both", labelsize=11)
     ax.grid(color="#dfe7ee", lw=0.8)
     ax.spines[["top", "right"]].set_visible(False)
     ax.set_xlim(df["总能耗（kWh）"].min() - 0.006, df["总能耗（kWh）"].max() + 0.006)
     y = points["时间h"]
-    ax.set_ylim(y.min() - 0.08, y.max() + 0.08)
+    ax.set_ylim(y.min() - 0.10, y.max() + 0.10)
+    # 图例放到左下空白区：两个数据点都在上方，标在图例原位置会与“能耗优先”的标注重叠。
     handles, labels = ax.get_legend_handles_labels()
     by_label = dict(zip(labels, handles))
-    ax.legend(by_label.values(), by_label.keys(), frameon=False, loc="upper left")
+    ax.legend(by_label.values(), by_label.keys(), frameon=False, loc="lower left",
+              fontsize=12, handletextpad=0.6)
     save(fig, "图5_目标权衡.png")
 
 
