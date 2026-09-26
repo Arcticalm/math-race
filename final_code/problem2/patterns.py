@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import copy
 import itertools
-from collections import Counter
+from collections import Counter, defaultdict
 from dataclasses import dataclass
 
 from final_code.problem2.transport import (
@@ -81,19 +81,26 @@ def add_patterns(pool, proposals, evaluator, batteries, max_accepted=None):
     return {"attempted_proposals": attempted, "accepted_proposals": accepted}
 
 
-def generate(boxes, evaluator, batteries):
+def generate(boxes, evaluator, batteries, complete_single_site=False):
     groups = exact_site_partitions(boxes, evaluator)
     groups["constructive"] = _partition_by_site(boxes, evaluator)
     for name, sorties in list(groups.items()):
         groups[name + "_merged"] = _merge_multisite(sorties, evaluator)
     proposals = [(s.boxes, s.route) for routes in groups.values() for s in routes]
     proposals += [([b], [b.site]) for b in boxes]
+    if complete_single_site:
+        by_site = defaultdict(list)
+        for box in boxes:
+            by_site[box.site].append(box)
+        for site, batch in sorted(by_site.items()):
+            for size in range(2, len(batch) + 1):
+                proposals.extend((list(group), [site]) for group in itertools.combinations(batch, size))
     pool = []
     add_patterns(pool, proposals, evaluator, batteries)
     return pool, groups
 
 
-def expand(pool, chosen, evaluator, batteries, limit=80):
+def expand(pool, chosen, evaluator, batteries, limit=80, max_stops=3):
     """Neighborhood columns from the audited Q3 incumbent, not a pricing proof.
 
     Split routes and transfer one box between two selected batches. Rank new
@@ -116,8 +123,11 @@ def expand(pool, chosen, evaluator, batteries, limit=80):
         for box in sortie.boxes:
             offer([b for b in sortie.boxes if b.code != box.code], sortie.route)
     for first, second in itertools.combinations(chosen, 2):
-        if len(set(first.route + second.route)) > 2:
+        if len(set(first.route + second.route)) > max_stops:
             continue
+        merged = first.boxes + second.boxes
+        for route in itertools.permutations(sorted({b.site for b in merged})):
+            offer(merged, route)
         for source, target in ((first, second), (second, first)):
             for box in source.boxes:
                 batch = target.boxes + [box]
@@ -127,4 +137,4 @@ def expand(pool, chosen, evaluator, batteries, limit=80):
     admitted = add_patterns(pool, [proposals[k] for k in sorted(proposals)],
                             evaluator, batteries, max_accepted=limit)
     return {"new_patterns": len(pool) - before, "proposals": len(proposals),
-            "accepted_proposal_limit": limit, **admitted, "method": "split and one-box transfer neighborhood"}
+            "accepted_proposal_limit": limit, **admitted, "max_stops": max_stops, "method": "split, merge and one-box transfer neighborhood"}

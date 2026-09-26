@@ -13,14 +13,14 @@ from final_code.problem3.physics import (
     LinkEvaluator, certify_moving_link, estimate_relay_mission, link_limits,
     load_relay_parameters, sampled_flight_leg,
 )
-from final_code.problem3.transport_relay import REFERENCE_RELAY_POSITIONS, _position, build_trajectory
+from final_code.problem3.trajectory import REFERENCE_RELAY_POSITIONS, _position, build_trajectory
 
 
 def locations(evaluator, expanded=False):
     params = load_relay_parameters()
     limits = link_limits(evaluator.params)
     base = evaluator.base
-    gateway = Node("G01", base.longitude, base.latitude, base.elevation_m + 20)
+    gateway = Node("G01", base.longitude, base.latitude, base.elevation_m + evaluator.params.gateway_agl_m)
     points = set(REFERENCE_RELAY_POSITIONS.values())
     points.update((n.longitude, n.latitude) for n in evaluator.sites.values())
     if expanded:
@@ -79,7 +79,7 @@ def _prove(evaluator, phase, start, end, node, altitude, threshold):
 def profile_key(pattern, candidate_locations, step=10.):
     locations_key = [(x["longitude"], x["latitude"], x["hover_altitude_m"])
                      for x in candidate_locations]
-    payload = json.dumps([pattern.geometry_key, locations_key, step], sort_keys=True)
+    payload = json.dumps(["full-dem-los-v2", pattern.geometry_key, locations_key, step], sort_keys=True)
     return hashlib.sha256(payload.encode()).hexdigest()
 
 
@@ -94,7 +94,7 @@ def build_profiles(pool, candidate_locations, cache=None, step=10.):
     evaluator = LinkEvaluator()
     limits = link_limits(evaluator.params)
     base = evaluator.base
-    gateway = Node("G01", base.longitude, base.latitude, base.elevation_m + 20)
+    gateway = Node("G01", base.longitude, base.latitude, base.elevation_m + evaluator.params.gateway_agl_m)
     profiles = {}
     try:
         for index, pattern in enumerate(pool):

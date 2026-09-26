@@ -1,0 +1,87 @@
+test_default_run_includes_reserve_and_energy_sensitivity (test_audit_q1.QuestionOneAuditTests) ... ok
+test_dem_corner_contacts_are_included (test_audit_q1.QuestionOneAuditTests) ... /home/naya/math-race/.venv/lib/python3.10/site-packages/rasterio/transform.py:178: PendingDeprecationWarning: Use `@` matmul instead of `*` mul operator for matrix multiplication
+  return Affine.translation(west, north) * Affine.scale(xsize, -ysize)
+/home/naya/math-race/tests/test_audit_q1.py:128: PendingDeprecationWarning: Use `@` matmul instead of `*` mul operator for matrix multiplication
+  start = solver.Node("start", *(transform * (.5, .5)), 0)
+/home/naya/math-race/tests/test_audit_q1.py:129: PendingDeprecationWarning: Use `@` matmul instead of `*` mul operator for matrix multiplication
+  end = solver.Node("end", *(transform * (2.5, 2.5)), 0)
+/home/naya/math-race/final_code/problem1/solver.py:188: PendingDeprecationWarning: Use `@` matmul instead of `*` mul operator for matrix multiplication
+  x0, y0 = inverse * (start.longitude, start.latitude)
+/home/naya/math-race/final_code/problem1/solver.py:189: PendingDeprecationWarning: Use `@` matmul instead of `*` mul operator for matrix multiplication
+  x1, y1 = inverse * (end.longitude, end.latitude)
+ok
+test_empty_energy_export_uses_zero_payload (test_audit_q1.QuestionOneAuditTests) ... ok
+test_exact_partition_matches_exhaustive_complete_solutions (test_audit_q1.QuestionOneAuditTests) ... ok
+test_infeasible_sensitivity_records_every_affected_site_and_plots (test_audit_q1.QuestionOneAuditTests) ... ok
+test_safe_payload_uses_loaded_outbound_and_empty_return (test_audit_q1.QuestionOneAuditTests) ... ok
+test_sensitivity_rejects_invalid_parameter_domains (test_audit_q1.QuestionOneAuditTests) ... ok
+test_independent_q3_score_ignores_frozen_partition (test_audit_q2.MasterAuditTests) ... ok
+test_missing_relay_locations_only_disable_patterns_needing_them (test_audit_q2.MasterAuditTests) ... Q3 makespan_s: {'objective': 'makespan_s', 'status': 'OPTIMAL', 'lower_bound': 6.0, 'incumbent': 6.0}
+Q3 weighted_lateness_x100: {'objective': 'weighted_lateness_x100', 'status': 'OPTIMAL', 'lower_bound': 0.0, 'incumbent': 0.0}
+Q3 energy_micro_kwh: {'objective': 'energy_micro_kwh', 'status': 'OPTIMAL', 'lower_bound': 3000000.0, 'incumbent': 3000000.0}
+Q3 sorties: {'objective': 'sorties', 'status': 'OPTIMAL', 'lower_bound': 3.0, 'incumbent': 3.0}
+ok
+test_pure_q3_does_not_impose_three_groups (test_audit_q2.MasterAuditTests) ... Q3 makespan_s: {'objective': 'makespan_s', 'status': 'OPTIMAL', 'lower_bound': 1.0, 'incumbent': 1.0}
+Q3 weighted_lateness_x100: {'objective': 'weighted_lateness_x100', 'status': 'OPTIMAL', 'lower_bound': 0.0, 'incumbent': 0.0}
+Q3 energy_micro_kwh: {'objective': 'energy_micro_kwh', 'status': 'OPTIMAL', 'lower_bound': 1000000.0, 'incumbent': 1000000.0}
+Q3 sorties: {'objective': 'sorties', 'status': 'OPTIMAL', 'lower_bound': 1.0, 'incumbent': 1.0}
+/usr/lib/python3.10/xml/etree/ElementTree.py:1296: ResourceWarning: unclosed file <_io.BufferedReader name='/home/naya/math-race/data/无人机应急物资运输基础数据/中继无人机数据.xlsx'>
+  self._parser.feed(data)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+Q3 makespan_s: {'objective': 'makespan_s', 'status': 'OPTIMAL', 'lower_bound': 6.0, 'incumbent': 6.0}
+Q3 weighted_lateness_x100: {'objective': 'weighted_lateness_x100', 'status': 'OPTIMAL', 'lower_bound': 0.0, 'incumbent': 0.0}
+Q3 energy_micro_kwh: {'objective': 'energy_micro_kwh', 'status': 'OPTIMAL', 'lower_bound': 3000000.0, 'incumbent': 3000000.0}
+Q3 sorties: {'objective': 'sorties', 'status': 'OPTIMAL', 'lower_bound': 3.0, 'incumbent': 3.0}
+ok
+test_unrealisable_partition_never_ranks_as_feasible (test_audit_q2.MasterAuditTests) ... ok
+test_changed_source_box_attributes_are_rejected (test_audit_q2.TransportAuditTests) ... ok
+test_continuous_compaction_preserves_feasibility (test_audit_q2.TransportAuditTests) ... ok
+test_continuous_joint_refinement_removes_idle_time (test_audit_q2.TransportAuditTests) ... ok
+test_negative_start_is_rejected (test_audit_q2.TransportAuditTests) ... ok
+test_shortened_but_self_consistent_flight_is_rejected (test_audit_q2.TransportAuditTests) ... ok
+test_continuous_certificate_covers_in_between_los_positions (test_audit_q3.ExactCommunicationAuditTests) ... /home/naya/math-race/final_code/problem3/physics.py:335: PendingDeprecationWarning: Use `@` matmul instead of `*` mul operator for matrix multiplication
+  cc, rr = inverse * (longitude, latitude)
+/home/naya/math-race/final_code/problem3/physics.py:189: PendingDeprecationWarning: Use `@` matmul instead of `*` mul operator for matrix multiplication
+  x0, y0 = inverse * (first.longitude, first.latitude)
+/home/naya/math-race/final_code/problem3/physics.py:190: PendingDeprecationWarning: Use `@` matmul instead of `*` mul operator for matrix multiplication
+  x1, y1 = inverse * (second.longitude, second.latitude)
+ok
+test_corner_touch_ridge_changes_both_los_and_flight_clearance (test_audit_q3.ExactCommunicationAuditTests) ... ok
+test_relay_audit_rejects_false_agl_ground_and_charge_fields (test_audit_q3.ExactCommunicationAuditTests) ... /usr/lib/python3.10/xml/etree/ElementTree.py:1342: ResourceWarning: unclosed file <_io.BufferedReader name='/home/naya/math-race/data/无人机应急物资运输基础数据/运输无人机数据.xlsx'>
+  parser.feed(text)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_setup_hover_energy_and_high_altitude_climb_are_included (test_audit_q3.ExactCommunicationAuditTests) ... ok
+test_atomic_units_merge_only_shared_transport_sorties (test_audit_q4.QuestionFourAuditTests) ... ok
+test_battery_recharge_is_counted_and_frozen_timestamp_checked (test_audit_q4.QuestionFourAuditTests) ... ok
+test_default_enumeration_exceeds_previous_limit (test_audit_q4.QuestionFourAuditTests) ... ok
+test_rejects_old_sampled_communication_certificate (test_audit_q4.QuestionFourAuditTests) ... ok
+test_rejects_unknown_relay_mapping (test_audit_q4.QuestionFourAuditTests) ... ok
+test_shared_relay_closure_is_transitive_and_cannot_be_split (test_audit_q4.QuestionFourAuditTests) ... ok
+test_stock_gap_workload_and_input_conservation (test_audit_q4.QuestionFourAuditTests) ... ok
+test_bundle_contains_all_four_questions (test_final_code.FinalCodeTests) ... ok
+test_question_four_uses_half_open_resource_intervals (test_final_code.FinalCodeTests) ... ok
+test_question_three_reselects_with_communication_constraint (test_final_code.FinalCodeTests) ... Q2 makespan_s: {'objective': 'makespan_s', 'status': 'OPTIMAL', 'lower_bound': 3.0, 'incumbent': 3.0}
+Q2 weighted_lateness_x100: {'objective': 'weighted_lateness_x100', 'status': 'OPTIMAL', 'lower_bound': 0.0, 'incumbent': 0.0}
+Q2 energy_micro_kwh: {'objective': 'energy_micro_kwh', 'status': 'OPTIMAL', 'lower_bound': 3000000.0, 'incumbent': 3000000.0}
+Q2 sorties: {'objective': 'sorties', 'status': 'OPTIMAL', 'lower_bound': 3.0, 'incumbent': 3.0}
+Q3 makespan_s: {'objective': 'makespan_s', 'status': 'OPTIMAL', 'lower_bound': 4.0, 'incumbent': 4.0}
+Q3 weighted_lateness_x100: {'objective': 'weighted_lateness_x100', 'status': 'OPTIMAL', 'lower_bound': 0.0, 'incumbent': 0.0}
+Q3 energy_micro_kwh: {'objective': 'energy_micro_kwh', 'status': 'OPTIMAL', 'lower_bound': 3000000.0, 'incumbent': 3000000.0}
+Q3 sorties: {'objective': 'sorties', 'status': 'OPTIMAL', 'lower_bound': 3.0, 'incumbent': 3.0}
+ok
+test_question_two_selects_mixed_patterns (test_final_code.FinalCodeTests) ... Q2 makespan_s: {'objective': 'makespan_s', 'status': 'OPTIMAL', 'lower_bound': 10.0, 'incumbent': 10.0}
+Q2 weighted_lateness_x100: {'objective': 'weighted_lateness_x100', 'status': 'OPTIMAL', 'lower_bound': 0.0, 'incumbent': 0.0}
+Q2 energy_micro_kwh: {'objective': 'energy_micro_kwh', 'status': 'OPTIMAL', 'lower_bound': 2000000.0, 'incumbent': 2000000.0}
+Q2 sorties: {'objective': 'sorties', 'status': 'OPTIMAL', 'lower_bound': 2.0, 'incumbent': 2.0}
+ok
+test_comparison_rejects_different_q3_scopes (test_review.ReviewTests) ... ok
+test_frozen_gate_rejects_changed_screening_and_old_policy (test_review.ReviewTests) ... ok
+test_saved_transport_rejects_duplicate_and_orphan_deliveries (test_review.ReviewTests) ... ok
+test_keeps_template_headers_and_both_transport_solutions (test_submission.SubmissionTests) ... ok
+test_rejects_a_modified_template_header (test_submission.SubmissionTests) ... ok
+
+----------------------------------------------------------------------
+Ran 36 tests in 2.883s
+
+OK

@@ -1,39 +1,23 @@
 # 山区洪涝灾害下无人机运输与通信协同优化
 
-本仓库用于存放山区洪涝灾害场景下无人机应急物资运输与通信协同优化建模的基础数据、地理空间数据及成果文档。
+四问建模、求解和验证程序在 [final_code](final_code/README.md)，算法与审查说明见 [四问文档](final_code/四问流程算法与题目审查.md)。
 
-## 目录说明
+| 目录 | 内容 |
+| --- | --- |
+| `data/` | 原始无人机、货箱、通信、节点和 GIS/DEM 数据 |
+| `docs/` | 题目及原始结果提交模板 |
+| `final_code/` | 按问题一、二、三、四整理的正式代码 |
+| `tests/` | 物理、通信、冻结分区、模板和程序包测试 |
+| `outputs/q1/`—`outputs/q4/` | 各问正式工作簿、CSV/JSON、模板分类表及图 |
+| `outputs/provenance/` | 已选方案的模式库、选址表与来源记录 |
+| `outputs/checks/` | 最终独立审计、输入哈希及测试证据 |
+| `pic/`、`analysis/` | 保留的辅助脚本，不参与正式求解和结果生成 |
 
-- `data/无人机应急物资运输基础数据/`：无人机、通信链路、物资需求、调度中心和服务区等基础数据。
-- `data/镇龙乡地理空间数据/`：镇龙乡及周边的道路、水系、水体、村镇点位和 DEM 等 GIS 数据。
-- `docs/`：建模题目说明和结果提交模板。
-
-## 数据格式
-
-仓库同时提供 `.xlsx`、`.csv`、`.mat`、`.tif`、`.html`、`.pdf` 和 `.docx` 文件。使用 GIS 或 MATLAB 数据前，请先阅读对应的数据说明文档，并保留坐标系、单位及原始数据结构。
-
-## 快速查看
-
-可直接在浏览器中打开以下文件查看地理空间地图：
-
-```text
-data/镇龙乡地理空间数据/镇龙乡地理空间详情地图.html
-```
-
-贡献和提交规范请参阅 [AGENTS.md](AGENTS.md) 与 [commit-conventions.md](commit-conventions.md)。
-
-## 求解代码
-
-四问的最终代码在 [`final_code/`](final_code/README.md)，按问题分目录。第
-二至第四问共用一套模式库，支持第二问独立选择组批和排程、第三问运输与中继联合
-重选，以及冻结第三问后的两组/三组资源配置和反馈迭代。
+直接查看 [结果目录](outputs/README.md)、[模板结果总表](outputs/结果提交汇总.xlsx) 或 [四问指标汇总](outputs/四问指标汇总.xlsx)。总表保留原模板六张表，并补充第三问独立运输明细，避免与第二问方案混淆。
 
 ```bash
-.venv/bin/python -m final_code.run_all --output outputs/unified/example --rounds 2
+.venv/bin/python -m unittest discover -s tests -v
+.venv/bin/python -m final_code.publish
 ```
 
-逐问运行、多轮选解与结果发布见 [`final_code/README.md`](final_code/README.md)；
-各问结果写入 `outputs/`，成图脚本在 `pic/`。
-
-原始数据不修改。结果包含连续时间与通信审计、各阶段求解界和冻结输入哈希；
-有限模式库的求解结果不声明原题全局最优。
+运行环境和重算命令见代码目录说明。原始数据未修改；正式结果均经过连续时间、资源及通信检查。第二、三问未证明原题全局最优。贡献规范见 [AGENTS.md](AGENTS.md) 与 [commit-conventions.md](commit-conventions.md)。

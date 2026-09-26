@@ -1,0 +1,1634 @@
+{
+  "source": "/home/naya/math-race/outputs",
+  "audit_scope": "fresh physics and continuous certificates from source workbooks and DEM",
+  "q2": {
+    "feasible": true,
+    "audit_version": "physical_replay_v2",
+    "violations": [],
+    "hard_deadlines_feasible": true,
+    "resource_schedule_feasible": true,
+    "physics_and_timeline_feasible": true,
+    "box_count": 80,
+    "assigned_box_count": 80,
+    "sortie_count": 27,
+    "total_energy_kwh": 70.8763166998559,
+    "makespan_s": 6294.864601791016,
+    "hard_deadline_check_count": 46,
+    "hard_deadline_compliant_count": 46,
+    "hard_deadline_compliance_rate": 1.0,
+    "all_due_box_count": 80,
+    "all_expected_on_time_count": 80,
+    "all_expected_on_time_rate": 1.0,
+    "all_expected_tardiness_s": 0.0,
+    "weighted_all_expected_tardiness": 0.0,
+    "expected_time_by_item_type": {
+      "医疗物资": {
+        "count": 16,
+        "on_time_count": 16,
+        "on_time_rate": 1.0
+      },
+      "应急食品": {
+        "count": 19,
+        "on_time_count": 19,
+        "on_time_rate": 1.0
+      },
+      "生活卫生用品": {
+        "count": 9,
+        "on_time_count": 9,
+        "on_time_rate": 1.0
+      },
+      "饮用水": {
+        "count": 36,
+        "on_time_count": 36,
+        "on_time_rate": 1.0
+      }
+    },
+    "hard_deadline_by_item_type": {
+      "医疗物资": {
+        "constraint_count": 31,
+        "compliant_count": 31,
+        "compliance_rate": 1.0
+      },
+      "应急食品": {
+        "constraint_count": 0,
+        "compliant_count": 0,
+        "compliance_rate": 1.0
+      },
+      "生活卫生用品": {
+        "constraint_count": 0,
+        "compliant_count": 0,
+        "compliance_rate": 1.0
+      },
+      "饮用水": {
+        "constraint_count": 15,
+        "compliant_count": 15,
+        "compliance_rate": 1.0
+      }
+    },
+    "soft_tardiness_s": 0.0,
+    "weighted_soft_tardiness_s": 0.0,
+    "soft_on_time_rate": 1.0,
+    "resource_checks": {
+      "airframe_count": 8,
+      "battery_count": 14,
+      "all_conflicts_clear": true
+    },
+    "terrain_clearance": {
+      "method": "independent segment/closed-cell rectangle intersection",
+      "scope": "horizontal cruise; departure/arrival work heights follow the task statement",
+      "required_clearance_m": 50.0,
+      "minimum_clearance_m": 50.0,
+      "unique_directed_leg_count": 32,
+      "leg_count": 57,
+      "feasible": true,
+      "violation_count": 0,
+      "legs": [
+        {
+          "sortie": "P00020",
+          "leg": 1,
+          "from": "O01",
+          "to": "S012",
+          "intersected_cell_count": 354,
+          "maximum_ground_m": 363.3009948730469,
+          "cruise_altitude_m": 413.3009948730469,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00020",
+          "leg": 2,
+          "from": "S012",
+          "to": "O01",
+          "intersected_cell_count": 354,
+          "maximum_ground_m": 363.3009948730469,
+          "cruise_altitude_m": 413.3009948730469,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00052",
+          "leg": 1,
+          "from": "O01",
+          "to": "S005",
+          "intersected_cell_count": 181,
+          "maximum_ground_m": 276.410888671875,
+          "cruise_altitude_m": 326.410888671875,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00052",
+          "leg": 2,
+          "from": "S005",
+          "to": "O01",
+          "intersected_cell_count": 181,
+          "maximum_ground_m": 276.410888671875,
+          "cruise_altitude_m": 326.410888671875,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00071",
+          "leg": 1,
+          "from": "O01",
+          "to": "S010",
+          "intersected_cell_count": 203,
+          "maximum_ground_m": 385.63653564453125,
+          "cruise_altitude_m": 435.63653564453125,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00071",
+          "leg": 2,
+          "from": "S010",
+          "to": "O01",
+          "intersected_cell_count": 203,
+          "maximum_ground_m": 385.63653564453125,
+          "cruise_altitude_m": 435.63653564453125,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00128",
+          "leg": 1,
+          "from": "O01",
+          "to": "S001",
+          "intersected_cell_count": 136,
+          "maximum_ground_m": 223.05661010742188,
+          "cruise_altitude_m": 273.0566101074219,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00128",
+          "leg": 2,
+          "from": "S001",
+          "to": "O01",
+          "intersected_cell_count": 136,
+          "maximum_ground_m": 223.05661010742188,
+          "cruise_altitude_m": 273.0566101074219,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00338",
+          "leg": 1,
+          "from": "O01",
+          "to": "S001",
+          "intersected_cell_count": 136,
+          "maximum_ground_m": 223.05661010742188,
+          "cruise_altitude_m": 273.0566101074219,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00338",
+          "leg": 2,
+          "from": "S001",
+          "to": "O01",
+          "intersected_cell_count": 136,
+          "maximum_ground_m": 223.05661010742188,
+          "cruise_altitude_m": 273.0566101074219,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00341",
+          "leg": 1,
+          "from": "O01",
+          "to": "S001",
+          "intersected_cell_count": 136,
+          "maximum_ground_m": 223.05661010742188,
+          "cruise_altitude_m": 273.0566101074219,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00341",
+          "leg": 2,
+          "from": "S001",
+          "to": "O01",
+          "intersected_cell_count": 136,
+          "maximum_ground_m": 223.05661010742188,
+          "cruise_altitude_m": 273.0566101074219,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00037",
+          "leg": 1,
+          "from": "O01",
+          "to": "S002",
+          "intersected_cell_count": 323,
+          "maximum_ground_m": 258.9542541503906,
+          "cruise_altitude_m": 308.9542541503906,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00037",
+          "leg": 2,
+          "from": "S002",
+          "to": "O01",
+          "intersected_cell_count": 323,
+          "maximum_ground_m": 258.9542541503906,
+          "cruise_altitude_m": 308.9542541503906,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00024",
+          "leg": 1,
+          "from": "O01",
+          "to": "S014",
+          "intersected_cell_count": 203,
+          "maximum_ground_m": 541.9473876953125,
+          "cruise_altitude_m": 591.9473876953125,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00024",
+          "leg": 2,
+          "from": "S014",
+          "to": "O01",
+          "intersected_cell_count": 203,
+          "maximum_ground_m": 541.9473876953125,
+          "cruise_altitude_m": 591.9473876953125,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00032",
+          "leg": 1,
+          "from": "O01",
+          "to": "S001",
+          "intersected_cell_count": 136,
+          "maximum_ground_m": 223.05661010742188,
+          "cruise_altitude_m": 273.0566101074219,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00032",
+          "leg": 2,
+          "from": "S001",
+          "to": "O01",
+          "intersected_cell_count": 136,
+          "maximum_ground_m": 223.05661010742188,
+          "cruise_altitude_m": 273.0566101074219,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00053",
+          "leg": 1,
+          "from": "O01",
+          "to": "S006",
+          "intersected_cell_count": 116,
+          "maximum_ground_m": 316.09783935546875,
+          "cruise_altitude_m": 366.09783935546875,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00053",
+          "leg": 2,
+          "from": "S006",
+          "to": "O01",
+          "intersected_cell_count": 116,
+          "maximum_ground_m": 316.09783935546875,
+          "cruise_altitude_m": 366.09783935546875,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00118",
+          "leg": 1,
+          "from": "O01",
+          "to": "S006",
+          "intersected_cell_count": 116,
+          "maximum_ground_m": 316.09783935546875,
+          "cruise_altitude_m": 366.09783935546875,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00118",
+          "leg": 2,
+          "from": "S006",
+          "to": "S007",
+          "intersected_cell_count": 104,
+          "maximum_ground_m": 540.361328125,
+          "cruise_altitude_m": 590.361328125,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00118",
+          "leg": 3,
+          "from": "S007",
+          "to": "O01",
+          "intersected_cell_count": 213,
+          "maximum_ground_m": 461.9731750488281,
+          "cruise_altitude_m": 511.9731750488281,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00040",
+          "leg": 1,
+          "from": "O01",
+          "to": "S002",
+          "intersected_cell_count": 323,
+          "maximum_ground_m": 258.9542541503906,
+          "cruise_altitude_m": 308.9542541503906,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00040",
+          "leg": 2,
+          "from": "S002",
+          "to": "O01",
+          "intersected_cell_count": 323,
+          "maximum_ground_m": 258.9542541503906,
+          "cruise_altitude_m": 308.9542541503906,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00026",
+          "leg": 1,
+          "from": "O01",
+          "to": "S015",
+          "intersected_cell_count": 286,
+          "maximum_ground_m": 521.7992553710938,
+          "cruise_altitude_m": 571.7992553710938,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00026",
+          "leg": 2,
+          "from": "S015",
+          "to": "O01",
+          "intersected_cell_count": 286,
+          "maximum_ground_m": 521.7992553710938,
+          "cruise_altitude_m": 571.7992553710938,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00114",
+          "leg": 1,
+          "from": "O01",
+          "to": "S013",
+          "intersected_cell_count": 228,
+          "maximum_ground_m": 349.18182373046875,
+          "cruise_altitude_m": 399.18182373046875,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00114",
+          "leg": 2,
+          "from": "S013",
+          "to": "S009",
+          "intersected_cell_count": 150,
+          "maximum_ground_m": 322.2989807128906,
+          "cruise_altitude_m": 372.2989807128906,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00114",
+          "leg": 3,
+          "from": "S009",
+          "to": "O01",
+          "intersected_cell_count": 253,
+          "maximum_ground_m": 243.22891235351562,
+          "cruise_altitude_m": 293.2289123535156,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00134",
+          "leg": 1,
+          "from": "O01",
+          "to": "S001",
+          "intersected_cell_count": 136,
+          "maximum_ground_m": 223.05661010742188,
+          "cruise_altitude_m": 273.0566101074219,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00134",
+          "leg": 2,
+          "from": "S001",
+          "to": "O01",
+          "intersected_cell_count": 136,
+          "maximum_ground_m": 223.05661010742188,
+          "cruise_altitude_m": 273.0566101074219,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00057",
+          "leg": 1,
+          "from": "O01",
+          "to": "S007",
+          "intersected_cell_count": 213,
+          "maximum_ground_m": 461.9731750488281,
+          "cruise_altitude_m": 511.9731750488281,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00057",
+          "leg": 2,
+          "from": "S007",
+          "to": "O01",
+          "intersected_cell_count": 213,
+          "maximum_ground_m": 461.9731750488281,
+          "cruise_altitude_m": 511.9731750488281,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00131",
+          "leg": 1,
+          "from": "O01",
+          "to": "S001",
+          "intersected_cell_count": 136,
+          "maximum_ground_m": 223.05661010742188,
+          "cruise_altitude_m": 273.0566101074219,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00131",
+          "leg": 2,
+          "from": "S001",
+          "to": "O01",
+          "intersected_cell_count": 136,
+          "maximum_ground_m": 223.05661010742188,
+          "cruise_altitude_m": 273.0566101074219,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00049",
+          "leg": 1,
+          "from": "O01",
+          "to": "S005",
+          "intersected_cell_count": 181,
+          "maximum_ground_m": 276.410888671875,
+          "cruise_altitude_m": 326.410888671875,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00049",
+          "leg": 2,
+          "from": "S005",
+          "to": "O01",
+          "intersected_cell_count": 181,
+          "maximum_ground_m": 276.410888671875,
+          "cruise_altitude_m": 326.410888671875,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00065",
+          "leg": 1,
+          "from": "O01",
+          "to": "S009",
+          "intersected_cell_count": 253,
+          "maximum_ground_m": 243.22891235351562,
+          "cruise_altitude_m": 293.2289123535156,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00065",
+          "leg": 2,
+          "from": "S009",
+          "to": "O01",
+          "intersected_cell_count": 253,
+          "maximum_ground_m": 243.22891235351562,
+          "cruise_altitude_m": 293.2289123535156,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00028",
+          "leg": 1,
+          "from": "O01",
+          "to": "S008",
+          "intersected_cell_count": 321,
+          "maximum_ground_m": 322.9093322753906,
+          "cruise_altitude_m": 372.9093322753906,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00028",
+          "leg": 2,
+          "from": "S008",
+          "to": "O01",
+          "intersected_cell_count": 321,
+          "maximum_ground_m": 322.9093322753906,
+          "cruise_altitude_m": 372.9093322753906,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00041",
+          "leg": 1,
+          "from": "O01",
+          "to": "S003",
+          "intersected_cell_count": 338,
+          "maximum_ground_m": 511.80413818359375,
+          "cruise_altitude_m": 561.8041381835938,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00041",
+          "leg": 2,
+          "from": "S003",
+          "to": "O01",
+          "intersected_cell_count": 338,
+          "maximum_ground_m": 511.80413818359375,
+          "cruise_altitude_m": 561.8041381835938,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00044",
+          "leg": 1,
+          "from": "O01",
+          "to": "S003",
+          "intersected_cell_count": 338,
+          "maximum_ground_m": 511.80413818359375,
+          "cruise_altitude_m": 561.8041381835938,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00044",
+          "leg": 2,
+          "from": "S003",
+          "to": "O01",
+          "intersected_cell_count": 338,
+          "maximum_ground_m": 511.80413818359375,
+          "cruise_altitude_m": 561.8041381835938,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00009",
+          "leg": 1,
+          "from": "O01",
+          "to": "S004",
+          "intersected_cell_count": 276,
+          "maximum_ground_m": 348.2391662597656,
+          "cruise_altitude_m": 398.2391662597656,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00009",
+          "leg": 2,
+          "from": "S004",
+          "to": "O01",
+          "intersected_cell_count": 276,
+          "maximum_ground_m": 348.2391662597656,
+          "cruise_altitude_m": 398.2391662597656,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00107",
+          "leg": 1,
+          "from": "O01",
+          "to": "S013",
+          "intersected_cell_count": 228,
+          "maximum_ground_m": 349.18182373046875,
+          "cruise_altitude_m": 399.18182373046875,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00107",
+          "leg": 2,
+          "from": "S013",
+          "to": "S010",
+          "intersected_cell_count": 60,
+          "maximum_ground_m": 454.07037353515625,
+          "cruise_altitude_m": 504.07037353515625,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00107",
+          "leg": 3,
+          "from": "S010",
+          "to": "O01",
+          "intersected_cell_count": 203,
+          "maximum_ground_m": 385.63653564453125,
+          "cruise_altitude_m": 435.63653564453125,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00030",
+          "leg": 1,
+          "from": "O01",
+          "to": "S008",
+          "intersected_cell_count": 321,
+          "maximum_ground_m": 322.9093322753906,
+          "cruise_altitude_m": 372.9093322753906,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00030",
+          "leg": 2,
+          "from": "S008",
+          "to": "O01",
+          "intersected_cell_count": 321,
+          "maximum_ground_m": 322.9093322753906,
+          "cruise_altitude_m": 372.9093322753906,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00077",
+          "leg": 1,
+          "from": "O01",
+          "to": "S011",
+          "intersected_cell_count": 123,
+          "maximum_ground_m": 245.36175537109375,
+          "cruise_altitude_m": 295.36175537109375,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00077",
+          "leg": 2,
+          "from": "S011",
+          "to": "O01",
+          "intersected_cell_count": 123,
+          "maximum_ground_m": 245.36175537109375,
+          "cruise_altitude_m": 295.36175537109375,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00080",
+          "leg": 1,
+          "from": "O01",
+          "to": "S011",
+          "intersected_cell_count": 123,
+          "maximum_ground_m": 245.36175537109375,
+          "cruise_altitude_m": 295.36175537109375,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00080",
+          "leg": 2,
+          "from": "S011",
+          "to": "O01",
+          "intersected_cell_count": 123,
+          "maximum_ground_m": 245.36175537109375,
+          "cruise_altitude_m": 295.36175537109375,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        }
+      ]
+    }
+  },
+  "q3": {
+    "feasible": true,
+    "audit_version": "physical_replay_v2",
+    "violations": [],
+    "hard_deadlines_feasible": true,
+    "resource_schedule_feasible": true,
+    "physics_and_timeline_feasible": true,
+    "box_count": 80,
+    "assigned_box_count": 80,
+    "sortie_count": 27,
+    "total_energy_kwh": 70.0585666456312,
+    "makespan_s": 6480.604199674681,
+    "hard_deadline_check_count": 46,
+    "hard_deadline_compliant_count": 46,
+    "hard_deadline_compliance_rate": 1.0,
+    "all_due_box_count": 80,
+    "all_expected_on_time_count": 77,
+    "all_expected_on_time_rate": 0.9625,
+    "all_expected_tardiness_s": 2749.931059724082,
+    "weighted_all_expected_tardiness": 32999.17271668898,
+    "expected_time_by_item_type": {
+      "医疗物资": {
+        "count": 16,
+        "on_time_count": 16,
+        "on_time_rate": 1.0
+      },
+      "应急食品": {
+        "count": 19,
+        "on_time_count": 19,
+        "on_time_rate": 1.0
+      },
+      "生活卫生用品": {
+        "count": 9,
+        "on_time_count": 9,
+        "on_time_rate": 1.0
+      },
+      "饮用水": {
+        "count": 36,
+        "on_time_count": 33,
+        "on_time_rate": 0.9166666666666666
+      }
+    },
+    "hard_deadline_by_item_type": {
+      "医疗物资": {
+        "constraint_count": 31,
+        "compliant_count": 31,
+        "compliance_rate": 1.0
+      },
+      "应急食品": {
+        "constraint_count": 0,
+        "compliant_count": 0,
+        "compliance_rate": 1.0
+      },
+      "生活卫生用品": {
+        "constraint_count": 0,
+        "compliant_count": 0,
+        "compliance_rate": 1.0
+      },
+      "饮用水": {
+        "constraint_count": 15,
+        "compliant_count": 15,
+        "compliance_rate": 1.0
+      }
+    },
+    "soft_tardiness_s": 2749.931059724082,
+    "weighted_soft_tardiness_s": 32999.17271668898,
+    "soft_on_time_rate": 0.953125,
+    "resource_checks": {
+      "airframe_count": 8,
+      "battery_count": 14,
+      "all_conflicts_clear": true
+    },
+    "terrain_clearance": {
+      "method": "independent segment/closed-cell rectangle intersection",
+      "scope": "horizontal cruise; departure/arrival work heights follow the task statement",
+      "required_clearance_m": 50.0,
+      "minimum_clearance_m": 50.0,
+      "unique_directed_leg_count": 31,
+      "leg_count": 55,
+      "feasible": true,
+      "violation_count": 0,
+      "legs": [
+        {
+          "sortie": "P00009",
+          "leg": 1,
+          "from": "O01",
+          "to": "S004",
+          "intersected_cell_count": 276,
+          "maximum_ground_m": 348.2391662597656,
+          "cruise_altitude_m": 398.2391662597656,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00009",
+          "leg": 2,
+          "from": "S004",
+          "to": "O01",
+          "intersected_cell_count": 276,
+          "maximum_ground_m": 348.2391662597656,
+          "cruise_altitude_m": 398.2391662597656,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00010",
+          "leg": 1,
+          "from": "O01",
+          "to": "S005",
+          "intersected_cell_count": 181,
+          "maximum_ground_m": 276.410888671875,
+          "cruise_altitude_m": 326.410888671875,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00010",
+          "leg": 2,
+          "from": "S005",
+          "to": "O01",
+          "intersected_cell_count": 181,
+          "maximum_ground_m": 276.410888671875,
+          "cruise_altitude_m": 326.410888671875,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00011",
+          "leg": 1,
+          "from": "O01",
+          "to": "S006",
+          "intersected_cell_count": 116,
+          "maximum_ground_m": 316.09783935546875,
+          "cruise_altitude_m": 366.09783935546875,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00011",
+          "leg": 2,
+          "from": "S006",
+          "to": "O01",
+          "intersected_cell_count": 116,
+          "maximum_ground_m": 316.09783935546875,
+          "cruise_altitude_m": 366.09783935546875,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00014",
+          "leg": 1,
+          "from": "O01",
+          "to": "S009",
+          "intersected_cell_count": 253,
+          "maximum_ground_m": 243.22891235351562,
+          "cruise_altitude_m": 293.2289123535156,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00014",
+          "leg": 2,
+          "from": "S009",
+          "to": "O01",
+          "intersected_cell_count": 253,
+          "maximum_ground_m": 243.22891235351562,
+          "cruise_altitude_m": 293.2289123535156,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00018",
+          "leg": 1,
+          "from": "O01",
+          "to": "S011",
+          "intersected_cell_count": 123,
+          "maximum_ground_m": 245.36175537109375,
+          "cruise_altitude_m": 295.36175537109375,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00018",
+          "leg": 2,
+          "from": "S011",
+          "to": "O01",
+          "intersected_cell_count": 123,
+          "maximum_ground_m": 245.36175537109375,
+          "cruise_altitude_m": 295.36175537109375,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00020",
+          "leg": 1,
+          "from": "O01",
+          "to": "S012",
+          "intersected_cell_count": 354,
+          "maximum_ground_m": 363.3009948730469,
+          "cruise_altitude_m": 413.3009948730469,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00020",
+          "leg": 2,
+          "from": "S012",
+          "to": "O01",
+          "intersected_cell_count": 354,
+          "maximum_ground_m": 363.3009948730469,
+          "cruise_altitude_m": 413.3009948730469,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00024",
+          "leg": 1,
+          "from": "O01",
+          "to": "S014",
+          "intersected_cell_count": 203,
+          "maximum_ground_m": 541.9473876953125,
+          "cruise_altitude_m": 591.9473876953125,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00024",
+          "leg": 2,
+          "from": "S014",
+          "to": "O01",
+          "intersected_cell_count": 203,
+          "maximum_ground_m": 541.9473876953125,
+          "cruise_altitude_m": 591.9473876953125,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00026",
+          "leg": 1,
+          "from": "O01",
+          "to": "S015",
+          "intersected_cell_count": 286,
+          "maximum_ground_m": 521.7992553710938,
+          "cruise_altitude_m": 571.7992553710938,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00026",
+          "leg": 2,
+          "from": "S015",
+          "to": "O01",
+          "intersected_cell_count": 286,
+          "maximum_ground_m": 521.7992553710938,
+          "cruise_altitude_m": 571.7992553710938,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00028",
+          "leg": 1,
+          "from": "O01",
+          "to": "S008",
+          "intersected_cell_count": 321,
+          "maximum_ground_m": 322.9093322753906,
+          "cruise_altitude_m": 372.9093322753906,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00028",
+          "leg": 2,
+          "from": "S008",
+          "to": "O01",
+          "intersected_cell_count": 321,
+          "maximum_ground_m": 322.9093322753906,
+          "cruise_altitude_m": 372.9093322753906,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00030",
+          "leg": 1,
+          "from": "O01",
+          "to": "S008",
+          "intersected_cell_count": 321,
+          "maximum_ground_m": 322.9093322753906,
+          "cruise_altitude_m": 372.9093322753906,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00030",
+          "leg": 2,
+          "from": "S008",
+          "to": "O01",
+          "intersected_cell_count": 321,
+          "maximum_ground_m": 322.9093322753906,
+          "cruise_altitude_m": 372.9093322753906,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00032",
+          "leg": 1,
+          "from": "O01",
+          "to": "S001",
+          "intersected_cell_count": 136,
+          "maximum_ground_m": 223.05661010742188,
+          "cruise_altitude_m": 273.0566101074219,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00032",
+          "leg": 2,
+          "from": "S001",
+          "to": "O01",
+          "intersected_cell_count": 136,
+          "maximum_ground_m": 223.05661010742188,
+          "cruise_altitude_m": 273.0566101074219,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00035",
+          "leg": 1,
+          "from": "O01",
+          "to": "S001",
+          "intersected_cell_count": 136,
+          "maximum_ground_m": 223.05661010742188,
+          "cruise_altitude_m": 273.0566101074219,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00035",
+          "leg": 2,
+          "from": "S001",
+          "to": "O01",
+          "intersected_cell_count": 136,
+          "maximum_ground_m": 223.05661010742188,
+          "cruise_altitude_m": 273.0566101074219,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00037",
+          "leg": 1,
+          "from": "O01",
+          "to": "S002",
+          "intersected_cell_count": 323,
+          "maximum_ground_m": 258.9542541503906,
+          "cruise_altitude_m": 308.9542541503906,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00037",
+          "leg": 2,
+          "from": "S002",
+          "to": "O01",
+          "intersected_cell_count": 323,
+          "maximum_ground_m": 258.9542541503906,
+          "cruise_altitude_m": 308.9542541503906,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00040",
+          "leg": 1,
+          "from": "O01",
+          "to": "S002",
+          "intersected_cell_count": 323,
+          "maximum_ground_m": 258.9542541503906,
+          "cruise_altitude_m": 308.9542541503906,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00040",
+          "leg": 2,
+          "from": "S002",
+          "to": "O01",
+          "intersected_cell_count": 323,
+          "maximum_ground_m": 258.9542541503906,
+          "cruise_altitude_m": 308.9542541503906,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00041",
+          "leg": 1,
+          "from": "O01",
+          "to": "S003",
+          "intersected_cell_count": 338,
+          "maximum_ground_m": 511.80413818359375,
+          "cruise_altitude_m": 561.8041381835938,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00041",
+          "leg": 2,
+          "from": "S003",
+          "to": "O01",
+          "intersected_cell_count": 338,
+          "maximum_ground_m": 511.80413818359375,
+          "cruise_altitude_m": 561.8041381835938,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00044",
+          "leg": 1,
+          "from": "O01",
+          "to": "S003",
+          "intersected_cell_count": 338,
+          "maximum_ground_m": 511.80413818359375,
+          "cruise_altitude_m": 561.8041381835938,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00044",
+          "leg": 2,
+          "from": "S003",
+          "to": "O01",
+          "intersected_cell_count": 338,
+          "maximum_ground_m": 511.80413818359375,
+          "cruise_altitude_m": 561.8041381835938,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00057",
+          "leg": 1,
+          "from": "O01",
+          "to": "S007",
+          "intersected_cell_count": 213,
+          "maximum_ground_m": 461.9731750488281,
+          "cruise_altitude_m": 511.9731750488281,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00057",
+          "leg": 2,
+          "from": "S007",
+          "to": "O01",
+          "intersected_cell_count": 213,
+          "maximum_ground_m": 461.9731750488281,
+          "cruise_altitude_m": 511.9731750488281,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00071",
+          "leg": 1,
+          "from": "O01",
+          "to": "S010",
+          "intersected_cell_count": 203,
+          "maximum_ground_m": 385.63653564453125,
+          "cruise_altitude_m": 435.63653564453125,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00071",
+          "leg": 2,
+          "from": "S010",
+          "to": "O01",
+          "intersected_cell_count": 203,
+          "maximum_ground_m": 385.63653564453125,
+          "cruise_altitude_m": 435.63653564453125,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00089",
+          "leg": 1,
+          "from": "O01",
+          "to": "S013",
+          "intersected_cell_count": 228,
+          "maximum_ground_m": 349.18182373046875,
+          "cruise_altitude_m": 399.18182373046875,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00089",
+          "leg": 2,
+          "from": "S013",
+          "to": "O01",
+          "intersected_cell_count": 228,
+          "maximum_ground_m": 349.18182373046875,
+          "cruise_altitude_m": 399.18182373046875,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00107",
+          "leg": 1,
+          "from": "O01",
+          "to": "S013",
+          "intersected_cell_count": 228,
+          "maximum_ground_m": 349.18182373046875,
+          "cruise_altitude_m": 399.18182373046875,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00107",
+          "leg": 2,
+          "from": "S013",
+          "to": "S010",
+          "intersected_cell_count": 60,
+          "maximum_ground_m": 454.07037353515625,
+          "cruise_altitude_m": 504.07037353515625,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00107",
+          "leg": 3,
+          "from": "S010",
+          "to": "O01",
+          "intersected_cell_count": 203,
+          "maximum_ground_m": 385.63653564453125,
+          "cruise_altitude_m": 435.63653564453125,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00137",
+          "leg": 1,
+          "from": "O01",
+          "to": "S001",
+          "intersected_cell_count": 136,
+          "maximum_ground_m": 223.05661010742188,
+          "cruise_altitude_m": 273.0566101074219,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00137",
+          "leg": 2,
+          "from": "S001",
+          "to": "O01",
+          "intersected_cell_count": 136,
+          "maximum_ground_m": 223.05661010742188,
+          "cruise_altitude_m": 273.0566101074219,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00140",
+          "leg": 1,
+          "from": "O01",
+          "to": "S001",
+          "intersected_cell_count": 136,
+          "maximum_ground_m": 223.05661010742188,
+          "cruise_altitude_m": 273.0566101074219,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00140",
+          "leg": 2,
+          "from": "S001",
+          "to": "O01",
+          "intersected_cell_count": 136,
+          "maximum_ground_m": 223.05661010742188,
+          "cruise_altitude_m": 273.0566101074219,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00143",
+          "leg": 1,
+          "from": "O01",
+          "to": "S001",
+          "intersected_cell_count": 136,
+          "maximum_ground_m": 223.05661010742188,
+          "cruise_altitude_m": 273.0566101074219,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00143",
+          "leg": 2,
+          "from": "S001",
+          "to": "O01",
+          "intersected_cell_count": 136,
+          "maximum_ground_m": 223.05661010742188,
+          "cruise_altitude_m": 273.0566101074219,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00146",
+          "leg": 1,
+          "from": "O01",
+          "to": "S001",
+          "intersected_cell_count": 136,
+          "maximum_ground_m": 223.05661010742188,
+          "cruise_altitude_m": 273.0566101074219,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00146",
+          "leg": 2,
+          "from": "S001",
+          "to": "O01",
+          "intersected_cell_count": 136,
+          "maximum_ground_m": 223.05661010742188,
+          "cruise_altitude_m": 273.0566101074219,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00272",
+          "leg": 1,
+          "from": "O01",
+          "to": "S007",
+          "intersected_cell_count": 213,
+          "maximum_ground_m": 461.9731750488281,
+          "cruise_altitude_m": 511.9731750488281,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00272",
+          "leg": 2,
+          "from": "S007",
+          "to": "O01",
+          "intersected_cell_count": 213,
+          "maximum_ground_m": 461.9731750488281,
+          "cruise_altitude_m": 511.9731750488281,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00275",
+          "leg": 1,
+          "from": "O01",
+          "to": "S007",
+          "intersected_cell_count": 213,
+          "maximum_ground_m": 461.9731750488281,
+          "cruise_altitude_m": 511.9731750488281,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00275",
+          "leg": 2,
+          "from": "S007",
+          "to": "O01",
+          "intersected_cell_count": 213,
+          "maximum_ground_m": 461.9731750488281,
+          "cruise_altitude_m": 511.9731750488281,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00278",
+          "leg": 1,
+          "from": "O01",
+          "to": "S007",
+          "intersected_cell_count": 213,
+          "maximum_ground_m": 461.9731750488281,
+          "cruise_altitude_m": 511.9731750488281,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        },
+        {
+          "sortie": "P00278",
+          "leg": 2,
+          "from": "S007",
+          "to": "O01",
+          "intersected_cell_count": 213,
+          "maximum_ground_m": 461.9731750488281,
+          "cruise_altitude_m": 511.9731750488281,
+          "minimum_clearance_m": 50.0,
+          "compliant": true
+        }
+      ]
+    }
+  },
+  "relay": {
+    "audit_version": "exact_dem_interval_v2",
+    "mission_count": 3,
+    "resource_conflict_count": 0,
+    "feasible": true,
+    "conflicts": []
+  },
+  "communication": {
+    "audit_version": "exact_dem_interval_v2",
+    "sample_step_s": 10.0,
+    "minimum_certification_step_s": 0.25,
+    "interval_count": 11913,
+    "uncovered_interval_count": 0,
+    "communication_outage_s": 0.0,
+    "uncertified_interval_s": 0.0,
+    "communication_outage_is_upper_bound": true,
+    "certified": true,
+    "method": "recursive continuous interval certificate over complete swept LOS slabs and every touched DEM pixel"
+  },
+  "joint_makespan_s": 6480.604199674681,
+  "joint_energy_kwh": 73.52314478602871,
+  "q4": {
+    "status": "ready",
+    "partition_policy": "frozen_transport_and_relay_closure_v1",
+    "inventory": {
+      "A_airframe": 4,
+      "B_airframe": 2,
+      "C_airframe": 2,
+      "A_battery": 6,
+      "B_battery": 4,
+      "C_battery": 4,
+      "relay_airframe": 2,
+      "relay_energy": 6
+    },
+    "atomic_units": [
+      [
+        "S001"
+      ],
+      [
+        "S002",
+        "S003",
+        "S004",
+        "S005",
+        "S007",
+        "S008",
+        "S009",
+        "S015"
+      ],
+      [
+        "S006"
+      ],
+      [
+        "S010",
+        "S012",
+        "S013",
+        "S014"
+      ],
+      [
+        "S011"
+      ]
+    ],
+    "frozen_input_sha256": {
+      "screening.json": "a5ae98d09d05ce25251a03027e985f3f957fde8d7a71c7470a3d787775136304",
+      "transport_inherited_audit.csv": "a39d3b0cc6bb8ffff648294a68af1dfa5e445c9b1a9ca38f2307ce058aa80895",
+      "relay_schedule.csv": "0ce90b5cf645279921ca4bdda49a8e0adaae1378256e4de7300877b56bf2db08",
+      "relay_resource_audit.csv": "181b887f0c11cc6a34906e1fe4a131e46dbf0127c7394693c3db3b4a8a933473",
+      "communication_audit.csv": "4213bb83bc48556c4092229b8fd8c8c3d20b3905510f22aa9e911ea9203361c8",
+      "box_delivery_audit.csv": "b6d806fd851c2875911d792df055ed55795a665ed7038f257dcf25bdff4dba98"
+    },
+    "solutions": {
+      "2": {
+        "feasible": true,
+        "candidate_count": 15,
+        "inventory_feasible": false,
+        "partition_search_complete": true,
+        "shared_relay_missions": [],
+        "optimality_scope": "all partitions of the frozen Q3 transport-and-relay task graph under the stated lexicographic objective; every mission has exactly one owner",
+        "selection_rule": "minimize total inventory deficit, then total resource demand, then max workload CV",
+        "score": [
+          2,
+          29,
+          1.0
+        ],
+        "groups": [
+          {
+            "group": 1,
+            "sites": "S001,S002,S003,S004,S005,S006,S007,S008,S009,S010,S012,S013,S014,S015",
+            "A_airframe": 4,
+            "B_airframe": 2,
+            "C_airframe": 2,
+            "A_battery": 6,
+            "B_battery": 4,
+            "C_battery": 4,
+            "relay_airframe": 2,
+            "relay_energy": 3,
+            "transport_sorties": "P00009,P00010,P00011,P00014,P00020,P00024,P00026,P00028,P00030,P00032,P00035,P00037,P00040,P00041,P00044,P00057,P00071,P00089,P00107,P00137,P00140,P00143,P00146,P00272,P00275,P00278",
+            "relay_sorties": "RU-001,RU-002,RU-003",
+            "shared_relay_missions": 0,
+            "site_count": 14,
+            "sortie_count": 26,
+            "transport_flight_time_s": 35222.39001215245,
+            "box_count": 77,
+            "relay_time_s": 8119.669319931451,
+            "transport_energy_kwh": 68.98142050744123,
+            "relay_energy_kwh": 3.464578140397504,
+            "cargo_mass_kg": 733.0
+          },
+          {
+            "group": 2,
+            "sites": "S011",
+            "A_airframe": 0,
+            "B_airframe": 1,
+            "C_airframe": 0,
+            "A_battery": 0,
+            "B_battery": 1,
+            "C_battery": 0,
+            "relay_airframe": 0,
+            "relay_energy": 0,
+            "transport_sorties": "P00018",
+            "relay_sorties": "",
+            "shared_relay_missions": 0,
+            "site_count": 1,
+            "sortie_count": 1,
+            "transport_flight_time_s": 799.6308045644855,
+            "box_count": 3,
+            "relay_time_s": 0,
+            "transport_energy_kwh": 1.0771461381899774,
+            "relay_energy_kwh": 0,
+            "cargo_mass_kg": 25.0
+          }
+        ]
+      },
+      "3": {
+        "feasible": true,
+        "candidate_count": 25,
+        "inventory_feasible": false,
+        "partition_search_complete": true,
+        "shared_relay_missions": [],
+        "optimality_scope": "all partitions of the frozen Q3 transport-and-relay task graph under the stated lexicographic objective; every mission has exactly one owner",
+        "selection_rule": "minimize total inventory deficit, then total resource demand, then max workload CV",
+        "score": [
+          4,
+          31,
+          1.414213562373095
+        ],
+        "groups": [
+          {
+            "sites": "S001,S002,S003,S004,S005,S007,S008,S009,S010,S012,S013,S014,S015",
+            "A_airframe": 4,
+            "B_airframe": 2,
+            "C_airframe": 2,
+            "A_battery": 6,
+            "B_battery": 4,
+            "C_battery": 4,
+            "relay_airframe": 2,
+            "relay_energy": 3,
+            "transport_sorties": "P00009,P00010,P00014,P00020,P00024,P00026,P00028,P00030,P00032,P00035,P00037,P00040,P00041,P00044,P00057,P00071,P00089,P00107,P00137,P00140,P00143,P00146,P00272,P00275,P00278",
+            "relay_sorties": "RU-001,RU-002,RU-003",
+            "shared_relay_missions": 0,
+            "site_count": 13,
+            "sortie_count": 25,
+            "transport_flight_time_s": 34141.52612687848,
+            "box_count": 71,
+            "relay_time_s": 8119.669319931451,
+            "transport_energy_kwh": 66.38748557311625,
+            "relay_energy_kwh": 3.464578140397504,
+            "cargo_mass_kg": 674.0,
+            "group": 1
+          },
+          {
+            "sites": "S006",
+            "A_airframe": 0,
+            "B_airframe": 0,
+            "C_airframe": 1,
+            "A_battery": 0,
+            "B_battery": 0,
+            "C_battery": 1,
+            "relay_airframe": 0,
+            "relay_energy": 0,
+            "transport_sorties": "P00011",
+            "relay_sorties": "",
+            "shared_relay_missions": 0,
+            "site_count": 1,
+            "sortie_count": 1,
+            "transport_flight_time_s": 1080.8638852739632,
+            "box_count": 6,
+            "relay_time_s": 0,
+            "transport_energy_kwh": 2.593934934324972,
+            "relay_energy_kwh": 0,
+            "cargo_mass_kg": 59.0,
+            "group": 2
+          },
+          {
+            "sites": "S011",
+            "A_airframe": 0,
+            "B_airframe": 1,
+            "C_airframe": 0,
+            "A_battery": 0,
+            "B_battery": 1,
+            "C_battery": 0,
+            "relay_airframe": 0,
+            "relay_energy": 0,
+            "transport_sorties": "P00018",
+            "relay_sorties": "",
+            "shared_relay_missions": 0,
+            "site_count": 1,
+            "sortie_count": 1,
+            "transport_flight_time_s": 799.6308045644855,
+            "box_count": 3,
+            "relay_time_s": 0,
+            "transport_energy_kwh": 1.0771461381899774,
+            "relay_energy_kwh": 0,
+            "cargo_mass_kg": 25.0,
+            "group": 3
+          }
+        ]
+      }
+    }
+  },
+  "passed": true,
+  "frozen_q3_sha256": {
+    "box_delivery_audit.csv": "b6d806fd851c2875911d792df055ed55795a665ed7038f257dcf25bdff4dba98",
+    "communication_audit.csv": "4213bb83bc48556c4092229b8fd8c8c3d20b3905510f22aa9e911ea9203361c8",
+    "relay_resource_audit.csv": "181b887f0c11cc6a34906e1fe4a131e46dbf0127c7394693c3db3b4a8a933473",
+    "relay_schedule.csv": "0ce90b5cf645279921ca4bdda49a8e0adaae1378256e4de7300877b56bf2db08",
+    "trajectory_phases.csv": "32e81ad7d6f6fe07f1849ae8445b984986d65f317ddf27b99b653913e795ed13",
+    "transport_inherited_audit.csv": "a39d3b0cc6bb8ffff648294a68af1dfa5e445c9b1a9ca38f2307ce058aa80895"
+  }
+}

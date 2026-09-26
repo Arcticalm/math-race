@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import argparse
 import copy
 import csv
 import itertools
@@ -28,7 +27,6 @@ from final_code.problem1.solver import (
 )
 
 BASE_DATA = ROOT / "data" / "无人机应急物资运输基础数据"
-OUTPUT_DEFAULT = ROOT / "outputs" / "problem2"
 
 
 @dataclass(frozen=True)
@@ -601,6 +599,7 @@ def _validate(
     makespan = max((sortie.return_s for sortie in sorties), default=0.0)
     return {
         "feasible": not violations,
+        "audit_version": "physical_replay_v2",
         "violations": violations,
         "hard_deadlines_feasible": not deadline_violations,
         "resource_schedule_feasible": not resource_violations,
@@ -662,76 +661,11 @@ def _schedule_candidates(
     return min(candidates, key=key)
 
 
-def _schedule_signature(sorties: list[Sortie]) -> tuple:
-    return tuple(sorted(
-        (tuple(sorted(box.code for box in item.boxes)), tuple(item.route), item.aircraft,
-         item.drone, item.battery, round(item.prep_start_s, 6), round(item.return_s, 6))
-        for item in sorties
-    ))
-
-
-def solve(reserve: float = 0.2, energy_scale: float = 1.0, return_candidates: bool = False):
-    boxes = load_task_boxes()
-    drones, batteries = load_resources()
-    evaluator = RouteEvaluator(reserve, energy_scale)
-    try:
-        initial = _partition_by_site(boxes, evaluator)
-        merged = _merge_multisite(initial, evaluator)
-        grouping_options = (("不跨区", initial), ("多点合并", merged))
-        selected = []
-        unique_candidates: dict[tuple, dict] = {}
-        for grouping, routes in grouping_options:
-            for profile in ("balanced", "energy"):
-                schedule, candidate_metrics = _schedule_candidates(routes, drones, batteries, evaluator, profile)
-                if schedule is None:
-                    continue
-                signature = _schedule_signature(schedule)
-                candidate = unique_candidates.setdefault(signature, {
-                    "sorties": schedule,
-                    "metrics": candidate_metrics,
-                    "labels": [],
-                })
-                label = f"{grouping}/{profile}"
-                if label not in candidate["labels"]:
-                    candidate["labels"].append(label)
-                if profile == "balanced":
-                    selected.append(candidate)
-        if not selected:
-            raise ValueError("No hard-time-feasible schedule found for any grouping candidate")
-        primary = min(selected, key=lambda item: (
-            item["metrics"]["weighted_all_expected_tardiness"],
-            item["metrics"]["makespan_s"], item["metrics"]["total_energy_kwh"],
-            item["metrics"]["sortie_count"],
-        ))
-        metrics = dict(primary["metrics"])
-        metrics["objective_profile"] = "weighted lateness, makespan, energy, sorties"
-        metrics["primary_candidate"] = primary["labels"]
-        metrics["candidate_scope"] = "single-site batches and greedy pairwise two-site merges; balanced and energy assignment heuristics"
-        metrics["tradeoff_candidates"] = {
-            " | ".join(item["labels"]): item["metrics"] for item in unique_candidates.values()
-        }
-        if return_candidates:
-            candidates = [
-                {"labels": list(item["labels"]), "sorties": item["sorties"], "metrics": item["metrics"]}
-                for item in unique_candidates.values()
-            ]
-            return primary["sorties"], metrics, boxes, candidates
-        return primary["sorties"], metrics, boxes
-    finally:
-        evaluator.close()
-
-
 def _write_csv(path: Path, fields: list[str], rows: list[dict]) -> None:
     with path.open("w", encoding="utf-8-sig", newline="") as stream:
         writer = csv.DictWriter(stream, fieldnames=fields, lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
-
-
-def _write_program_bundle(output_path: Path) -> None:
-    from final_code.package import write_program_bundle
-
-    write_program_bundle(output_path)
 
 
 def write_outputs(
@@ -802,25 +736,9 @@ def write_outputs(
                 "充电完成（s）": item.return_s + charge,
             })
     _write_csv(output_dir / "battery_audit.csv", list(battery_rows[0]) if battery_rows else [], battery_rows)
-    tradeoff_rows = []
-    for policy, routes in metrics.get("tradeoff_candidates", {}).items():
-        tradeoff_rows.append({
-            "方案": policy,
-            "可行": routes.get("feasible", False),
-            "架次": routes.get("sortie_count", ""),
-            "总能耗（kWh）": routes.get("total_energy_kwh", ""),
-            "完成时间（s）": routes.get("makespan_s", ""),
-            "加权迟到（全部期望时间）": routes.get("weighted_all_expected_tardiness", ""),
-            "全部期望时间准时率": routes.get("all_expected_on_time_rate", ""),
-            "硬截止合规率": routes.get("hard_deadline_compliance_rate", ""),
-            "说明": routes.get("reason", "feasible heuristic candidate; not a Pareto-optimality certificate"),
-        })
-    if tradeoff_rows:
-        _write_csv(output_dir / "objective_tradeoff.csv", list(tradeoff_rows[0]), tradeoff_rows)
     _plot_routes(sorties, output_dir / "routes.png")
     _plot_resource_gantt(sorties, output_dir / "resource_gantt.png")
     _plot_delivery_times(sorties, boxes, output_dir / "delivery_times.png")
-    _write_program_bundle(output_dir / "problem2_program.zip")
     (output_dir / "validation.json").write_text(json.dumps(metrics, ensure_ascii=False, indent=2), encoding="utf-8")
     (output_dir / "model_assumptions.json").write_text(json.dumps({
         "reserve_fraction": reserve,
@@ -834,7 +752,7 @@ def write_outputs(
         "battery_reuse": "only after full recharge; independent of airframe release",
         "handoff_timing": "each site's handoff duration is applied after arrival and before the next leg; final-site handoff occurs before return to O01",
         "loading_and_preparation": "fixed preparation followed by serial per-box loading",
-        "solver": "deterministic constructive heuristic; no global optimality guarantee",
+        "solver": "finite shared patterns and CP-SAT scheduling; no global optimality guarantee",
         "objective_profile": metrics.get("objective_profile", "balanced"),
     }, ensure_ascii=False, indent=2), encoding="utf-8")
 
@@ -910,24 +828,3 @@ def _plot_delivery_times(sorties: list[Sortie], boxes: list[TaskBox], output_pat
     axis.grid(axis="x", alpha=0.25)
     figure.savefig(output_path, dpi=180)
     plt.close(figure)
-
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description="Construct a feasible Problem 2 transport schedule")
-    parser.add_argument("--reserve", type=float, default=0.2)
-    parser.add_argument("--energy-scale", type=float, default=1.0)
-    parser.add_argument("--output", type=Path, default=OUTPUT_DEFAULT)
-    args = parser.parse_args()
-    if not 0 <= args.reserve < 1 or args.energy_scale <= 0:
-        parser.error("reserve must be in [0,1), energy-scale must be positive")
-    sorties, metrics, boxes = solve(args.reserve, args.energy_scale)
-    drones, batteries = load_resources()
-    write_outputs(sorties, metrics, boxes, args.output, args.reserve, args.energy_scale)
-    print(json.dumps(metrics, ensure_ascii=False, indent=2))
-    print(f"Wrote results to {args.output}")
-    if not metrics["feasible"]:
-        raise SystemExit(2)
-
-
-if __name__ == "__main__":
-    main()

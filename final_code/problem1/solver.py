@@ -12,6 +12,7 @@ import rasterio
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from matplotlib import font_manager
 import numpy as np
 from openpyxl import load_workbook
 
@@ -712,13 +713,23 @@ def write_outputs(result: dict, output_dir: Path) -> None:
             for payload in item["safe_payloads"]:
                 writer.writerow({"reserve_fraction": item["reserve_fraction"], "horizontal_energy_scale": item["horizontal_energy_scale"], **payload})
 
-    plt.rcParams["font.family"] = "Noto Sans CJK SC"
-    plt.rcParams["axes.unicode_minus"] = False
+    _configure_plot_fonts()
     _plot_safe_payloads(run_data, output_dir / "safe_payloads_heatmap.png")
     _plot_sensitivity(result["runs"], output_dir / "reserve_sensitivity.png")
     _plot_energy_sensitivity(result["runs"], output_dir / "energy_model_sensitivity.png")
     _plot_site_flights(run_data, output_dir / "site_flight_counts.png")
     _write_submission_workbook(chosen_rows, output_dir / "problem1_submission.xlsx")
+
+
+def _configure_plot_fonts() -> None:
+    # Matplotlib may expose only the JP face of a CJK font collection; it still
+    # includes the Chinese glyphs required by these figures.
+    available = {font.name for font in font_manager.fontManager.ttflist}
+    preferred = ("Noto Sans CJK SC", "Noto Sans CJK JP", "Microsoft YaHei",
+                 "SimHei", "Droid Sans Fallback", "Arial Unicode MS")
+    family = next((name for name in preferred if name in available), "DejaVu Sans")
+    plt.rcParams["font.family"] = family
+    plt.rcParams["axes.unicode_minus"] = False
 
 
 def _write_submission_workbook(chosen_rows: list[dict], output_path: Path) -> None:
@@ -790,6 +801,15 @@ def _plot_sensitivity(runs: list[dict], output_path: Path) -> None:
     axes[1].grid(alpha=0.25)
     handles = axes[1].get_lines() + second_axis.get_lines()
     axes[1].legend(handles, [line.get_label() for line in handles], loc="best", fontsize=8)
+    for axis in axes:
+        axis.set_xticks(reserve)
+        margin = max((max(reserve) - min(reserve)) * .05, 1.0)
+        axis.set_xlim(min(reserve) - margin, max(reserve) + margin)
+        for level, item in zip(reserve, runs):
+            if not item["complete_delivery_feasible"]:
+                axis.axvline(level, color="#777777", linestyle=":", linewidth=1)
+                axis.text(level, .08, "不可行", rotation=90, ha="center",
+                          transform=axis.get_xaxis_transform(), color="#555555")
     figure.savefig(output_path, dpi=180)
     plt.close(figure)
 
@@ -834,7 +854,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Solve Problem 1 single-site round-trip batches")
     parser.add_argument("--reserve", nargs="+", type=float, help="Append reserve scenarios to the workbook baseline (default: 0.10 0.15 0.25 0.30 0.40 0.50)")
     parser.add_argument("--energy-scale", nargs="+", type=float, help="Append horizontal energy-rate sensitivity scenarios (default: 0.8 1.2)")
-    parser.add_argument("--output", type=Path, default=ROOT / "outputs/problem1")
+    parser.add_argument("--output", type=Path, default=ROOT / "outputs/q1")
     arguments = parser.parse_args()
     result = run(arguments.reserve, arguments.energy_scale)
     write_outputs(result, arguments.output)

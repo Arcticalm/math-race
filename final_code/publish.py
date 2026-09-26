@@ -1,4 +1,4 @@
-"""Publish the selected Q2–Q4 workbooks and comparable figures at one location."""
+"""Publish the selected Q1–Q4 workbooks and comparable figures at one location."""
 
 from __future__ import annotations
 
@@ -6,7 +6,6 @@ import argparse
 import csv
 import json
 import shutil
-import zipfile
 from collections import defaultdict
 from pathlib import Path
 
@@ -18,7 +17,7 @@ from final_code.run_all import digest
 from final_code.problem1.solver import ROOT, load_nodes
 from final_code.problem2.transport import load_task_boxes
 from final_code.problem2.terrain_audit import write_clearance_outputs
-from final_code.problem4.solver import SITES, q3_gate
+from final_code.problem4.solver import SITES, q3_gate, validate_frozen_partition
 
 
 COLORS = {"A": "#2878b5", "B": "#e07a24", "C": "#37966f", "relay": "#7952a1"}
@@ -34,9 +33,17 @@ def save(figure, path: Path) -> None:
     plt.close(figure)
 
 
-def candidate_rows(source: Path):
+def candidate_rows(source: Path, summary=None):
+    if summary is not None:
+        records = {}
+        for key, score_key in (("q2_candidates", "q2_score"), ("joint_candidates", "joint_score")):
+            for candidate in summary.get(key, []):
+                name = Path(candidate["source"]).name
+                row = records.setdefault(name, {"run": name, "iteration": "best"})
+                row[score_key] = candidate["score"]
+        return list(records.values())
     rows = []
-    for root in sorted(source.glob("run*")):
+    for root in sorted(source.iterdir()):
         path = root / "feedback_history.json"
         if not path.exists():
             continue
@@ -76,20 +83,26 @@ def joint_tradeoff(rows, selected, output):
     points = [row for row in rows if row.get("joint_score")]
     if not points:
         raise ValueError("No Q3 candidates available for the tradeoff chart")
+    # An independently solved Q3 carries no frozen-partition terms, so the second
+    # panel falls back to the joint sortie count instead of a partition deficit.
+    coupled = len(points[0]["joint_score"]) > 4
     figure, axes = plt.subplots(1, 2, figsize=(12, 5), layout="constrained")
     for row in points:
-        time_s, late, energy, sorties, deficit, *_ = row["joint_score"]
+        time_s, late, energy, sorties = row["joint_score"][:4]
+        deficit = row["joint_score"][5] if coupled else 0
         chosen = row["run"] == selected["run"] and abs(time_s - selected["time_s"]) < 1e-6
         color = "#c0392b" if chosen else "#2878b5"
-        for axis, horizontal in zip(axes, (energy, deficit)):
+        for axis, horizontal in zip(axes, (energy, deficit if coupled else sorties)):
             axis.scatter(horizontal, time_s, color=color, s=90 if chosen else 45,
                          edgecolor="white", linewidth=.5, zorder=3)
             axis.annotate(f"{row['run']}-{row['iteration']}", (horizontal, time_s),
                           xytext=(4, 4), textcoords="offset points", fontsize=8)
     axes[0].set(xlabel="Joint energy (kWh)", ylabel="Joint completion time (s)",
                 title="Completion time and energy")
-    axes[1].set(xlabel="K=2 + K=3 resource deficit", ylabel="Joint completion time (s)",
-                title="Completion time and partition deficit")
+    axes[1].set(xlabel="K=2 + K=3 resource deficit" if coupled else "Joint sortie count",
+                ylabel="Joint completion time (s)",
+                title="Completion time and partition deficit" if coupled
+                else "Completion time and sorties")
     for axis in axes:
         axis.grid(alpha=.25)
         axis.scatter([], [], color="#c0392b", label="Selected")
@@ -204,9 +217,13 @@ def communication_chart(source: Path, output: Path):
 def partition_map(source: Path, output: Path):
     data = json.loads((source / "q4/result.json").read_text(encoding="utf-8"))
     base, sites = load_nodes()
-    figure, axes = plt.subplots(1, 2, figsize=(14, 6), layout="constrained", sharex=True, sharey=True)
+    # A K that the frozen Q3 schedule cannot realise is reported in the tables but
+    # has no partition to draw.
+    keys = [k for k in ("2", "3") if data["solutions"][k].get("feasible")]
+    figure, axes = plt.subplots(1, len(keys), figsize=(7 * len(keys), 6), layout="constrained",
+                                sharex=True, sharey=True, squeeze=False)
     palette = ("#2878b5", "#e07a24", "#37966f")
-    for axis, k in zip(axes, ("2", "3")):
+    for axis, k in zip(axes[0], keys):
         groups = data["solutions"][k]["groups"]
         mapping = {site: index for index, row in enumerate(groups)
                    for site in row["sites"].split(",")}
@@ -226,17 +243,22 @@ def partition_map(source: Path, output: Path):
                  xlabel="Longitude (deg)")
         axis.grid(alpha=.25)
         axis.legend(loc="best", fontsize=8)
-    axes[0].set_ylabel("Latitude (deg)")
+    axes[0, 0].set_ylabel("Latitude (deg)")
     save(figure, output)
 
 
 def inventory_chart(source: Path, output: Path):
     rows = read_csv(source / "q4/inventory_comparison.csv")
-    keys = [row["resource"] for row in rows if row["K"] == "2"]
+    present = [k for k in ("2", "3") if any(row["K"] == k for row in rows)]
+    if not present:
+        raise ValueError("Q4 inventory comparison has no partition rows")
+    keys = [row["resource"] for row in rows if row["K"] == present[0]]
     if len(keys) != 8:
         raise ValueError("Q4 inventory chart expects eight named resource types")
-    figure, axes = plt.subplots(2, 1, figsize=(11, 8), layout="constrained", sharex=True)
-    for axis, k in zip(axes, ("2", "3")):
+    figure, axes = plt.subplots(len(present), 1, figsize=(11, 4 * len(present)),
+                                layout="constrained", sharex=True, squeeze=False)
+    axes = axes[:, 0]
+    for axis, k in zip(axes, present):
         values = {row["resource"]: row for row in rows if row["K"] == k}
         for index, key in enumerate(keys):
             row = values[key]
@@ -249,7 +271,7 @@ def inventory_chart(source: Path, output: Path):
                           ha="center", fontsize=8, color="#a52a2a")
         axis.set(ylabel="Units", title=f"K={k}: inventory and independent group demand")
         axis.grid(axis="y", alpha=.25)
-    axes[1].set_xticks(range(len(keys)), keys, rotation=30, ha="right", fontsize=8)
+    axes[-1].set_xticks(range(len(keys)), keys, rotation=30, ha="right", fontsize=8)
     axes[0].bar([], [], color="#2878b5", label="Inventory")
     axes[0].bar([], [], color="#37966f", label="Demand within stock")
     axes[0].bar([], [], color="#c0392b", label="Demand exceeding stock")
@@ -257,111 +279,111 @@ def inventory_chart(source: Path, output: Path):
     save(figure, output)
 
 
-def publish(source: Path, output: Path) -> dict:
-    if not (source / "summary.json").exists():
-        raise ValueError("Selected unified solution is missing")
+def _copy_question(source: Path, target: Path):
+    """Keep full-precision records once and place all figures in a subdirectory."""
+    target.mkdir(parents=True, exist_ok=True)
+    figures = target / "figures"
+    figures.mkdir(exist_ok=True)
+    if source.resolve() != target.resolve():
+        for path in source.iterdir():
+            if path.is_file() and path.suffix in (".csv", ".json", ".xlsx"):
+                shutil.copy2(path, target / path.name)
+        if (source / "figures").exists():
+            shutil.copytree(source / "figures", figures, dirs_exist_ok=True)
+    for path in source.glob("*.png"):
+        shutil.copy2(path, figures / path.name)
+    if source.resolve() == target.resolve():
+        for path in list(target.glob("*.png")) + list(target.glob("*_program.zip")):
+            path.unlink()
+
+
+def publish(source: Path, output: Path, q1_source: Path | None = None) -> dict:
+    """Write the final four-question tree; source schedules are never rescheduled."""
+    from final_code.package import write_program_bundle
+    from final_code.submission import organize_workbooks
+    from final_code.summary_workbook import build as build_summary
+
+    q1_source = q1_source or output / "q1"
     summary = json.loads((source / "summary.json").read_text(encoding="utf-8"))
     q2 = json.loads((source / "q2/validation.json").read_text(encoding="utf-8"))
+    q3 = json.loads((source / "q3/screening.json").read_text(encoding="utf-8"))
+    q4 = json.loads((source / "q4/result.json").read_text(encoding="utf-8"))
     if not (summary.get("feasible") and q2.get("feasible")
             and q2.get("terrain_clearance", {}).get("feasible")
+            and q2.get("audit_version") == "physical_replay_v2"
             and q3_gate(source / "q3")["ready"]):
         raise ValueError("Selected Q2/Q3 solution has not passed the required audits")
-    if not all(json.loads((source / "q4/result.json").read_text(encoding="utf-8"))
-               ["solutions"][str(k)]["feasible"] for k in (2, 3)):
-        raise ValueError("Both frozen Q4 partitions are required")
+    validate_frozen_partition(source / "q3", q4)
     output.mkdir(parents=True, exist_ok=True)
-    names = {"problem2_submission.xlsx": "q2/problem2_submission.xlsx",
-             "problem3_submission.xlsx": "q3/problem3_submission.xlsx",
-             "problem4_submission.xlsx": "q4/problem4_submission.xlsx",
-             "unified_program.zip": "unified_program.zip",
-             "routes.png": "q2/routes.png",
-             "resource_gantt.png": "q2/resource_gantt.png",
-             "delivery_times.png": "q2/delivery_times.png",
-             "q3_routes_relays.png": "q3/routes_relays.png"}
-    for name, relative in names.items():
-        shutil.copy2(source / relative, output / name)
-    write_clearance_outputs(output, q2["terrain_clearance"])
-    q3 = json.loads((source / "q3/screening.json").read_text(encoding="utf-8"))
-    (output / "_q3_clearance_tmp").mkdir(exist_ok=True)
-    write_clearance_outputs(output / "_q3_clearance_tmp", q3["terrain_clearance"])
-    shutil.move(output / "_q3_clearance_tmp/terrain_clearance.png", output / "q3_terrain_clearance.png")
-    shutil.move(output / "_q3_clearance_tmp/terrain_clearance_audit.csv", output / "q3_terrain_clearance_audit.csv")
-    (output / "_q3_clearance_tmp").rmdir()
-    rows = candidate_rows(output)
-    q2_source = Path(summary["q2"]["source"]).name
-    q3_source = Path(summary["q3_q4"]["source"]).name
-    q2_candidates = time_tradeoff(rows, {"run": q2_source,
-                                           "time_s": summary["q2"]["score"][0]},
-                                    output / "time_priority_tradeoff.png")
-    q3_candidates = joint_tradeoff(rows, {"run": q3_source,
-                                             "time_s": summary["q3_q4"]["score"][0]},
-                                      output / "q3_tradeoff.png")
-    relay_gantt(source, output / "q3_resource_gantt.png")
-    delivery_chart(source, output / "q3_delivery_times.png")
-    communication_chart(source, output / "q3_communication_timeline.png")
-    partition_map(source, output / "q4_partitions.png")
-    inventory_chart(source, output / "q4_inventory.png")
-    with (output / "time_priority_candidates.csv").open("w", encoding="utf-8-sig", newline="") as stream:
-        writer = csv.DictWriter(stream, fieldnames=("run", "iteration", "sortie_count",
-                                                     "makespan_s", "weighted_lateness", "energy_kwh", "selected"))
-        writer.writeheader()
-        writer.writerows({"run": row["run"], "iteration": row["iteration"],
-                          "sortie_count": row["q2_score"][3], "makespan_s": row["q2_score"][0],
-                          "weighted_lateness": row["q2_score"][1], "energy_kwh": row["q2_score"][2],
-                          "selected": row["run"] == q2_source
-                          and abs(row["q2_score"][0] - summary["q2"]["score"][0]) < 1e-6}
-                         for row in q2_candidates)
-    assets = [*names, "terrain_clearance.png", "terrain_clearance_audit.csv",
-              "q3_terrain_clearance.png", "q3_terrain_clearance_audit.csv",
-              "time_priority_tradeoff.png", "time_priority_candidates.csv",
-              "q3_tradeoff.png", "q3_resource_gantt.png", "q3_delivery_times.png",
-              "q3_communication_timeline.png", "q4_partitions.png", "q4_inventory.png"]
-    with zipfile.ZipFile(output / "unified_results.zip", "w", zipfile.ZIP_DEFLATED) as archive:
-        for name in ("problem2_submission.xlsx", "problem3_submission.xlsx",
-                     "problem4_submission.xlsx", "unified_program.zip",
-                     "terrain_clearance_audit.csv", "q3_terrain_clearance_audit.csv"):
-            archive.write(output / name, name)
-        for name in assets:
-            if name.endswith(".png"):
-                archive.write(output / name, name)
-        for relative in ("q2/validation.json", "q3/screening.json", "q3/box_delivery_audit.csv",
-                         "q3/communication_audit.csv", "q3/relay_resource_audit.csv",
-                         "q4/result.json", "q4/inventory_comparison.csv"):
-            archive.write(source / relative, relative)
-    index = ["# 第二至第四问统一结果", "",
-             "三份工作簿分别记录第二问独立运输方案、第三问运输与中继联合方案、第四问冻结后的分区资源配置。",
-             "计算指标、适用范围和资源缺口详见 [完整报告](final/REPORT.md)。", "",
-             "## 提交与审计", "",
-             "- [第二问提交表](problem2_submission.xlsx)",
-             "- [第三问提交表](problem3_submission.xlsx)",
-             "- [第四问提交表](problem4_submission.xlsx)",
-             "- [提交包](unified_results.zip) · [可运行程序](unified_program.zip)",
-             "- [文件清单与 SHA-256](deliverables.json)", "",
-             "## 图表", "",
-             "与 `outputs/problem23` 对应的第二问图：", "",
-             "- [运输路线](routes.png) · [资源甘特图](resource_gantt.png) · [逐箱送达](delivery_times.png)",
-             "- [完成时间权衡](time_priority_tradeoff.png) · [巡航净空](terrain_clearance.png)", "",
-             "第三、四问扩展图：", "",
-             "- [运输与中继路线](q3_routes_relays.png) · [联合资源甘特图](q3_resource_gantt.png)",
-             "- [第三问逐箱送达](q3_delivery_times.png) · [连续通信时序](q3_communication_timeline.png)",
-             "- [第三问巡航净空](q3_terrain_clearance.png) · [分区地图](q4_partitions.png)",
-             "- [分区资源需求与库存](q4_inventory.png) · [联合方案权衡](q3_tradeoff.png)", "",
-             "图中候选点只代表已认证或已审计的搜索结果；红点是当前选中方案。",
-             "第二问和第三问分别来自不同运行，原始方案及审计表保存在 `final/`。", ""]
-    (output / "README.md").write_text("\n".join(index), encoding="utf-8")
-    result = {"selected_source": str(source.resolve()), "output": str(output.resolve()),
-              "q2_candidate_count": len(q2_candidates), "q3_candidate_count": len(q3_candidates),
-              "files": {name: digest(output / name) for name in assets + ["unified_results.zip"]}}
+    _copy_question(q1_source, output / "q1")
+    for question in ("q2", "q3", "q4"):
+        _copy_question(source / question, output / question)
+    if source.resolve() != output.resolve():
+        for name in ("summary.json", "REPORT.md", "manifest.json"):
+            if (source / name).exists():
+                shutil.copy2(source / name, output / name)
+        for name in ("provenance", "sources"):
+            if (source / name).exists():
+                shutil.copytree(source / name, output / "provenance", dirs_exist_ok=True)
+    counts = organize_workbooks(output)
+    build_summary(output / "q1", output, output / "四问指标汇总.xlsx")
+    write_clearance_outputs(output / "q2/figures", q2["terrain_clearance"])
+    write_clearance_outputs(output / "q3/figures", q3["terrain_clearance"])
+    rows = candidate_rows(output, summary)
+    if any(row.get("q2_score") for row in rows):
+        time_tradeoff(rows, {"run": Path(summary["q2"]["source"]).name,
+                            "time_s": summary["q2"]["score"][0]},
+                      output / "q2/figures/time_priority_tradeoff.png")
+    if any(row.get("joint_score") for row in rows):
+        joint_tradeoff(rows, {"run": Path(summary["q3_q4"]["source"]).name,
+                             "time_s": summary["q3_q4"]["score"][0]},
+                       output / "q3/figures/tradeoff.png")
+    relay_gantt(output, output / "q3/figures/resource_gantt.png")
+    delivery_chart(output, output / "q3/figures/delivery_times.png")
+    communication_chart(output, output / "q3/figures/communication_timeline.png")
+    if any(solution.get("feasible") for solution in q4["solutions"].values()):
+        partition_map(output, output / "q4/figures/partitions.png")
+        inventory_chart(output, output / "q4/figures/inventory.png")
+    summary["layout"] = "question_directories_v1"
+    summary["artifact_sha256"] = {
+        str(path.relative_to(output)): digest(path)
+        for question in ("q1", "q2", "q3", "q4")
+        for path in (output / question).iterdir()
+        if path.is_file() and path.suffix in (".csv", ".json", ".xlsx")}
+    (output / "summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
+    readme = ["# 四问最终结果", "",
+        "按照 docs/结果提交模板.xlsx 分类；原始精度保留在各问 CSV/JSON，展示表按求解器原有精度导出。", "",
+        "- [结果提交汇总](结果提交汇总.xlsx)：原模板 6 张表，加 Q3_运输架次、Q3_逐箱交付两张补充表。",
+        "- [四问指标汇总](四问指标汇总.xlsx)：26 张指标、资源和审计明细表。",
+        "- [流程与算法](../final_code/四问流程算法与题目审查.md) · [审查报告](REPORT.md)", "",
+        "| 问题 | 按模板填写的工作簿 | 明细与图表 |",
+        "| --- | --- | --- |",
+        "| 一 | [单点组批](q1/problem1_submission.xlsx) | q1/tables；q1/figures |",
+        "| 二 | [运输架次及逐箱交付](q2/problem2_submission.xlsx) | q2/tables；q2/figures |",
+        "| 三 | [联合运输、中继及通信保障](q3/problem3_submission.xlsx) | q3/tables；q3/figures |",
+        "| 四 | [分区配置](q4/problem4_submission.xlsx) | q4/tables；q4/figures |", "",
+        "第三问单独工作簿沿用模板中的 Q2_运输架次、Q2_逐箱交付字段承载第三问重选后的运输方案；",
+        "它们与独立第二问不同。总表中用新增 Q3_运输架次、Q3_逐箱交付区分，绝不相互覆盖。", "",
+        "`provenance/` 保存选中方案的模式、选址和运行来源，`checks/` 保存最终复核和测试证据。",
+        "[程序包](程序.zip) 包含四问源码、测试、说明和原模板；[文件清单](deliverables.json) 给出 SHA-256。", "",
+        "重新整理：`.venv/bin/python -m final_code.publish`。此命令不重新优化或改动冻结排程。", ""]
+    (output / "README.md").write_text("\n".join(readme), encoding="utf-8")
+    write_program_bundle(output / "程序.zip")
+    files = {str(p.relative_to(output)): digest(p) for p in sorted(output.rglob("*"))
+             if p.is_file() and p.name != "deliverables.json" and "__pycache__" not in p.parts}
+    result = {"layout": "question_directories_v1", "template": "docs/结果提交模板.xlsx",
+              "template_sheet_rows": counts, "global_optimal_q2_q3": False, "files": files}
     (output / "deliverables.json").write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
     return result
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--source", type=Path, default=ROOT / "outputs/unified/final")
-    parser.add_argument("--output", type=Path, default=ROOT / "outputs/unified")
+    parser.add_argument("--source", type=Path, default=ROOT / "outputs")
+    parser.add_argument("--output", type=Path, default=ROOT / "outputs")
+    parser.add_argument("--q1-source", type=Path)
     args = parser.parse_args()
-    result = publish(args.source, args.output)
+    result = publish(args.source, args.output, args.q1_source)
     print(json.dumps({key: value for key, value in result.items() if key != "files"}, ensure_ascii=False))
 
 

@@ -1,0 +1,156 @@
+[
+  {
+    "longitude": 109.1923786,
+    "latitude": 23.0494548,
+    "ground_dsm_m": 436.229248046875,
+    "hover_altitude_m": 736.229248046875,
+    "agl_m": 300.0,
+    "outbound_flight_s": 553.4065752475881,
+    "return_flight_s": 604.1173459181609,
+    "preflight_s": 763.4065752475881,
+    "fixed_energy_kwh": 0.3196410353595807
+  },
+  {
+    "longitude": 109.1928191,
+    "latitude": 23.0294186,
+    "ground_dsm_m": 314.2220458984375,
+    "hover_altitude_m": 614.2220458984375,
+    "agl_m": 300.0,
+    "outbound_flight_s": 423.88570467377315,
+    "return_flight_s": 464.429208498643,
+    "preflight_s": 633.8857046737731,
+    "fixed_energy_kwh": 0.24553111818709417
+  },
+  {
+    "longitude": 109.19444444,
+    "latitude": 23.06333333,
+    "ground_dsm_m": 736.2197265625,
+    "hover_altitude_m": 1036.2197265625,
+    "agl_m": 300.0,
+    "outbound_flight_s": 703.4222584626402,
+    "return_flight_s": 779.1322356761818,
+    "preflight_s": 913.4222584626402,
+    "fixed_energy_kwh": 0.39424157606669347
+  },
+  {
+    "longitude": 109.19944444,
+    "latitude": 23.0575,
+    "ground_dsm_m": 689.9253540039062,
+    "hover_altitude_m": 989.9253540039062,
+    "agl_m": 300.0,
+    "outbound_flight_s": 637.2175111345099,
+    "return_flight_s": 709.0696239681688,
+    "preflight_s": 847.2175111345099,
+    "fixed_energy_kwh": 0.3552222782312607
+  },
+  {
+    "longitude": 109.1997836,
+    "latitude": 23.007714,
+    "ground_dsm_m": 275.1272277832031,
+    "hover_altitude_m": 575.1272277832031,
+    "agl_m": 300.0,
+    "outbound_flight_s": 323.92569416286057,
+    "return_flight_s": 361.21129647812745,
+    "preflight_s": 533.9256941628605,
+    "fixed_energy_kwh": 0.18443614563269461
+  },
+  {
+    "longitude": 109.2203356,
+    "latitude": 23.0319231,
+    "ground_dsm_m": 178.04286193847656,
+    "hover_altitude_m": 478.04286193847656,
+    "agl_m": 300.0,
+    "outbound_flight_s": 275.3958304947265,
+    "return_flight_s": 304.5910689895996,
+    "preflight_s": 485.3958304947265,
+    "fixed_energy_kwh": 0.1603056564012031
+  },
+  {
+    "longitude": 109.2283003,
+    "latitude": 23.0561338,
+    "ground_dsm_m": 169.03955078125,
+    "hover_altitude_m": 469.03955078125,
+    "agl_m": 300.0,
+    "outbound_flight_s": 438.80289643865115,
+    "return_flight_s": 467.2478590037553,
+    "preflight_s": 648.8028964386511,
+    "fixed_energy_kwh": 0.2653421542678198
+  },
+  {
+    "longitude": 109.2381714,
+    "latitude": 23.0778414,
+    "ground_dsm_m": 195.11575317382812,
+    "hover_altitude_m": 495.1157531738281,
+    "agl_m": 300.0,
+    "outbound_flight_s": 608.2314343935634,
+    "return_flight_s": 638.8494138247157,
+    "preflight_s": 818.2314343935634,
+    "fixed_energy_kwh": 0.3717416664330771
+  },
+  {
+    "longitude": 109.2432319,
+    "latitude": 23.0335927,
+    "ground_dsm_m": 153.96136474609375,
+    "hover_altitude_m": 453.96136474609375,
+    "agl_m": 300.0,
+    "outbound_flight_s": 285.79276293911715,
+    "return_flight_s": 312.98121000129163,
+    "preflight_s": 495.79276293911715,
+    "fixed_energy_kwh": 0.1686533909020433
+  },
+  {
+    "longitude": 109.2541424,
+    "latitude": 23.0552989,
+    "ground_dsm_m": 189.4370880126953,
+    "hover_altitude_m": 489.4370880126953,
+    "agl_m": 300.0,
+    "outbound_flight_s": 471.946298217484,
+    "return_flight_s": 502.0910555518753,
+    "preflight_s": 681.946298217484,
+    "fixed_energy_kwh": 0.28507272270202566
+  },
+  {
+    "longitude": 109.2713839,
+    "latitude": 23.0310882,
+    "ground_dsm_m": 321.70806884765625,
+    "hover_altitude_m": 621.7080688476562,
+    "agl_m": 300.0,
+    "outbound_flight_s": 446.74915053923576,
+    "return_flight_s": 487.9164896098738,
+    "preflight_s": 656.7491505392358,
+    "fixed_energy_kwh": 0.25960822228264624
+  },
+  {
+    "longitude": 109.2760168,
+    "latitude": 23.0194009,
+    "ground_dsm_m": 321.5816650390625,
+    "hover_altitude_m": 621.5816650390625,
+    "agl_m": 300.0,
+    "outbound_flight_s": 442.0330763678303,
+    "return_flight_s": 483.18988178775214,
+    "preflight_s": 652.0330763678303,
+    "fixed_energy_kwh": 0.25660412575411073
+  },
+  {
+    "longitude": 109.28027778,
+    "latitude": 23.03333333,
+    "ground_dsm_m": 377.28515625,
+    "hover_altitude_m": 677.28515625,
+    "agl_m": 300.0,
+    "outbound_flight_s": 521.5554143047281,
+    "return_flight_s": 567.3541773255614,
+    "preflight_s": 731.5554143047281,
+    "fixed_energy_kwh": 0.30346560930007627
+  },
+  {
+    "longitude": 109.2835966,
+    "latitude": 23.0052097,
+    "ground_dsm_m": 320.9825134277344,
+    "hover_altitude_m": 620.9825134277344,
+    "agl_m": 300.0,
+    "outbound_flight_s": 484.04843464822693,
+    "return_flight_s": 525.1553107672048,
+    "preflight_s": 694.0484346482269,
+    "fixed_energy_kwh": 0.2834896982197434
+  }
+]

@@ -1,0 +1,63 @@
+{
+  "python": "3.10.12",
+  "packages": {
+    "ortools": "9.15.6755",
+    "numpy": "2.2.6",
+    "scipy": null,
+    "rasterio": "1.4.4",
+    "openpyxl": "3.1.5",
+    "matplotlib": "3.10.9"
+  },
+  "input_sha256": {
+    "data/无人机应急物资运输基础数据/中继无人机数据.xlsx": "be52643ff29419233e6a141dca03a04160a8af551cab36d8c49b51bb836bea04",
+    "data/无人机应急物资运输基础数据/物资需求与配送时限.xlsx": "5a3346159ceddcf585859d270b8f62114b388a1f737fbe64ffde0ee1fdc8170a",
+    "data/无人机应急物资运输基础数据/调度中心与服务区.xlsx": "541a7af1ded08c9a3ff448480332cb5f6a54902f0afa6e9bcd50c1d2b2b34e38",
+    "data/无人机应急物资运输基础数据/运输无人机数据.xlsx": "9296a657c07e042afba6aeea7999665d9cd24e00b592fd6c269de6e338480dcb",
+    "data/无人机应急物资运输基础数据/通信链路参数.xlsx": "1860d153199e7ae460ba36e83b673374e640e19de91ea167f2877271001f5f81",
+    "data/镇龙乡地理空间数据/镇龙乡及周边地理数据/数字高程模型数据（DEM）/镇龙乡及周边30米DEM.tif": "741fe6de0b2bcaffd0f4007f574ee698d46197094f52cc954b532c4f90fc7c03"
+  },
+  "parameters": {
+    "rounds": 2,
+    "time_limit": 240.0,
+    "max_relays": 10,
+    "expansion_limit": 160,
+    "profile_cache": "outputs/unified/run01/communication_cache.json",
+    "seed_source": "outputs/unified/final",
+    "complete_single_site": false,
+    "expanded_locations": true,
+    "random_seed": 31,
+    "q3_partition_groups": 0
+  },
+  "source_sha256": {
+    "final_code/refine_saved.py": "5d464bffc76e20620bf6df74adb6d2413ac33b52c3c82ccb444a6d14ac313c8a",
+    "final_code/review.py": "217f0b91fc849369b6f30c8f911f4e39ce0e1a047b3fab8b6171c8ebc6d6c5f1",
+    "final_code/__init__.py": "96d08781346ae3439200afb2d4f50bf6f6379244c9d4714e4ea3678871a8ee4e",
+    "final_code/run_all.py": "fb4071626742b4edaeb01737308a6c1879a5b230d085c4d34dab45df6cf637b9",
+    "final_code/publish.py": "c31119275fb54b31d117f99683b2ee345fd48ab208225b29fdc418e7f5cc2571",
+    "final_code/compare_runs.py": "caf9a75ff1770c0c95cb147b74c70636cccc7e270ec8178ed94e90c56dc12b89",
+    "final_code/replay.py": "f20facceaa7d3afde0c27c558289c520d18f2ba56a3989aa597dc6a3369695aa",
+    "final_code/summary_workbook.py": "7797d40aa7ee04cdbc45e6d77fe848ecf08bd043533c2936c7e2b6e1efefcb83",
+    "final_code/package.py": "98bfad71cb04dadf0074374b5344a2be283d054970c5369a5b6c8f1619b07515",
+    "final_code/problem3/__init__.py": "abba345433f4d01bdb4035ecfbe2e15f3603a470d0a28a5e48a3fcb582883058",
+    "final_code/problem3/transport_relay.py": "0372daf307ce62efad76b362028d5908c960afcbbcce9aa87b7ca1c5b89a33d8",
+    "final_code/problem3/timeline.py": "7add456e0b0d5b3923d2c8c7acab8c7da4fe874045e4c3cf769e1ca9f7df1cf4",
+    "final_code/problem3/refine.py": "64b976313cd11d6dbf2c97cf2e43311a877b021176f7168f0a4034800e8ba8fc",
+    "final_code/problem3/physics.py": "8a3c12dd317ba32a3f5ebe65a097049ed46f95123587071505349c70eb1ee014",
+    "final_code/problem3/communication.py": "e8a74bbeec1f0a2d605f631cd29aee0608d77416c9ee4746fad314a08df64595",
+    "final_code/problem3/audit.py": "ee0c2be8fb5cd829231aed89c9a7e31c87a734a7caa4823bedfad7374fe2f493",
+    "final_code/problem3/run.py": "c5a81613dd869c1ba767abfa538e0de0aa20fb89015e8de6e6016f0fc5098ef9",
+    "final_code/problem1/solver.py": "761cc0fe3eed51f83b723cc83d371bf11dfb53527f33233ed5f62041d1068b8c",
+    "final_code/problem1/__init__.py": "e1001c04067dc6008eb5c8ad374dd7fc0c50fcd33fa3bdd476a161d8b129099e",
+    "final_code/problem4/solver.py": "ab5dc2164a93088bc02f195b706e0325553ac6bf8c067bf7792a8d1ac1cdb677",
+    "final_code/problem4/__init__.py": "7acfb33e18e0a3c43a82e136f596985c1d29866b569437af5c0ff53ba3d9298d",
+    "final_code/problem2/transport.py": "29d35a5fb7c868ad4b7b025b6d82df6672f0fb4720d198c121e3a9b15fd931bd",
+    "final_code/problem2/__init__.py": "2e6657da35c89731b672c467f812bfe9cd80ca31e1f7c997842c67d4c99847f0",
+    "final_code/problem2/master.py": "f64eb724bdd938b5b8e047c4c0c138dbb512586b971cd0e31fab3e95128db1ee",
+    "final_code/problem2/terrain_audit.py": "e134dca54d18ff2aa50f7e07532345d55ac9e54fb7fe531020e7ec5d68022314",
+    "final_code/problem2/groups.py": "dd5563b1164d1a6e8fd63fe0fedc062e70a9a8642bec32535275b75a6813fdb9",
+    "final_code/problem2/run.py": "905e88d2ad4f9128a8a7ea9e330ae0fd043fd5584de52fa2c7fd93cca85a4b95",
+    "final_code/problem2/patterns.py": "cc7142f235ba1c8771a1cec250b24ab596f6ec94b29bdd7bbac2ff353220a7e0"
+  },
+  "source_changed_during_run": true,
+  "source_fingerprint_note": "This audit search ran while reporting and refinement code was being edited. Source hashes describe files at export, not a frozen launch snapshot; CP-SAT master and geometry implementations were unchanged during the run. Selected schedules are independently re-audited."
+}

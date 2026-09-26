@@ -1,23 +1,50 @@
-# Problem 1 solver
+# 问题一：单点往返能力与精确组批
 
-Run from the repository root (Python 3.10+):
+从仓库根目录运行（Python 3.10+）：
 
 ```bash
 .venv/bin/python -m final_code.problem1.solver
 ```
 
-Sensitivity scenarios append common reserve fractions and horizontal-energy calibration multipliers to the default baseline:
+默认写入 `outputs/q1/`。基准返航安全余量采用运输无人机工作簿的 20%，默认同时计算 10%、15%、25%、30%、40%、50% 的返航余量场景，以及水平能耗率为基准 0.8、1.2 倍的敏感性场景。两类敏感性分别改变一个参数，不做笛卡尔积。可指定其他敏感性水平：
 
 ```bash
-.venv/bin/python -m final_code.problem1.solver --reserve 0.10 0.15 0.25 0.30 --energy-scale 0.8 1.2
+.venv/bin/python -m final_code.problem1.solver --reserve 0.1 0.3 0.5 --energy-scale 0.8 1.2 --output outputs/q1
 ```
 
-Outputs are written to `outputs/problem1/` (ignored as generated results): JSON details, template-aligned `problem1_submission.xlsx` and `batches.csv`, a detailed batch table with leg energies and return SOC, site summaries, safe-payload/sensitivity tables, trade-off table, and PNG figures. The baseline always uses the return-SOC lower bound in the aircraft workbook (20% for A/B/C); any `--reserve` and `--energy-scale` values are appended as sensitivity scenarios. Scenarios that cannot deliver all boxes are explicitly marked infeasible, with affected sites listed.
+显式提供参数时，该参数列表替换对应的默认敏感性列表，工作簿基准场景始终保留。Python API 中 `run([], [])` 只计算基准。不可行场景列出所有无法完成组批的服务区，完整任务的架次、能耗和时间记为 `null`，不把部分交付冒充完整方案。
 
-Three representative objective priority policies are compared: sorties → energy → cumulative work time, energy → sorties → time, and time → sorties → energy. `objective_tradeoff.csv` lists these solutions and indicates nondominance among the sampled policies only; it is not claimed to be the complete Pareto frontier. Cumulative work time is preparation + loading + flight + single-stop handoff, summed over sorties; it is not a fleet makespan.
+## 计算流程与最优性
 
-## Energy model caveat
+1. 读取 O01、15 个服务区、3 种机型和 80 个不可拆分货箱。
+2. 对每条 O01—服务区水平直线遍历全部相交 DEM 像元，包含边界、角点接触；越出 DEM 或碰到 NoData 时拒绝该航段。巡航海拔取最高像元高程加 50 m，O01 作业高度取表中地面海拔，服务区取表中地面海拔加 30 m。
+3. 分别计算载货去程和空载返程的爬升、巡航、下降时间及能量。用单调二分求满足总能量安全余量的最大质量载荷；装载体积随后逐批约束，不将体积在没有货物密度时换算为重量。
+4. 对每个服务区枚举全部非空货箱子集与三种机型，筛除超过质量、体积或能量上限的组合。不同服务区不合并成一个架次。
+5. 以已交付货箱的位掩码为动态规划状态，每次选择含最小未覆盖货箱的可行批次，精确完成集合划分。货箱恰好出现一次。
+6. 分别求解三个字典序目标：架次→能耗→累计作业时间、能耗→架次→时间、时间→架次→能耗。累计作业时间为所有架次的准备、装载、飞行及交接时间之和；问题一不计算实体机/电池调度或任务完成时刻。
 
-The problem statement defines payload-adjusted standard range, flight time, and the return reserve constraint, but does not provide an explicit formula for transport horizontal energy or climb-efficiency units. The baseline calibrates horizontal energy as `usable battery energy (kWh) / empty standard range (m)` (kWh/m), then scales that rate by `empty range / payload-adjusted range`. Climb energy uses `mass (kg) × g (m/s²) × climb height (m) / (3.6×10⁶ × efficiency)`, interpreting the workbook's efficiency as a dimensionless propulsion efficiency. It checks each one-way leg against the payload-adjusted outbound range or empty return range. These are explicit modeling assumptions, not fully specified source formulas; numerical optima are conditional on them and should be accompanied by alternative energy-rate/efficiency sensitivity analysis in the paper.
+在给定能耗假设和目标优先顺序下，每个服务区的全部可行子集均已枚举，动态规划精确求解；各服务区无资源耦合且三个指标可加，因此组合得到的是该顺序的全局最优解。三个目标顺序得到的代表方案不等于完整 Pareto 前沿。
 
-The GeoTIFF metadata declares EPSG:4326 and 1/3600-degree cells. Flight leg distances use a great-circle calculation; route terrain is sampled along the coordinate-linear path at intervals no greater than 30 m. Service-area and O01 tabular elevations are used for operating heights, while DEM samples determine the prescribed route cruise clearance. The DEM is a surface model; this implementation does not model obstacle clearance beyond the problem's specified 50 m above sampled maximum.
+## 输出与审查修正
+
+输出包括 `problem1_results.json`、与题目模板一致的 `problem1_submission.xlsx`、批次表、逐航段能量及返航 SOC 明细、服务区汇总、最大安全载荷表、敏感性表、目标权衡表和四幅 PNG 图。绘图自动选择 Matplotlib 可识别的中文字体族（包括 Noto Sans CJK JP 字体集合中的中文字符），避免固定指定未暴露的 SC 字体名导致缺字。
+
+`safe_payloads.csv` 和 `safe_payloads_sensitivity.csv` 中：
+
+- `empty_round_trip_energy_kwh` 是零载荷往返能耗；
+- `max_payload_round_trip_energy_kwh` 是最大安全载荷对应的往返能耗；
+- `empty_round_trip_feasible` 区分“零载荷也无法往返”和“可行但只容许很小载荷”。
+
+此次审查补齐了默认敏感性，修复不可行敏感性场景的异常及漏记服务区问题，并纠正了此前空载能量字段误写为最大载荷能量的问题。基准物理和基准组批数值保持不变。测试：
+
+```bash
+.venv/bin/python -m unittest tests.test_audit_q1
+```
+
+## 公共物理假设
+
+题面给出了载荷—等效航程关系，但未完整指定水平能耗公式。程序采用 `E_hor = E_use × d / L(q)`，并按 `m × 9.80665 × h / (3.6e6 × η)` 计算爬升附加能量，解释工作簿的爬升效率为无量纲推进效率。质量包含机体、电池和当段剩余货载；返程为空载。下降效率为 0 时不额外计下降能耗。单段范围检查在基准能耗模型及正余量条件下由总能量上限蕴含。
+
+上述标定是明确的建模假设，物理数值和最优性结论以它为条件；水平能耗率敏感性不代表完整气动不确定性分析。DEM 坐标为 EPSG:4326，地形沿经纬度线性插值路径逐像元计算，水平距离采用平均地球半径 6371008.8 m 的大圆距离，局部直线与大圆距离差异是地理近似。表中节点海拔用于作业高度，DEM 用于航线净空；不附加题目之外的障碍物模型。
+
+最终模板表和图分别位于本问结果目录的 `tables/`、`figures/`。总表与程序包由 `python -m final_code.publish` 统一生成。

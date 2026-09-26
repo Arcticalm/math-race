@@ -29,6 +29,7 @@ class LinkParameters:
     relay_access: Radio
     relay_backhaul: Radio
     gateway: Radio
+    gateway_agl_m: float = 20.0
 
 
 @dataclass(frozen=True)
@@ -104,6 +105,7 @@ def load_link_parameters(path: Path | None = None) -> LinkParameters:
         relay_access=radio("中继接入端"),
         relay_backhaul=radio("中继回传端"),
         gateway=radio("固定网关 G01"),
+        gateway_agl_m=parameter("固定网关 G01", "hG"),
     )
 
 
@@ -181,18 +183,55 @@ def link_limits(params: LinkParameters) -> dict[str, float]:
     }
 
 
-def _segment_elevations(dem: rasterio.io.DatasetReader, first: Node, second: Node,
-                        first_altitude_m: float, second_altitude_m: float,
-                        step_m: float = 30.0, values=None) -> tuple[float, ...] | None:
-    distance = great_circle_distance_m(first, second)
-    intervals = max(1, math.ceil(distance / step_m))
-    fractions = np.arange(1, intervals, dtype=float) / intervals
-    longitude = first.longitude + fractions * (second.longitude - first.longitude)
-    latitude = first.latitude + fractions * (second.latitude - first.latitude)
-    rows, cols = rasterio.transform.rowcol(dem.transform, longitude, latitude)
-    rows, cols = np.asarray(rows), np.asarray(cols)
-    if np.any((rows < 0) | (rows >= dem.height) | (cols < 0) | (cols >= dem.width)):
+def _raster_segment_cells(dem, first: Node, second: Node):
+    """Every touched pixel and LOS-fraction bounds, including edge/corner contacts."""
+    inverse = ~dem.transform
+    x0, y0 = inverse * (first.longitude, first.latitude)
+    x1, y1 = inverse * (second.longitude, second.latitude)
+    if any(not (0 <= x <= dem.width and 0 <= y <= dem.height)
+           for x, y in ((x0, y0), (x1, y1))):
         return None
+    crossings = [0.0, 1.0]
+    for origin, finish in ((x0, x1), (y0, y1)):
+        if abs(finish - origin) > 1e-14:
+            boundaries = np.arange(math.floor(min(origin, finish)) + 1,
+                                   math.ceil(max(origin, finish)))
+            crossings.extend(((boundaries - origin) / (finish - origin)).tolist())
+    cuts = np.unique(np.asarray(crossings))
+    middle = (cuts[:-1] + cuts[1:]) / 2
+    probes = np.concatenate([cuts, middle])
+    lows = np.concatenate([cuts, cuts[:-1]])
+    highs = np.concatenate([cuts, cuts[1:]])
+    xx, yy = x0 + probes * (x1 - x0), y0 + probes * (y1 - y0)
+    cols, rows = np.floor(xx).astype(int), np.floor(yy).astype(int)
+    on_x = np.abs(xx - np.rint(xx)) <= 1e-9
+    on_y = np.abs(yy - np.rint(yy)) <= 1e-9
+    # Numerical edge contacts must include both neighbouring cells.
+    cols[on_x] = np.rint(xx[on_x]).astype(int)
+    rows[on_y] = np.rint(yy[on_y]).astype(int)
+    row_parts, col_parts, low_parts, high_parts = [], [], [], []
+    for dr, dc, mask in ((0, 0, np.ones(len(probes), dtype=bool)),
+                         (-1, 0, on_y), (0, -1, on_x), (-1, -1, on_x & on_y)):
+        rr, cc = rows + dr, cols + dc
+        valid = mask & (rr >= 0) & (rr < dem.height) & (cc >= 0) & (cc < dem.width)
+        row_parts.append(rr[valid]); col_parts.append(cc[valid])
+        low_parts.append(lows[valid]); high_parts.append(highs[valid])
+    return tuple(np.concatenate(parts) for parts in
+                 (row_parts, col_parts, low_parts, high_parts))
+
+
+def _segment_elevations(dem, first: Node, second: Node,
+                        first_altitude_m: float, second_altitude_m: float,
+                        step_m: float = 30.0, values=None):
+    """Terrain minus minimum LOS height in every intersected DEM cell.
+
+    The retained ``step_m`` argument is compatibility only: no spatial samples
+    are skipped. Pixel terrain is piecewise constant, and corner contacts count.
+    """
+    cells = _raster_segment_cells(dem, first, second)
+    if cells is None:
+        return None
+    rows, cols, lower, upper = cells
     raster = values if values is not None else dem.read(1)
     heights = raster[rows, cols]
     invalid = ~np.isfinite(heights) | np.isclose(heights, -32767.0)
@@ -200,8 +239,10 @@ def _segment_elevations(dem: rasterio.io.DatasetReader, first: Node, second: Nod
         invalid |= np.isclose(heights, dem.nodata)
     if np.any(invalid):
         return None
-    return heights - (first_altitude_m + fractions * (second_altitude_m - first_altitude_m))
-
+    delta = second_altitude_m - first_altitude_m
+    minimum_los = np.minimum(first_altitude_m + lower * delta,
+                             first_altitude_m + upper * delta)
+    return heights - minimum_los
 
 
 class LinkEvaluator:
@@ -240,10 +281,10 @@ class LinkEvaluator:
 def certify_moving_link(evaluator: LinkEvaluator, first: Node, first_altitude: float,
                         last: Node, last_altitude: float, fixed: Node, fixed_altitude: float,
                         threshold_db: float) -> bool:
-    """Conservative interval bound for linear motion and the 30 m LOS rule.
+    """Conservative interval bound for linear motion over every DEM pixel.
 
-    Enumerate all possible LOS sample counts. Bound each moving sample by
-    every raster cell in its swept coordinate rectangle and minimum LOS height.
+    Cover the complete swept LOS surface with fraction slabs, including every
+    intersected cell and a lower bound on LOS height throughout each slab.
     False means unproved, not necessarily an outage. Subdivide and retry.
     """
     if fixed.code != "G01":
@@ -266,26 +307,38 @@ def certify_moving_link(evaluator: LinkEvaluator, first: Node, first_altitude: f
                                  abs(last_altitude - fixed_altitude)))
     if max_distance <= 0:
         return False
-    min_count = max(1, math.ceil(max(0, horizontal - movement / 2) / 30))
-    max_count = max(1, math.ceil((horizontal + movement / 2) / 30))
-    if max_count - min_count > 4:
-        return False
-    terrain_clear = True
-    inverse = ~evaluator.dem.transform
-    for count in range(min_count, max_count + 1):
-        fractions = np.arange(1, count, dtype=float) / count
-        if not len(fractions):
-            continue
-        x0 = first.longitude + fractions * (fixed.longitude - first.longitude)
-        y0 = first.latitude + fractions * (fixed.latitude - first.latitude)
-        x1 = last.longitude + fractions * (fixed.longitude - last.longitude)
-        y1 = last.latitude + fractions * (fixed.latitude - last.latitude)
-        col0, row0 = inverse * (x0, y0)
-        col1, row1 = inverse * (x1, y1)
-        low_row = np.floor(np.minimum(row0, row1) - 1e-9).astype(int)
-        high_row = np.floor(np.maximum(row0, row1) + 1e-9).astype(int)
-        low_col = np.floor(np.minimum(col0, col1) - 1e-9).astype(int)
-        high_col = np.floor(np.maximum(col0, col1) + 1e-9).astype(int)
+    # Vertical motion has a fixed ground projection; its lowest endpoint
+    # altitude gives the lowest LOS everywhere along the full pixel traversal.
+    if first.longitude == last.longitude and first.latitude == last.latitude:
+        clearances = _segment_elevations(
+            evaluator.dem, first, fixed, min(first_altitude, last_altitude),
+            fixed_altitude, values=evaluator.dem_values)
+        if clearances is None:
+            return False
+        terrain_clear = not np.any(clearances >= -1e-8)
+    else:
+        if movement > 120:
+            return False
+        # Cover the entire moving LOS by swept fraction slabs, rather than
+        # certifying isolated 30 m samples. Every slab is enclosed by its four
+        # endpoint positions; its minimum 3D LOS height occurs at a corner.
+        count = max(1, math.ceil((horizontal + movement / 2) / 15.0))
+        lower = np.arange(count, dtype=float) / count
+        upper = (np.arange(count, dtype=float) + 1) / count
+        inverse = ~evaluator.dem.transform
+        pixel_corners = []
+        altitude_corners = []
+        for endpoint, altitude in ((first, first_altitude), (last, last_altitude)):
+            for fraction in (lower, upper):
+                longitude = endpoint.longitude + fraction * (fixed.longitude - endpoint.longitude)
+                latitude = endpoint.latitude + fraction * (fixed.latitude - endpoint.latitude)
+                cc, rr = inverse * (longitude, latitude)
+                pixel_corners.append((cc, rr))
+                altitude_corners.append(altitude + fraction * (fixed_altitude - altitude))
+        low_row = np.floor(np.min([r for c, r in pixel_corners], axis=0) - 1e-9).astype(int)
+        high_row = np.floor(np.max([r for c, r in pixel_corners], axis=0) + 1e-9).astype(int)
+        low_col = np.floor(np.min([c for c, r in pixel_corners], axis=0) - 1e-9).astype(int)
+        high_col = np.floor(np.max([c for c, r in pixel_corners], axis=0) + 1e-9).astype(int)
         if np.any((low_row < 0) | (high_row >= evaluator.dem.height)
                   | (low_col < 0) | (high_col >= evaluator.dem.width)):
             return False
@@ -293,7 +346,7 @@ def certify_moving_link(evaluator: LinkEvaluator, first: Node, first_altitude: f
         max_cols = int(np.max(high_col - low_col))
         if max_rows > 8 or max_cols > 8:
             return False
-        heights = np.full(len(fractions), -np.inf)
+        heights = np.full(count, -np.inf)
         for dr in range(max_rows + 1):
             for dc in range(max_cols + 1):
                 rows = np.minimum(low_row + dr, high_row)
@@ -305,9 +358,8 @@ def certify_moving_link(evaluator: LinkEvaluator, first: Node, first_altitude: f
                 if np.any(invalid):
                     return False
                 heights = np.maximum(heights, values)
-        minimum_los = min(first_altitude, last_altitude) * (1 - fractions) + fixed_altitude * fractions
-        if np.any(heights >= minimum_los - 1e-8):
-            terrain_clear = False
+        minimum_los = np.min(altitude_corners, axis=0)
+        terrain_clear = not np.any(heights >= minimum_los - 1e-8)
     upper_loss = (32.45 + 20 * math.log10(evaluator.params.frequency_mhz)
                   + 20 * math.log10(max_distance / 1000)
                   + (0 if terrain_clear else evaluator.params.obstruction_loss_db))
@@ -315,20 +367,15 @@ def certify_moving_link(evaluator: LinkEvaluator, first: Node, first_altitude: f
 
 
 def sampled_flight_leg(evaluator: LinkEvaluator, first: Node, last: Node) -> tuple[float, float]:
-    """Same 30 m endpoint-inclusive samples as Q2, using the loaded raster."""
-    distance = great_circle_distance_m(first, last)
-    fractions = np.linspace(0, 1, max(1, math.ceil(distance / 30)) + 1)
-    rows, cols = rasterio.transform.rowcol(
-        evaluator.dem.transform,
-        first.longitude + fractions * (last.longitude - first.longitude),
-        first.latitude + fractions * (last.latitude - first.latitude))
-    rows, cols = np.asarray(rows), np.asarray(cols)
-    if np.any((rows < 0) | (rows >= evaluator.dem.height) | (cols < 0) | (cols >= evaluator.dem.width)):
+    """Exact maximum over every DEM pixel touched by the relay flight leg."""
+    cells = _raster_segment_cells(evaluator.dem, first, last)
+    if cells is None:
         raise ValueError("Relay flight outside DEM")
+    rows, cols, _, _ = cells
     values = evaluator.dem_values[rows, cols]
     invalid = ~np.isfinite(values) | np.isclose(values, -32767)
     if evaluator.dem.nodata is not None:
         invalid |= np.isclose(values, evaluator.dem.nodata)
     if np.any(invalid):
         raise ValueError("Relay flight crosses DEM NoData")
-    return float(np.max(values)), distance
+    return float(np.max(values)), great_circle_distance_m(first, last)

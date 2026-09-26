@@ -1,0 +1,115 @@
+{
+  "feasible": true,
+  "all_partitions_available": true,
+  "partition_policy": "frozen_transport_and_relay_closure_v1",
+  "q3_partition_groups": 0,
+  "global_optimal": false,
+  "q2": {
+    "source": "/home/naya/math-race/outputs/unified/review_search",
+    "score": [
+      6294.864601791016,
+      0.0,
+      70.8763166998559,
+      27
+    ],
+    "provenance": "provenance/q2"
+  },
+  "q3_q4": {
+    "source": "/home/naya/math-race/outputs/unified/review_refined",
+    "score": [
+      6480.604199674681,
+      32999.17271668898,
+      73.52314478602871,
+      30
+    ],
+    "provenance": "provenance/q3"
+  },
+  "q2_candidates": [
+    {
+      "source": "/home/naya/math-race/outputs/unified/review_refined",
+      "score": [
+        6294.864601791016,
+        646.262583178559,
+        70.22735307817169,
+        27
+      ]
+    },
+    {
+      "source": "/home/naya/math-race/outputs/unified/review_search",
+      "score": [
+        6294.864601791016,
+        0.0,
+        70.8763166998559,
+        27
+      ]
+    }
+  ],
+  "joint_candidates": [
+    {
+      "source": "/home/naya/math-race/outputs/unified/review_refined",
+      "score": [
+        6480.604199674681,
+        32999.17271668898,
+        73.52314478602871,
+        30
+      ]
+    },
+    {
+      "source": "/home/naya/math-race/outputs/unified/review_search",
+      "score": [
+        7676.436866917964,
+        109361.02786458662,
+        75.42617086757214,
+        31
+      ]
+    }
+  ],
+  "selection_rule": "independent time-first Q2; joint time, lateness, energy and sorties, extended by the K=2/K=3 frozen-partition deficit, resource sum and worst CV only for coupled runs",
+  "source_pattern_ids": "local to the recorded source run; no route, box, time or resource assignment changed",
+  "packages": {
+    "ortools": "9.15.6755",
+    "numpy": "2.2.6",
+    "scipy": null,
+    "rasterio": "1.4.4",
+    "openpyxl": "3.1.5",
+    "matplotlib": "3.10.9"
+  },
+  "artifact_sha256": {
+    "q1/objective_tradeoff.csv": "32c415747f2778b3ee931ed877e51f10b23726311c45ca367b1e5c6a3e2cc82e",
+    "q1/batches_detailed.csv": "9a4cf31f4a23007bc371b0b3af9b6c811fbaf42b8f2c531632dff52f892f344b",
+    "q1/sensitivity_summary.csv": "137558e8a0a65803ce3c4fea8d6a3f606d6e987e030c861d7f8fa75cd90ca46f",
+    "q1/batches.csv": "06962bcffdaa2c85d44ac224026267f2b2ce5f4b9fa020f54521e45adfb006c2",
+    "q1/problem1_submission.xlsx": "3ca0ef5b8e1abd3b3c0c4e9de7eb49e4aa3e524cad4685d7a1cf95c7d238e07a",
+    "q1/safe_payloads_sensitivity.csv": "15837c7e040245abc83f56ecbde01b121dcb614454aa620f0a968611f9c2b3a0",
+    "q1/service_area_summary.csv": "c1aefdae702a6acf9f6e469d789729343edd5f90b3ee5ecc9aae2ba766f39a69",
+    "q1/problem1_results.json": "5e1f614da7d72f1005afa923d0f07bd306d88f6d2eccd5d01a3ee772a8819a7c",
+    "q1/safe_payloads.csv": "e86b7a6bca133d0c5d7f023c12c5cd28c93d0bee2a058b20001302586e9a4ca4",
+    "q2/box_delivery_audit.csv": "7f759f3a0b93b0fe331aef252064fe0cf0cb12e28f1455b10479ddf170a1a940",
+    "q2/sorties_audit.csv": "6e2501631d5bc91703784f7c69b665d1fbf9c84270cb9283e32aebeb18b837ca",
+    "q2/battery_audit.csv": "3e389b7505fbd14d730d523b840cc19cd6a685449c217d1067133521b11840b5",
+    "q2/model_assumptions.json": "ec88392e63ff548debba6b32e70c5135db3899e5f26490811946f63aa4c17273",
+    "q2/problem2_submission.xlsx": "fb00337e4712fbc0215161dae314be80798a80be8bffb0e75114652a48a987fa",
+    "q2/route_segments.csv": "6e3ebb4d88b09703d12f6e0be7b2f5057f0b92d0b00e381a6a7aea2475b666aa",
+    "q2/validation.json": "d880ba3a4009ccebf0a9133b91813a7de26fff19c2d5fe8a8ce0922a14a26b94",
+    "q3/box_delivery_audit.csv": "b6d806fd851c2875911d792df055ed55795a665ed7038f257dcf25bdff4dba98",
+    "q3/transport_inherited_audit.csv": "a39d3b0cc6bb8ffff648294a68af1dfa5e445c9b1a9ca38f2307ce058aa80895",
+    "q3/relay_schedule.csv": "0ce90b5cf645279921ca4bdda49a8e0adaae1378256e4de7300877b56bf2db08",
+    "q3/problem3_submission.xlsx": "6a53ff813820d51aa9bb8c835cb39a9992012217510ff4f8172b45f7f1fcf331",
+    "q3/relay_resource_audit.csv": "181b887f0c11cc6a34906e1fe4a131e46dbf0127c7394693c3db3b4a8a933473",
+    "q3/communication_audit.csv": "4213bb83bc48556c4092229b8fd8c8c3d20b3905510f22aa9e911ea9203361c8",
+    "q3/trajectory_phases.csv": "32e81ad7d6f6fe07f1849ae8445b984986d65f317ddf27b99b653913e795ed13",
+    "q3/screening.json": "a5ae98d09d05ce25251a03027e985f3f957fde8d7a71c7470a3d787775136304",
+    "q4/site_mapping_audit.csv": "4658abb894228528f274e09675fdd0ccec34dd81e5a943c5d170f2e4096e66e4",
+    "q4/result.json": "be70f6d698bb480b58cc0c72f834e8df9d0e2f50ce77b177d9d8db66c1aaa6e4",
+    "q4/assumptions.json": "dc90dd60e4b95918d369b59c64c3127b42c095d70d003afbb9c7153ff94de923",
+    "q4/inventory_comparison.csv": "3149559377e48cbf52367c5e34e4a717e210a02e76db940a7e572275cb5ec38b",
+    "q4/resource_interval_audit.csv": "fe79ae6bd2f180115bfd65ca4331c0cc4e925c3b8f5c3b320e305dc6d0eb9b06",
+    "q4/task_mapping_audit.csv": "02e634f958b28fa7196939277c005ed40cf098166fa372de8a31ff10aa008f1d",
+    "q4/frozen_q3_sha256.json": "a49252fa4e0841624e69705880e7f48f0cd21c67105ee582208af45ccd18581e",
+    "q4/workload_comparison.csv": "6d92ee65e5c20d38ab47c4407cebf6d9135eb987bfe5946f451a935b75df2467",
+    "q4/problem4_configuration.csv": "27e035dc9884aa9904940e4bc95abfcdf57d0e20925840a6c5d92f4e1a8cead9",
+    "q4/problem4_submission.xlsx": "da8374eb54447c7a03c4ee2e7e7765f27634879c6e38f0dd9817098f4ffd7540"
+  },
+  "historical_source_paths": "Original search labels only; retained reproducibility records are referenced by the relative provenance fields.",
+  "layout": "question_directories_v1"
+}
