@@ -139,7 +139,7 @@ Just choose `xelatex', no `pdflatex' or `latex' and so on.}
 % 定制列表环境
 \RequirePackage{enumitem}
 % 下划线
-\RequirePackage{ulem}
+\RequirePackage[normalem]{ulem}
 % 尺寸计算
 \RequirePackage{calc}
 
@@ -505,6 +505,7 @@ BoldFont = SourceHanSerifCN-Bold.otf
 % {\thecontentslabel\hskip.5em}{}{\titlerule*[0.5pc]{.}\contentspage}
 
 % 上标文献
-\newcommand{\upcite}[1]{\textsuperscript{\textsuperscript{\cite{#1}}}}
-\newcommand{\supercite}[1]{\textsuperscript{\textsuperscript{\cite{#1}}}}
+\def\@cite#1#2{\textsuperscript{[{#1\if@tempswa , #2\fi}]}}
+\newcommand{\upcite}[1]{\cite{#1}}
+\newcommand{\supercite}[1]{\cite{#1}}
 \endinput

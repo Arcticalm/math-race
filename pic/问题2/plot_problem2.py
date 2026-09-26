@@ -18,7 +18,7 @@ import pandas as pd
 from openpyxl import load_workbook
 
 ROOT = Path(__file__).resolve().parents[2]
-DATA = ROOT / "outputs" / "problem2"
+DATA = ROOT / "outputs" / "q2"
 OUT = Path(__file__).resolve().parent
 BASE = ROOT / "data" / "无人机应急物资运输基础数据"
 COLORS = {"A": "#1769aa", "B": "#e08e0b", "C": "#c44536"}
@@ -78,10 +78,7 @@ def load_data():
     segments = pd.read_csv(DATA / "route_segments.csv")
     deliveries = pd.read_csv(DATA / "box_delivery_audit.csv")
     batteries = pd.read_csv(DATA / "battery_audit.csv")
-    # 候选方案指标表由统一求解器的反馈迭代逐轮输出（publish 汇总）。
-    candidates_path = DATA / "time_priority_candidates.csv"
-    candidates = pd.read_csv(candidates_path) if candidates_path.exists() else None
-    return sorties, segments, deliveries, batteries, candidates
+    return sorties, segments, deliveries, batteries
 
 
 def route_list(value):
@@ -217,65 +214,59 @@ def plot_energy(sorties):
     save(fig, "图5_架次能耗与机型.png")
 
 
-def plot_tradeoff(candidates):
-    """对比各轮反馈迭代给出的候选方案在四个目标上的取值。
+def plot_site_load(sorties):
+    """各服务区的架次数与能耗。
 
-    统一求解器不再成批枚举组批方案，而是逐轮反馈迭代各产生一个通过审计的候选解，
-    因此这里按轮次并列比较，深色标出最终选定的那一轮。
+    新一轮问题二结果来自多轮反馈流水线，两轮给出的运输方案完全一致，
+    因此原先的“逐轮候选方案对比”已无信息量，改为按服务区展示方案的空间结构。
     """
-    df = candidates.copy()
-    # 只有一次运行时不显示 run 目录名，避免把复现用的目录名带进论文图。
-    if df["run"].nunique() == 1:
-        df["方案"] = "第 " + df["iteration"].astype(str) + " 轮"
-    else:
-        df["方案"] = df["run"] + " · 第 " + df["iteration"].astype(str) + " 轮"
-    selected = df["selected"].astype(str).str.lower().isin(["true", "1", "是"])
-    panels = [
-        ("makespan_s", "全部任务完成时间 / s", "#1769aa"),
-        ("weighted_lateness", "加权迟到量 /（优先级×s）", "#c44536"),
-        ("energy_kwh", "总运输能耗 / kWh", "#e08e0b"),
-        ("sortie_count", "运输架次 / 架", "#35a7a0"),
-    ]
-    fig, axes = plt.subplots(2, 2, figsize=(12.4, 8.2))
-    for ax, (column, label, color) in zip(axes.ravel(), panels):
-        colors = [color if flag else "#c3ccd4" for flag in selected]
-        bars = ax.bar(df["方案"], df[column], width=0.5, color=colors, alpha=0.92)
-        for bar, value in zip(bars, df[column]):
-            ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height(),
-                    f"{value:g}", ha="center", va="bottom", fontsize=14)
-        ax.set_ylabel(label, fontsize=13)
-        ax.tick_params(axis="both", labelsize=12)
-        ax.grid(axis="y", color="#dfe7ee", lw=0.8)
-        ax.spines[["top", "right"]].set_visible(False)
-        ax.margins(y=0.20)
-    fig.suptitle("反馈迭代候选方案的指标对比（深色为最终选定方案）",
-                 y=1.0, fontsize=17, fontweight="bold")
-    fig.tight_layout()
-    save(fig, "图6_方案指标对比.png")
+    rows = []
+    for _, row in sorties.iterrows():
+        sites = [s for s in str(row["访问服务区顺序"]).replace("→", ",").split(",") if s.strip()]
+        per = float(row["架次能耗（kWh）"]) / len(sites)
+        for site in sites:
+            rows.append({"服务区": site.strip(), "能耗": per, "架次": 1})
+    frame = pd.DataFrame(rows).groupby("服务区", as_index=False)[["能耗", "架次"]].sum()
+    frame = frame.sort_values("能耗")
+    fig, axes = plt.subplots(1, 2, figsize=(11.6, 5.6), sharey=True,
+                             gridspec_kw={"wspace": 0.08})
+    axes[0].barh(frame["服务区"], frame["能耗"], color="#1769aa", alpha=0.9)
+    axes[0].set_xlabel("总能耗 / kWh", fontsize=12)
+    axes[0].set_ylabel("服务区", fontsize=12)
+    axes[0].set_title("服务区能耗", fontsize=14, fontweight="bold")
+    axes[1].barh(frame["服务区"], frame["架次"], color="#e08e0b", alpha=0.9)
+    axes[1].set_xlabel("往返架次数 / 架", fontsize=12)
+    axes[1].set_title("服务区架次", fontsize=14, fontweight="bold")
+    for ax in axes:
+        ax.grid(axis="x", color="#dfe7ee", lw=0.8)
+        ax.spines[["top", "right", "left"]].set_visible(False)
+        ax.tick_params(axis="y", labelsize=11, length=0)
+        ax.tick_params(axis="x", labelsize=11)
+    for y, val in enumerate(frame["能耗"]):
+        axes[0].text(val + 0.06, y, f"{val:.2f}", va="center", fontsize=11)
+    for y, val in enumerate(frame["架次"]):
+        axes[1].text(val + 0.04, y, f"{int(val)}", va="center", fontsize=11)
+    fig.suptitle("各服务区运输负荷分布", y=1.02, fontsize=16, fontweight="bold")
+    save(fig, "图6_服务区运输负荷.png")
 
 
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
-    sorties, segments, deliveries, batteries, candidates = load_data()
+    sorties, segments, deliveries, batteries = load_data()
     plot_routes(sorties); plot_drone_gantt(sorties); plot_battery_gantt(batteries)
-    plot_delivery(deliveries); plot_energy(sorties)
-    if candidates is None:
-        print("跳过 图6_方案指标对比.png：缺少 time_priority_candidates.csv（需先运行 publish）")
-    else:
-        plot_tradeoff(candidates)
+    plot_delivery(deliveries); plot_energy(sorties); plot_site_load(sorties)
     rows = [
         ("图1_调度路线网络.png", "展示 O01 到服务区的实际访问路线"),
         ("图2_无人机资源时间轴.png", "展示实体无人机任务串行与并行关系"),
         ("图3_电池周转时间轴.png", "展示共享电池任务占用和充电周转"),
         ("图4_逐箱配送时效.png", "比较期望送达时间和实际交付时间"),
         ("图5_架次能耗与机型.png", "比较各架次能耗及机型差异"),
+        ("图6_服务区运输负荷.png", "展示各服务区的架次数与能耗分布"),
     ]
-    if candidates is not None:
-        rows.append(("图6_方案指标对比.png", "对比反馈迭代候选方案的完成时间、迟到量、能耗与架次"))
     table = "\n".join(f"| {name} | {use} |" for name, use in rows)
     (OUT / "图表索引.md").write_text(
         "# 问题2图表\n\n| 文件 | 论文用途 |\n|---|---|\n" + table + "\n\n"
-        "数据来源：outputs/problem2（统一求解器 q2 输出）；候选方案指标见 time_priority_candidates.csv。\n",
+        "数据来源：outputs/q2（多轮反馈流水线产出的最终第二问方案）。\n",
         encoding="utf-8")
 
 

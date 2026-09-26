@@ -17,7 +17,7 @@ from openpyxl import load_workbook
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[2]
-DATA = ROOT / "outputs" / "problem3"
+DATA = ROOT / "outputs" / "q3"
 OUT = Path(__file__).resolve().parent
 BASE = ROOT / "data" / "无人机应急物资运输基础数据"
 SAMPLE_STEP_S = 15.0
@@ -72,7 +72,7 @@ def collect_link_samples(schedule: pd.DataFrame) -> pd.DataFrame:
     sys.path.insert(0, str(ROOT))
     from final_code.problem1.solver import Node
     from final_code.problem3.physics import LinkEvaluator, link_limits
-    from final_code.problem3.transport_relay import TrackPhase, _position
+    from final_code.problem3.trajectory import TrackPhase, _position
 
     phases = []
     for row in pd.read_csv(DATA / "trajectory_phases.csv").to_dict("records"):
@@ -138,17 +138,18 @@ def plot_joint_gantt(relay, transport):
     r["开始"] = r["准备开始时刻（s）"]; r["结束"] = r["返回O01时刻（s）"]
     df = pd.concat([t[["资源", "类型", "开始", "结束"]], r[["资源", "类型", "开始", "结束"]]], ignore_index=True)
     df = df.sort_values("开始").reset_index(drop=True)
-    fig, ax = plt.subplots(figsize=(11.5, 7.0))
+    fig, ax = plt.subplots(figsize=(12.6, 8.4))
     for i, row in df.iterrows():
         color = "#287a8c" if row["类型"] == "运输" else "#d3b532"
-        ax.barh(i, row["结束"] - row["开始"], left=row["开始"], height=0.62, color=color, alpha=0.88)
-        ax.text((row["开始"] + row["结束"]) / 2, i, row["资源"], ha="center", va="center", fontsize=6.5, color="white")
-    ax.set_yticks(range(len(df)), df["资源"]); ax.set_xlabel("时间 / s")
-    ax.set_title("运输与中继无人机联合任务时间轴", pad=12, fontweight="bold")
+        ax.barh(i, row["结束"] - row["开始"], left=row["开始"], height=0.66, color=color, alpha=0.88)
+        ax.text((row["开始"] + row["结束"]) / 2, i, row["资源"], ha="center", va="center", fontsize=9.5, color="white")
+    ax.set_yticks(range(len(df)), df["资源"], fontsize=10.5); ax.set_xlabel("时间 / s", fontsize=13)
+    ax.tick_params(axis="x", labelsize=11)
+    ax.set_title("运输与中继无人机联合任务时间轴", pad=12, fontsize=16, fontweight="bold")
     ax.grid(axis="x", color="#dfe7ee", lw=0.8); ax.spines[["top", "right"]].set_visible(False)
     ax.legend(handles=[Patch(color="#287a8c", label="运输架次"), Patch(color="#d3b532", label="中继架次")],
-              frameon=False, loc="upper left", bbox_to_anchor=(1.01, 1), borderaxespad=0)
-    fig.subplots_adjust(right=0.82)
+              frameon=False, loc="upper left", bbox_to_anchor=(1.01, 1), borderaxespad=0, fontsize=12)
+    fig.subplots_adjust(right=0.84)
     save(fig, "图1_联合任务时间轴.png")
 
 
@@ -180,9 +181,9 @@ def plot_relay_map(schedule):
     arr = np.asarray(list(ns.values())); ax.set_xlim(arr[:, 0].min()-0.018, arr[:, 0].max()+0.018); ax.set_ylim(arr[:, 1].min()-0.014, arr[:, 1].max()+0.014)
     for code, (x, y) in ns.items():
         if code == "O01":
-            ax.scatter(x, y, marker="*", s=130, color="#222", zorder=4); ax.text(x, y, "  O01", va="center", fontweight="bold")
+            ax.scatter(x, y, marker="*", s=150, color="#222", zorder=4); ax.text(x, y, "  O01", va="center", fontsize=11, fontweight="bold")
         else:
-            ax.scatter(x, y, s=20, color="#59636d", zorder=3); ax.text(x, y, code, fontsize=7, color="#39434d")
+            ax.scatter(x, y, s=22, color="#59636d", zorder=3); ax.text(x, y, code, fontsize=9, color="#39434d")
     # 同一悬停点可能承载多个中继架次，合并为一个点并合并标注，避免文字重叠。
     for _, row in schedule.iterrows():
         ax.plot([ns["O01"][0], row["longitude"]], [ns["O01"][1], row["latitude"]],
@@ -195,9 +196,9 @@ def plot_relay_map(schedule):
         y = group["latitude"].iloc[0]
         labels = " / ".join(group["relay_sortie"].astype(str))
         ax.scatter(x, y, s=72, marker="^", color="#d3b532", edgecolor="white", zorder=5)
-        ax.annotate(labels, (x, y), xytext=(6, 6), textcoords="offset points",
-                    fontsize=7, color="#725f00", ha="left", va="bottom",
-                    bbox={"facecolor": "white", "edgecolor": "none", "alpha": 0.68, "pad": 1.5})
+        ax.annotate(labels, (x, y), xytext=(-9, 9), textcoords="offset points",
+                    fontsize=9.5, color="#725f00", ha="right", va="bottom",
+                    bbox={"facecolor": "white", "edgecolor": "none", "pad": 2.0})
     ax.set_xlabel("经度"); ax.set_ylabel("纬度"); ax.set_title("中继悬停点与服务覆盖空间分布", pad=12, fontweight="bold")
     ax.grid(color="white", alpha=0.65, lw=0.8); ax.spines[["top", "right"]].set_visible(False)
     ax.legend(handles=[Patch(color="#d3b532", label="中继悬停点/航线")], frameon=False, loc="upper right")
@@ -207,13 +208,15 @@ def plot_relay_map(schedule):
 def plot_relay_resources(relay):
     df = relay.sort_values(["中继无人机编号", "准备开始时刻（s）"])
     resources = list(dict.fromkeys(df["中继无人机编号"]))
-    fig, ax = plt.subplots(figsize=(10.5, 4.8))
+    fig, ax = plt.subplots(figsize=(11.5, 5.4))
     for yi, resource in enumerate(resources):
         for _, row in df[df["中继无人机编号"] == resource].iterrows():
-            ax.barh(yi, row["返回O01时刻（s）"] - row["准备开始时刻（s）"], left=row["准备开始时刻（s）"], height=0.48, color="#d3b532", alpha=0.9)
-            ax.text((row["准备开始时刻（s）"] + row["返回O01时刻（s）"]) / 2, yi, row["中继架次编号"], ha="center", va="center", fontsize=7, color="white")
-    ax.set_yticks(range(len(resources)), resources); ax.set_xlabel("时间 / s"); ax.set_ylabel("中继无人机")
-    ax.set_title("中继无人机任务占用与架次衔接", pad=12, fontweight="bold")
+            ax.barh(yi, row["返回O01时刻（s）"] - row["准备开始时刻（s）"], left=row["准备开始时刻（s）"], height=0.46, color="#d3b532", alpha=0.9)
+            ax.text((row["准备开始时刻（s）"] + row["返回O01时刻（s）"]) / 2, yi, row["中继架次编号"], ha="center", va="center", fontsize=12, color="white")
+    ax.set_yticks(range(len(resources)), resources, fontsize=13)
+    ax.set_xlabel("时间 / s", fontsize=13); ax.set_ylabel("中继无人机", fontsize=13)
+    ax.tick_params(axis="x", labelsize=11)
+    ax.set_title("中继无人机任务占用与架次衔接", pad=12, fontsize=16, fontweight="bold")
     ax.grid(axis="x", color="#dfe7ee", lw=0.8); ax.spines[["top", "right"]].set_visible(False)
     save(fig, "图4_中继资源周转.png")
 
