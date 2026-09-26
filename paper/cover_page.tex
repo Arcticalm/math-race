@@ -1,0 +1,61 @@
+% ======================================================================
+% “华为杯”第二十三届中国研究生数学建模竞赛 - 封面（承诺与队伍信息页，页码 0）
+% 严格基于官方附件3模板排版，使用独立作用域隔离，不影响主论文的任何全局格式
+% ======================================================================
+
+% 队伍信息宏保底声明（主文档未定义时生效）
+\providecommand{\CoverFiguresPath}{figures/}
+\providecommand{\SchoolName}{南京理工大学}
+\providecommand{\TeamNumber}{}
+\providecommand{\MemberA}{}
+\providecommand{\MemberB}{}
+\providecommand{\MemberC}{}
+
+\begingroup
+\pagestyle{empty}
+\thispagestyle{empty}
+
+% 顶部四校徽/Logo 横向对齐居中
+\begin{center}
+    \setlength{\tabcolsep}{1.2em}
+    \begin{tabular}{@{}cccc@{}}
+        \includegraphics[height=1.8cm]{\CoverFiguresPath logo_cpipc.png} &
+        \includegraphics[height=2.0cm]{\CoverFiguresPath logo_contest.png} &
+        \includegraphics[height=2.1cm]{\CoverFiguresPath logo_huawei.jpg} &
+        \includegraphics[height=2.0cm]{\CoverFiguresPath logo_xjtu.png}
+    \end{tabular}
+\end{center}
+
+\vspace{1.0cm}
+
+% 大赛名称与竞赛名称
+\begin{center}
+    {\zihao{-2}\bfseries\heiti 中国研究生创新实践系列大赛\par}
+    \vspace{0.4cm}
+    {\zihao{2}\bfseries\heiti “华为杯”第二十三届中国研究生\par}
+    \vspace{0.4cm}
+    {\zihao{2}\bfseries\heiti 数学建模竞赛\par}
+\end{center}
+
+\vspace{2.2cm}
+
+% 队伍信息表（规范三线表结构）
+\begin{center}
+\zihao{-2}\bfseries
+\renewcommand{\arraystretch}{2.0}
+\begin{tabular}{p{3.2cm}p{11.5cm}}
+\makebox[4em][s]{学\quad 校} & \SchoolName \\
+\specialrule{1.5pt}{0pt}{0pt}
+\makebox[4em][s]{参赛队号} & \TeamNumber \\
+\specialrule{1.5pt}{0pt}{0pt}
+\multirow{3}{*}{\makebox[4em][s]{队员姓名}} & 1.\quad \MemberA \\
+\cline{2-2}
+ & 2.\quad \MemberB \\
+\cline{2-2}
+ & 3.\quad \MemberC \\
+\specialrule{1.5pt}{0pt}{0pt}
+\end{tabular}
+\end{center}
+
+\clearpage
+\endgroup

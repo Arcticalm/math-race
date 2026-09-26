@@ -37,7 +37,7 @@
 Just choose `xelatex', no `pdflatex' or `latex' and so on.}
 \fi
 % 支持中文的 ctex 宏包
-\RequirePackage{ctex}
+\RequirePackage[linespread=1.0]{ctex}
 % 页面布局
 \RequirePackage{geometry}
 % 数学宏包
@@ -89,12 +89,12 @@ Just choose `xelatex', no `pdflatex' or `latex' and so on.}
 %%目录
 \RequirePackage{titlesec}
 \RequirePackage{titletoc}
-\renewcommand{\contentsname}{目录}
-\titlecontents{section}[0em]{\songti\zihao{-4}}{\thecontentslabel\ }{}
+\renewcommand{\contentsname}{目\quad 录}
+\titlecontents{section}[0em]{\vspace{0.15\baselineskip}\songti\zihao{-4}\bfseries}{}{}
 {\hspace{.5em}\titlerule*[4pt]{$\cdot$}\contentspage}
-\titlecontents{subsection}[2em]{\vspace{0.1\baselineskip}\songti\zihao{-4}}{\thecontentslabel\ }{}
+\titlecontents{subsection}[1.5em]{\vspace{0.05\baselineskip}\songti\zihao{-4}}{}{}
 {\hspace{.5em}\titlerule*[4pt]{$\cdot$}\contentspage}
-\titlecontents{subsubsection}[4em]{\vspace{0.1\baselineskip}\songti\zihao{-4}}{\thecontentslabel\ }{}
+\titlecontents{subsubsection}[3.2em]{\vspace{0.05\baselineskip}\songti\zihao{-4}}{}{}
 {\hspace{.5em}\titlerule*[4pt]{$\cdot$}\contentspage}
 
 \newcolumntype{Y}{>{\centering\arraybackslash}X}
@@ -157,15 +157,15 @@ Just choose `xelatex', no `pdflatex' or `latex' and so on.}
 % 智能自动化交叉引用
 \RequirePackage{cleveref}
 %% Document Layout
-% 页面布局
+% 页面布局与单倍行距规范（官方格式规范要求：行距用单倍行距）
 \geometry{top=25mm,bottom=25mm,left=25mm,right=25mm}
-\renewcommand*{\baselinestretch}{1.38}
-% 修改tabular 环境, 设置表格中的行间距为正文行间距.
+\renewcommand*{\baselinestretch}{1.0}
+% 修改tabular 环境, 保持表格内适度呼吸感
 \let\mcm@oldtabular\tabular
 \let\mcm@endoldtabular\endtabular
 \renewenvironment{tabular}%
 	{\bgroup%
-	\renewcommand{\arraystretch}{1.38}%
+	\renewcommand{\arraystretch}{1.15}%
 	\mcm@oldtabular}%
 	{\mcm@endoldtabular\egroup}
 % 每行缩进两个汉字
@@ -360,19 +360,20 @@ BoldFont = SourceHanSerifCN-Bold.otf
 \renewcommand\thesection{\chinese{section}、}
 \renewcommand\thesubsection{\arabic{section}.\arabic{subsection}}
 \renewcommand\thesubsubsection{\thesubsection.\arabic{subsubsection}}
+% 格式规范：一级标题用四号黑体字并居中；其余汉字用小四号宋体字。
 \renewcommand\section{\@startsection{section}{1}{\z@}%
 	{-3.5ex \@plus -1ex \@minus -.2ex}%
 	{2.3ex \@plus.2ex}%
-	{\centering\normalfont\Large\bfseries\heiti}}
+	{\centering\normalfont\zihao{4}\bfseries\heiti}}
 \renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
 	{-3.25ex\@plus -1ex \@minus -.2ex}%
 	{1.5ex \@plus .2ex}%
-	{\normalfont\large\bfseries\heiti}}
+	{\normalfont\zihao{-4}\bfseries\heiti}}
 
 \renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
 	{-3.25ex\@plus -1ex \@minus -.2ex}%
 	{1.5ex \@plus .2ex}%
-	{\normalfont\normalsize\bfseries\heiti}}
+	{\normalfont\zihao{-4}\bfseries\heiti}}
 
 
 \renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
@@ -481,7 +482,7 @@ BoldFont = SourceHanSerifCN-Bold.otf
 \newcommand*{\mcm@cap@proof}{证明}
 \newcommand*{\mcm@cap@solution}{解}
  %%%  中文标题名称
-\newcommand*{\mcm@cap@contentsname}{目录}
+\newcommand*{\mcm@cap@contentsname}{目\quad 录}
 \newcommand*{\mcm@cap@listfigurename}{插图清单}
 \newcommand*{\mcm@cap@listtablename}{附表清单}
 \newcommand*{\mcm@cap@refname}{参考文献}

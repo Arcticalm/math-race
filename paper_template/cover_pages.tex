@@ -1,0 +1,151 @@
+% ======================================================================
+% “华为杯”第二十三届中国研究生数学建模竞赛 - 封面与摘要页模块 (Page 0 & Page 1)
+% 
+% 说明：
+% 1. 本模块严格还原附件3官方 Word 模板的前两页排版规范。
+% 2. 依赖宏包（请确保主文档导言区包含）：
+%    \usepackage{ctex}
+%    \usepackage{graphicx}
+%    \usepackage{booktabs}
+%    \usepackage{multirow}
+%    \usepackage{array}
+%    \usepackage[normalem]{ulem}
+% 3. 支持在主文档导言区自定义变量宏，若未定义则使用默认/留空值：
+%    \newcommand{\SchoolName}{您的学校}
+%    \newcommand{\TeamNumber}{您的队号}
+%    \newcommand{\MemberA}{队员1}
+%    \newcommand{\MemberB}{队员2}
+%    \newcommand{\MemberC}{队员3}
+%    \newcommand{\PaperTitle}{论文题目}
+%    \newcommand{\PaperKeywords}{关键词1\quad 关键词2\quad 关键词3}
+%    \newcommand{\AbstractContent}{论文摘要正文...}
+% ======================================================================
+
+% -------------------------------------------------------------
+% 基础参数保底定义
+% -------------------------------------------------------------
+\providecommand{\CoverFiguresPath}{figures/} % 徽标图片路径，主文档跨目录引用时可重定义
+\providecommand{\SchoolName}{南京理工大学}
+\providecommand{\TeamNumber}{}
+\providecommand{\MemberA}{}
+\providecommand{\MemberB}{}
+\providecommand{\MemberC}{}
+\providecommand{\PaperTitle}{}
+\providecommand{\PaperKeywords}{}
+\providecommand{\AbstractContent}{%
+（此处填写论文摘要内容。摘要应简明扼要，需包含：建模思路、主要方法、模型、结果与结论、创新点等，请认真书写，注意篇幅一般不超过两页，且无需译成英文。）%
+}
+
+% -------------------------------------------------------------
+% 字体保底定义（默认使用 ctex 标配中文字体）
+% -------------------------------------------------------------
+\providecommand{\hwxinwei}{\heiti}
+\providecommand{\hwlishu}{\kaishu}
+
+% =============================================================
+% 第一页：封面 / 承诺与参赛队伍信息页 (页码标为 0)
+% =============================================================
+\pagestyle{plain}
+\setcounter{page}{0}
+
+% 顶部四校徽/Logo 横向对齐居中
+\begin{center}
+    \setlength{\tabcolsep}{1.2em}
+    \begin{tabular}{@{}cccc@{}}
+        \includegraphics[height=1.8cm]{\CoverFiguresPath logo_cpipc.png} &
+        \includegraphics[height=2.0cm]{\CoverFiguresPath logo_contest.png} &
+        \includegraphics[height=2.1cm]{\CoverFiguresPath logo_huawei.jpg} &
+        \includegraphics[height=2.0cm]{\CoverFiguresPath logo_xjtu.png}
+    \end{tabular}
+\end{center}
+
+\vspace{1.0cm}
+
+% 大赛名称与竞赛名称
+\begin{center}
+    {\zihao{-2}\hwxinwei\bfseries 中国研究生创新实践系列大赛\par}
+    \vspace{0.4cm}
+    {\zihao{2}\hwxinwei\bfseries “华为杯”第二十三届中国研究生\par}
+    \vspace{0.4cm}
+    {\zihao{2}\hwxinwei\bfseries 数学建模竞赛\par}
+\end{center}
+
+\vspace{2.2cm}
+
+% 队伍信息表（规范三线表结构）
+\begin{center}
+\zihao{-2}\bfseries
+\renewcommand{\arraystretch}{2.0}
+\begin{tabular}{p{3.2cm}p{11.5cm}}
+\makebox[4em][s]{学\quad 校} & \SchoolName \\
+\specialrule{1.5pt}{0pt}{0pt}
+\makebox[4em][s]{参赛队号} & \TeamNumber \\
+\specialrule{1.5pt}{0pt}{0pt}
+\multirow{3}{*}{\makebox[4em][s]{队员姓名}} & 1.\quad \MemberA \\
+\cline{2-2}
+ & 2.\quad \MemberB \\
+\cline{2-2}
+ & 3.\quad \MemberC \\
+\specialrule{1.5pt}{0pt}{0pt}
+\end{tabular}
+\end{center}
+
+\clearpage
+
+% =============================================================
+% 第二页：题目与摘要页 (页码从 1 开始)
+% =============================================================
+\setcounter{page}{1}
+
+% 顶部大赛名称与竞赛名称
+\begin{center}
+    {\zihao{-2}\hwxinwei\bfseries 中国研究生创新实践系列大赛\par}
+    \vspace{0.4cm}
+    {\zihao{2}\hwxinwei\bfseries “华为杯”第二十三届中国研究生\par}
+    \vspace{0.4cm}
+    {\zihao{2}\hwxinwei\bfseries 数学建模竞赛\par}
+\end{center}
+
+\vspace{1.0cm}
+
+% 题目栏
+\noindent{\zihao{-2}\hwlishu 题\quad 目：}\quad 
+\ifx\PaperTitle\empty
+    \uline{\hspace{11.5cm}}
+\else
+    \uline{\makebox[11.5cm][c]{\zihao{3}\songti\bfseries \PaperTitle}}
+\fi
+\par
+
+\vspace{1.2cm}
+
+% 摘要标题（居中）
+\begin{center}
+    {\zihao{-2}\hwlishu 摘\quad 要：\par}
+\end{center}
+
+\vspace{0.5cm}
+
+% 摘要正文区域（小四宋体，1.3倍行距）
+\begingroup
+\zihao{-4}\songti
+\linespread{1.3}\selectfont
+\AbstractContent
+\endgroup
+
+\vfill
+
+% 关键词栏
+\noindent{\zihao{-2}\hwlishu 关键词：}\quad 
+\begingroup
+\zihao{-4}\songti
+\ifx\PaperKeywords\empty
+    \quad
+\else
+    \PaperKeywords
+\fi
+\endgroup
+\par
+
+\vspace{0.8cm}
+\clearpage

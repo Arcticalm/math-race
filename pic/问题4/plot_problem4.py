@@ -337,7 +337,9 @@ def plot_workload_time_energy(workload):
             zorder=5
         )
 
-    ax.set_xlabel("运输飞行时间 / h", labelpad=6)
+    # transport_flight_time_s 字段按“返航时刻−起飞时刻”计，含服务区投送交接时间，
+    # 因此标签统一写成“运输空中作业时间（含交接）”，不再简称为“飞行时间”。
+    ax.set_xlabel("运输空中作业时间（含交接）/ h", labelpad=6)
     ax.set_ylabel("运输能耗 / kWh", labelpad=6)
     ax.set_title("分区运输工作量的时间—能耗关系", pad=14, fontweight="bold")
     ax.set_xlim(-0.3, 11.2)
